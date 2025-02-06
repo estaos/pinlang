@@ -123,7 +123,7 @@ val myitems = [1, 2, 3, 4, 5];
 
 ```
 
-## Objects
+## Objects and Structs
 
 Objects are instances of structs. Internally, they are represented as pointers.
 
@@ -158,6 +158,17 @@ extention on Person {
   }
 }
 
+const myPerson = Person {
+  name: "",
+  // ... basically create a person object without calling a constructor
+}
+
+const myPerson2 = Person(
+  name: ""
+  // ... call constructor with named arguments
+  // See how we don't use new
+)
+
 // We can also do mixins
 struct Employee mixin Person {
   employeeId: int64;
@@ -166,6 +177,20 @@ struct Employee mixin Person {
   nickname: string;
 }
 
+```
+
+Structs can be anonymous, that is, we can create typed objects without having to define a struct first.
+
+```js
+val myobj = {
+  name: "Someone!"
+}
+
+// In the generated code there will be struct generated for this object. But only this object
+// will be of that type.
+
+These are valid types and can be used anywehere a type is expected.
+const myFunc = (a: int64, b: int64): {a: int64, b: int64} => ({a, b})
 ```
 
 
