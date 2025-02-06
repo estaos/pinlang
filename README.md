@@ -193,6 +193,8 @@ val myobj = {
 const myFunc = (a: int64, b: int64): {a: int64, b: int64} => ({a, b})
 ```
 
+## Reference counting and native structs
 
+Objects that are passed from C are called native objects and are not reference counted. Only objects whose structs are defined in e-script are reference counted. It's very important to note that refrenmce counting adds a bit of a runtime to the language, but this should be small. This means we will also add an extra field to every struct to track the ref count.
 
 
