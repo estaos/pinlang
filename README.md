@@ -189,7 +189,7 @@ val myobj = {
 // In the generated code there will be struct generated for this object. But only this object
 // will be of that type.
 
-These are valid types and can be used anywehere a type is expected.
+//These are valid types and can be used anywehere a type is expected.
 const myFunc = (a: int64, b: int64): {a: int64, b: int64} => ({a, b})
 ```
 
