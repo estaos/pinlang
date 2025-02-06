@@ -139,6 +139,10 @@ extention on Person {
     this.name = name;
     this.surname = surname
   }
+
+  ~Person() {
+    // destructor
+  }
   
   toString() {
     // no runtime, so these are not auto generated.
