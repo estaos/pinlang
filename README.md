@@ -83,6 +83,7 @@ z = null;
 
 13. any
 14. object
+15. Function
 
 All of these types (except for boolean) can signed or unsigned.
 
