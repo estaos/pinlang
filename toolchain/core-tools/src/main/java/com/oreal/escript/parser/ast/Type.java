@@ -25,4 +25,6 @@ public class Type {
     /// clashes, for overloaded types, the `fullyQualifiedName` of a Type also
     /// includes its line number and column in the source file.
     private List<Symbol> parameters;
+
+    private String documentationMarkdown;
 }

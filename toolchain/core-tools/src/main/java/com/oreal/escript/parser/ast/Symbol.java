@@ -11,4 +11,6 @@ public class Symbol {
 
     private final TypeReference type;
     private final Source source;
+
+    private String documentationMarkdown;
 }
