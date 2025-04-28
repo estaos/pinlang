@@ -8,7 +8,7 @@ import java.io.File;
 @Getter
 @AllArgsConstructor
 public class Source {
-    private final File source;
-    private final int lineNumber;
-    private final int columnNumber;
+    private File source;
+    private int lineNumber;
+    private int columnNumber;
 }

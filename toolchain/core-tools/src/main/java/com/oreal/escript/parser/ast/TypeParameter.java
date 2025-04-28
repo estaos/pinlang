@@ -27,6 +27,6 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class TypeParameter {
-    private final String name;
-    private final List<TypeReference> bounds;
+    private String name;
+    private List<TypeReference> bounds;
 }

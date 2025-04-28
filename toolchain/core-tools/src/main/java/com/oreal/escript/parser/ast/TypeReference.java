@@ -10,8 +10,8 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class TypeReference {
-    private final String name;
-    private final String fullyQualifiedName;
+    private String name;
+    private String fullyQualifiedName;
 
     /// Keeps a list of type arguments to this TypeReference.
     ///
@@ -20,5 +20,5 @@ public class TypeReference {
     /// val Map<String, int32> a;
     /// ```
     /// The type arguments for this symbol are: `String` and `int32` in that specific order.
-    private final List<TypeReference> typeArguments;
+    private List<TypeReference> typeArguments;
 }

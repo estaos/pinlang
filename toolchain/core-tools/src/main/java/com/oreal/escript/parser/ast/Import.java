@@ -7,7 +7,12 @@ import org.jetbrains.annotations.Nullable;
 @Getter
 @AllArgsConstructor
 public class Import {
-    private final @Nullable String namespace;
-    private final boolean isExternal;
-    private final CompilationUnit compilationUnit;
+    private @Nullable String namespace;
+    private boolean isExternal;
+
+    /// The compilation resulting from parsing this import.
+    ///
+    /// If the import could not be resolved, the compilation
+    /// unit will not be set, i.e `null`.
+    private @Nullable CompilationUnit compilationUnit;
 }
