@@ -9,8 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class NamedValueSymbol extends Symbol {
-    public NamedValueSymbol(String name, String fullyQualifiedName, TypeReference type, Source source, boolean reAssignable, boolean immutable) {
-        super(name, fullyQualifiedName, type, source);
+    public NamedValueSymbol(String name, String fullyQualifiedName, TypeReference type, Source source, boolean reAssignable, boolean immutable, String documentationMarkdown) {
+        super(name, fullyQualifiedName, type, source, documentationMarkdown);
         this.reAssignable = reAssignable;
         this.immutable = immutable;
     }
