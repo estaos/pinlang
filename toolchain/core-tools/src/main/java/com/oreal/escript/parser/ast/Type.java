@@ -20,9 +20,9 @@ public class Type {
 
     /// If this type is callable, these are the parameters it should be called with.
     ///
-    /// It is the number and type of parameters that differentiates callable types
+    /// It is the number and type of parameters that differentiate callable types
     /// of the same name. This allows for method/function overloading. To prevent
-    /// clashes, the `fullyQualifiedName` of a Type also includes its line number
-    /// and column in the source file.
+    /// clashes, for overloaded types, the `fullyQualifiedName` of a Type also
+    /// includes its line number and column in the source file.
     private List<Symbol> parameters;
 }
