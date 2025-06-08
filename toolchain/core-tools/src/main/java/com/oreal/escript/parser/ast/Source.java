@@ -1,12 +1,14 @@
 package com.oreal.escript.parser.ast;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.io.File;
 
 @Getter
 @AllArgsConstructor
+@EqualsAndHashCode
 public class Source {
     private File file;
     private int lineNumber;

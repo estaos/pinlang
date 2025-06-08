@@ -3,6 +3,7 @@ package com.oreal.escript.parser.ast;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -11,7 +12,13 @@ import java.util.List;
 @AllArgsConstructor
 public class TypeReference {
     private String name;
-    private String fullyQualifiedName;
+
+    /// Where this type is defined.
+    ///
+    /// Set during annotation.
+    ///
+    /// This is used to find the type in the type symbols table.
+    private @Nullable Source source;
 
     /// Keeps a list of type arguments to this TypeReference.
     ///
