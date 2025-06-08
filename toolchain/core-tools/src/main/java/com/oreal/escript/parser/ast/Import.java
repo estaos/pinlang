@@ -15,7 +15,7 @@ public class Import {
     /// Where this import is defined.
     private Source source;
 
-    /// The compilation resulting from parsing this import.
+    /// The compilation unit resulting from parsing this import.
     ///
     /// If the import could not be resolved, the compilation
     /// unit will not be set, i.e `null`.
