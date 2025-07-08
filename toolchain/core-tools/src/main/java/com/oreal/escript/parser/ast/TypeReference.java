@@ -13,12 +13,10 @@ import java.util.List;
 public class TypeReference {
     private String name;
 
-    /// Where this type is defined.
+    /// This is the actual resolved type being referenced.
     ///
     /// Set during annotation.
-    ///
-    /// This is used to find the type in the type symbols table.
-    private @Nullable Source source;
+    private @Nullable Type type;
 
     /// Keeps a list of type arguments to this TypeReference.
     ///
