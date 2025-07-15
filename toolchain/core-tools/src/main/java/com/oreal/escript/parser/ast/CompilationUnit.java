@@ -14,6 +14,6 @@ public class CompilationUnit {
     private File source;
     private List<Import> imports;
 
-    private List<Symbol> symbols;
+    private List<? extends Symbol> symbols;
     private List<Type> types;
 }

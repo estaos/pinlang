@@ -21,9 +21,9 @@ public class CallableType extends Type {
         this.parameters = parameters;
     }
 
-    /// This is its block on statements;
+    /// This is its block of statements;
     ///
-    /// Set to `null` if this is a function declaration.
+    /// Set to `null` if this is a function declaration, like in traits.
     private @Nullable BlockExpression statementBlock;
 
     /// These are the parameters it should be called with.

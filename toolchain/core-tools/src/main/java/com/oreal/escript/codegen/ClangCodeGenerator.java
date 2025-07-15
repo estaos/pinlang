@@ -2,14 +2,20 @@ package com.oreal.escript.codegen;
 
 import com.oreal.escript.codegen.outputs.File;
 import com.oreal.escript.parser.ast.CompilationUnit;
+import com.oreal.escript.parser.ast.Expression;
 import com.oreal.escript.parser.ast.Import;
+import com.oreal.escript.parser.ast.NamedValueSymbol;
+import com.oreal.escript.parser.ast.Symbol;
+import com.oreal.escript.parser.ast.TypeReference;
 
 import java.nio.file.Path;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class ClangCodeGenerator implements  CodeGenerator {
     private final String ES_EXTENSION = ".escript";
@@ -40,6 +46,7 @@ public class ClangCodeGenerator implements  CodeGenerator {
         String contents =
                 getHeaderFileHeader(headerDefinitionName) +
                 getCIncludes(compilationUnit.getImports()) +
+                getSymbolDeclarations(compilationUnit.getSymbols()) +
                 getHeaderFileFooter(headerDefinitionName);
 
         return new File(withFileExtension(".h", path), contents);
@@ -93,5 +100,33 @@ public class ClangCodeGenerator implements  CodeGenerator {
                 .replace(path.getFileSystem().getSeparator(), "_")
                 .replace(ES_EXTENSION, "_H_")
                 .replace(".", "_").toUpperCase();
+    }
+
+    private String getSymbolDeclarations(List<? extends Symbol> symbols) {
+        return symbols.stream().map(this::getSymbolDeclaration).collect(Collectors.joining());
+    }
+
+    private String getSymbolDeclaration(Symbol symbol) {
+        if(symbol instanceof NamedValueSymbol valueSymbol) {
+            TypeReference type = valueSymbol.getType();
+            var cExpression = Optional.ofNullable(valueSymbol.getValue())
+                    .map(this::getCExpression);
+
+            String squareBracketPair = IntStream.range(0, valueSymbol.getArrayDimensions())
+                    .mapToObj(_ -> "[]")
+                    .collect(Collectors.joining());
+            String cTypeName =
+                    (type.getName().equals("boolean") ? "bool" : type.getName()) + squareBracketPair;
+
+            return cExpression
+                    .map(value ->String.format("%s %s = %s;\n", cTypeName, valueSymbol.getName(), value))
+                    .orElse(String.format("%s %s;\n", cTypeName, valueSymbol.getName()));
+        } else {
+            throw new IllegalArgumentException("Unknown symbol " + symbol);
+        }
+    }
+
+    private String getCExpression(Expression expression) {
+        return "";
     }
 }

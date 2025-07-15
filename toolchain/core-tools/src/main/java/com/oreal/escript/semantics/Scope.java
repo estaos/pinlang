@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Getter
 public class Scope {
@@ -22,7 +23,7 @@ public class Scope {
     /// import "def.escript" as name
     /// ```
     ///
-    /// in the bove example, contents of abc will be added under this scope, while contents
+    /// In the above example, contents of abc will be added under this scope, while contents
     /// of def will be under 'name' aliased scope.
     private final Map<String, Scope> aliasedScopes = new HashMap<>();
 
@@ -48,12 +49,24 @@ public class Scope {
         return this;
     }
 
+    public @Nullable Type resolveType(String name) {
+        return types.stream().filter(type -> type.getName().equals(name))
+                .findFirst()
+                .orElseGet(
+                        () -> Optional.ofNullable(parent)
+                                .map(parent -> parent.resolveType(name))
+                                .orElse(null)
+                );
+
+    }
+
     /// Symbols defined in project scope are accessible from any scope.
     ///
     /// Therefore, all scopes should be supersets of the project scope.
     ///
     /// The project scope has no parent.
     public static Scope getProjectScope() {
+        // Note that these are the built in types, i.e, not user defined.
         var int8Type = new Type(null, "int8", List.of(), "");
         var int16Type = new Type(null, "int16", List.of(), "");
         var int32Type = new Type(null, "int32", List.of(), "");

@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class Symbol {
+public abstract class Symbol {
     private final String name;
 
     private final TypeReference type;
