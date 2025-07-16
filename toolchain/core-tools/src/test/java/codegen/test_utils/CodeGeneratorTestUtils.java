@@ -50,7 +50,6 @@ public class CodeGeneratorTestUtils {
             new NamedValueSymbol("myChar", charTypeReference, source, true, false, "", null, false),
             new NamedValueSymbol("myBoolean", booleanTypeReference, source, true, false, "", null, false),
             new NamedValueSymbol("myCharArray", charTypeReference, source, true, false, "", null, false, 1)
-
         );
 
         return  new CompilationUnit(
@@ -72,5 +71,30 @@ public class CodeGeneratorTestUtils {
                 false, "", new TypeNameExpression(typeReference), false);
 
         return new CompilationUnit(new File("main.escript"), List.of(), List.of(functionSymbol), List.of(callableType));
+    }
+
+    public static CompilationUnit getFunctionWithArgsCompilationUnit(Scope scope) {
+        var source = new Source(new File(""), 0, 0, 0);
+        var int8TypeReference = new TypeReference("int8", scope.resolveType("int8"), List.of());
+        var int16TypeReference = new TypeReference("int16", scope.resolveType("int16"), List.of());
+
+        var callableType = new CallableType(
+                source,
+                "myFunction_type",
+                List.of(), "",
+                new BlockExpression(List.of(), null),
+                List.of(
+                        new NamedValueSymbol("a", int8TypeReference, source, true, false, "", null, false),
+                        new NamedValueSymbol("b", int16TypeReference, source, true, false, "", null, false)
+                )
+        );
+
+        var functionTypeReference = new TypeReference("myFunction_type", callableType, List.of());
+        callableType.setStatementBlock(new BlockExpression(List.of(), functionTypeReference));
+        var functionSymbol = new NamedValueSymbol("myFunction", functionTypeReference, source, true,
+                false, "", new TypeNameExpression(functionTypeReference), false);
+
+        var symbols = List.of(functionSymbol);
+        return new CompilationUnit(new File("main.escript"), List.of(), symbols, List.of(callableType));
     }
 }

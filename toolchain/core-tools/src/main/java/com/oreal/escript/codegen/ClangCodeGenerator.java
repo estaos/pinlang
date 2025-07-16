@@ -166,7 +166,7 @@ public class ClangCodeGenerator implements  CodeGenerator {
             String returnType = getCallableTypeReturnType(callableType);
             String parameterList = getCallableTypeParameterList(callableType);
 
-            return String.format("%s %s(%s);\ntypedef %s (*%s_ptr)(%s);\n",
+            return String.format("typedef %s (*%s_ptr)(%s);\n%s %s(%s);\n",
                     returnType, callableType.getName(), parameterList,
                     returnType, callableType.getName(), parameterList);
         } else {
@@ -209,7 +209,9 @@ public class ClangCodeGenerator implements  CodeGenerator {
     private String getCallableTypeReturnType(CallableType callableType) {
         if(Objects.requireNonNull(callableType.getStatementBlock()).getType() == null) {
             return "void";
-        } else {
+        } else if(Objects.requireNonNull(callableType.getStatementBlock()).getType().getType() instanceof CallableType callableReturnType) {
+            return String.format("%s_ptr", callableReturnType.getName());
+        }else {
             return Objects.requireNonNull(callableType.getStatementBlock()).getType().getName();
         }
     }

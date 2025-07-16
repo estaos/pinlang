@@ -100,8 +100,8 @@ char[] myCharArray;
         String expectedContents = """
 #ifndef MAIN_H_
 #define MAIN_H_
-void myFunction_type();
 typedef void (*myFunction_type_ptr)();
+void myFunction_type();
 myFunction_type_ptr myFunction = myFunction_type;
 #endif // MAIN_H_
 """;
@@ -120,6 +120,27 @@ myFunction_type_ptr myFunction = myFunction_type;
         String expectedContents = """
 #include "main.h"
 void myFunction_type() {}
+""";
+
+        assertEquals(expectedContents, file.getContents());
+    }
+
+    @Test
+    public void test_can_declare_non_void_function_in_header_file() {
+        var instance = new ClangCodeGenerator();
+        var scope = Scope.getProjectScope();
+        CompilationUnit compilationUnit = CodeGeneratorTestUtils.getFunctionWithArgsCompilationUnit(scope);
+
+        List<File> files = instance.generateCode(compilationUnit);
+        File file = files.getFirst();
+
+        String expectedContents = """
+#ifndef MAIN_H_
+#define MAIN_H_
+typedef myFunction_type_ptr (*myFunction_type_ptr)(int8 a, int16 b);
+myFunction_type_ptr myFunction_type(int8 a, int16 b);
+myFunction_type_ptr myFunction = myFunction_type;
+#endif // MAIN_H_
 """;
 
         assertEquals(expectedContents, file.getContents());
