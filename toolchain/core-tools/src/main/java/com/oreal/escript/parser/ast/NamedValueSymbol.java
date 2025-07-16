@@ -57,4 +57,12 @@ public class NamedValueSymbol extends Symbol {
     public boolean isArray() {
         return arrayDimensions > 0;
     }
+
+    public boolean isFunction() {
+        if(getType().getType() != null) {
+            return getType().getType() instanceof CallableType;
+        } else {
+            return false;
+        }
+    }
 }

@@ -1,9 +1,12 @@
 package codegen.test_utils;
 
+import com.oreal.escript.parser.ast.BlockExpression;
+import com.oreal.escript.parser.ast.CallableType;
 import com.oreal.escript.parser.ast.CompilationUnit;
 import com.oreal.escript.parser.ast.Import;
 import com.oreal.escript.parser.ast.NamedValueSymbol;
 import com.oreal.escript.parser.ast.Source;
+import com.oreal.escript.parser.ast.TypeNameExpression;
 import com.oreal.escript.parser.ast.TypeReference;
 import com.oreal.escript.semantics.Scope;
 
@@ -52,5 +55,22 @@ public class CodeGeneratorTestUtils {
 
         return  new CompilationUnit(
                 new File("main.escript"), List.of(), symbols, List.of());
+    }
+
+    public static CompilationUnit getVoidFunctionWithNoStatementsCompilationUnit() {
+        var source = new Source(new File(""), 0, 0, 0);
+
+        var callableType = new CallableType(
+                source,
+                "myFunction_type",
+                List.of(), "",
+                new BlockExpression(List.of(), null),
+                List.of());
+
+        var typeReference = new TypeReference("myFunction_type", callableType, List.of());
+        var functionSymbol = new NamedValueSymbol("myFunction", typeReference, source, true,
+                false, "", new TypeNameExpression(typeReference), false);
+
+        return new CompilationUnit(new File("main.escript"), List.of(), List.of(functionSymbol), List.of(callableType));
     }
 }
