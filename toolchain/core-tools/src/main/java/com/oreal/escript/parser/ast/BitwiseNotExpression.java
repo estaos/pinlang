@@ -5,6 +5,6 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class BitwiseNotExpression {
+public class BitwiseNotExpression extends Expression {
     private Expression operand;
 }

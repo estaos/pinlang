@@ -6,4 +6,5 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class NumberLiteralExpression extends Expression {
+    private String numberAsString;
 }

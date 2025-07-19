@@ -5,7 +5,7 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class AssignmentExpression {
+public class AssignmentExpression extends Expression {
     private String symbolName;
     private Expression value;
 }

@@ -9,6 +9,7 @@ import java.util.List;
 @Setter
 public class FunctionCallExpression extends Expression {
     private List<Argument> arguments;
+    private String functionName;
 
     public FunctionCallExpression() {
         super(null);

@@ -5,6 +5,6 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class LogicalNotExpression {
+public class LogicalNotExpression extends Expression {
     private Expression operand;
 }

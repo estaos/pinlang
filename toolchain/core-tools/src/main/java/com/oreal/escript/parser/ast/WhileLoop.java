@@ -5,7 +5,7 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class WhileLoop {
+public class WhileLoop extends Expression {
     private Expression booleanExpression;
     private BlockExpression blockExpression;
 }

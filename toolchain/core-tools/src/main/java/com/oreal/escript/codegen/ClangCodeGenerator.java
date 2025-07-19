@@ -1,15 +1,54 @@
 package com.oreal.escript.codegen;
 
 import com.oreal.escript.codegen.outputs.File;
+import com.oreal.escript.parser.ast.AddExpression;
+import com.oreal.escript.parser.ast.Argument;
+import com.oreal.escript.parser.ast.AssignmentExpression;
+import com.oreal.escript.parser.ast.BitwiseAndExpression;
+import com.oreal.escript.parser.ast.BitwiseLeftShift;
+import com.oreal.escript.parser.ast.BitwiseNotExpression;
+import com.oreal.escript.parser.ast.BitwiseOrExpression;
+import com.oreal.escript.parser.ast.BitwiseRightShift;
+import com.oreal.escript.parser.ast.BitwiseXorExpression;
+import com.oreal.escript.parser.ast.BlockExpression;
+import com.oreal.escript.parser.ast.BooleanLiteralExpression;
+import com.oreal.escript.parser.ast.BreakStatement;
 import com.oreal.escript.parser.ast.CallableType;
+import com.oreal.escript.parser.ast.CharLiteralExpression;
+import com.oreal.escript.parser.ast.CharSequenceLiteralExpression;
+import com.oreal.escript.parser.ast.CompareEqualToExpression;
+import com.oreal.escript.parser.ast.CompareGreaterThanExpression;
+import com.oreal.escript.parser.ast.CompareLessThanExpression;
+import com.oreal.escript.parser.ast.CompareNotEqualToExpression;
 import com.oreal.escript.parser.ast.CompilationUnit;
+import com.oreal.escript.parser.ast.ContinueStatement;
+import com.oreal.escript.parser.ast.DecrementExpression;
+import com.oreal.escript.parser.ast.DivisionExpression;
+import com.oreal.escript.parser.ast.DoWhileLoop;
 import com.oreal.escript.parser.ast.Expression;
+import com.oreal.escript.parser.ast.ForLoop;
+import com.oreal.escript.parser.ast.FunctionCallExpression;
+import com.oreal.escript.parser.ast.IfStatement;
 import com.oreal.escript.parser.ast.Import;
+import com.oreal.escript.parser.ast.IncrementExpression;
+import com.oreal.escript.parser.ast.LogicalAndExpression;
+import com.oreal.escript.parser.ast.LogicalNotExpression;
+import com.oreal.escript.parser.ast.LogicalOrExpression;
+import com.oreal.escript.parser.ast.ModulusExpression;
+import com.oreal.escript.parser.ast.MultiplyExpression;
 import com.oreal.escript.parser.ast.NamedValueSymbol;
+import com.oreal.escript.parser.ast.NullExpression;
+import com.oreal.escript.parser.ast.NumberLiteralExpression;
+import com.oreal.escript.parser.ast.ReturnStatement;
+import com.oreal.escript.parser.ast.SubtractExpression;
 import com.oreal.escript.parser.ast.Symbol;
+import com.oreal.escript.parser.ast.SymbolValueExpression;
 import com.oreal.escript.parser.ast.Type;
 import com.oreal.escript.parser.ast.TypeNameExpression;
 import com.oreal.escript.parser.ast.TypeReference;
+import com.oreal.escript.parser.ast.WhileLoop;
+import com.oreal.escript.parser.logging.LogEntry;
+import com.oreal.escript.parser.logging.LogEntryCode;
 
 import java.nio.file.Path;
 import java.util.Deque;
@@ -22,6 +61,7 @@ import java.util.stream.IntStream;
 
 public class ClangCodeGenerator implements  CodeGenerator {
     private final String ES_EXTENSION = ".escript";
+    public final List<LogEntry> logs = new LinkedList<>();
 
     @Override
     public List<File> generateCode(CompilationUnit annotatedCompilationUnit) {
@@ -201,7 +241,128 @@ public class ClangCodeGenerator implements  CodeGenerator {
     private String getCExpression(Expression expression) {
         if(expression instanceof TypeNameExpression typeNameExpression) {
             return Objects.requireNonNull(typeNameExpression.getType()).getName();
+        } else if(expression instanceof ReturnStatement returnStatement) {
+            return String.format("return (%s)", getCExpression(returnStatement.getReturnExpression()));
+        } else if(expression instanceof ContinueStatement) {
+            return "continue";
+        } else if(expression instanceof BreakStatement) {
+            return "break";
+        } else if(expression instanceof BooleanLiteralExpression booleanLiteralExpression) {
+            return Boolean.toString(booleanLiteralExpression.isValue());
+        } else if(expression instanceof CharSequenceLiteralExpression charSequenceLiteralExpression) {
+            return String.format("\"%s\"", charSequenceLiteralExpression.getCharSequence());
+        } else if(expression instanceof CharLiteralExpression charLiteralExpression) {
+            return String.format("'%s'", charLiteralExpression.getCharacter());
+        } else if(expression instanceof NumberLiteralExpression numberLiteralExpression) {
+            return numberLiteralExpression.getNumberAsString();
+        } else if(expression instanceof NullExpression) {
+            return "NULL";
+        }else if(expression instanceof SymbolValueExpression symbolValueExpression) {
+            return symbolValueExpression.getSymbolName();
+        } else if(expression instanceof AssignmentExpression assignmentExpression) {
+            return String.format("%s=(%s)", assignmentExpression.getSymbolName(), getCExpression(assignmentExpression.getValue()));
+        } else if(expression instanceof BitwiseAndExpression operator) {
+            return String.format("(%s) & (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
+        } else if(expression instanceof BitwiseLeftShift operator) {
+            return String.format("(%s) << (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
+        } else if(expression instanceof BitwiseRightShift operator) {
+            return String.format("(%s) >> (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
+        } else if(expression instanceof BitwiseNotExpression operator) {
+            return String.format("~(%s)", getCExpression(operator.getOperand()));
+        } else if(expression instanceof BitwiseOrExpression operator) {
+            return String.format("(%s) | (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
+        } else if(expression instanceof BitwiseXorExpression operator) {
+            return String.format("(%s) ^ (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
+        } else if(expression instanceof LogicalAndExpression operator) {
+            return String.format("(%s) && (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
+        } else if(expression instanceof LogicalOrExpression operator) {
+            return String.format("(%s) || (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
+        } else if(expression instanceof LogicalNotExpression operator) {
+            return String.format("!(%s)", getCExpression(operator.getOperand()));
+        } else if(expression instanceof CompareEqualToExpression operator) {
+            return String.format("(%s) == (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
+        } else if(expression instanceof CompareGreaterThanExpression operator) {
+            return String.format("(%s) > (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
+        } else if(expression instanceof CompareLessThanExpression operator) {
+            return String.format("(%s) < (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
+        } else if(expression instanceof CompareNotEqualToExpression operator) {
+            return String.format("(%s) != (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
+        } else if(expression instanceof AddExpression operator) {
+            return String.format("(%s) + (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
+        } else if(expression instanceof SubtractExpression operator) {
+            return String.format("(%s) - (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
+        } else if(expression instanceof MultiplyExpression operator) {
+            return String.format("(%s) * (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
+        } else if(expression instanceof DivisionExpression operator) {
+            return String.format("(%s) / (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
+        } else if(expression instanceof ModulusExpression operator) {
+            return String.format("(%s) %% (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
+        } else if(expression instanceof DecrementExpression operator) {
+            if(operator.isPreDecrement()) {
+                return String.format("--(%s)", getCExpression(operator.getOperand()));
+            } else {
+                return String.format("(%s)++", getCExpression(operator.getOperand()));
+            }
+        } else if(expression instanceof IncrementExpression operator) {
+            if(operator.isPreIncrement()) {
+                return String.format("--(%s)", getCExpression(operator.getOperand()));
+            } else {
+                return String.format("(%s)++", getCExpression(operator.getOperand()));
+            }
+        } else if(expression instanceof BlockExpression blockExpression) {
+            String output = blockExpression.getStatements().stream().map(this::getCExpression).collect(Collectors.joining(";\n"));
+
+            if(output.isEmpty()) {
+                return String.format("{%s}", output);
+            } else {
+                return String.format("{%s}\n", output);
+            }
+        } else if (expression instanceof FunctionCallExpression functionCallExpression) {
+            String arguments = functionCallExpression.getArguments().stream().map(Argument::getExpression)
+                    .map(this::getCExpression)
+                    .map(cExpression -> String.format("(%s)", cExpression))
+                    .collect(Collectors.joining(", "));
+
+            return String.format("%s(%s)", functionCallExpression.getFunctionName(), arguments);
+        } else if(expression instanceof DoWhileLoop doWhileLoop) {
+            String statements = getCExpression(doWhileLoop.getBlockExpression());
+            String booleanCheck = getCExpression(doWhileLoop.getBooleanExpression());
+            return String.format("do %s while(%s);", statements, booleanCheck);
+        } else if(expression instanceof ForLoop forLoop) {
+            String initialisationExpression = getCExpression(forLoop.getDeclarationExpression());
+            String comparisonExpression = getCExpression(forLoop.getComparisonExpression());
+            String counterExpression = getCExpression(forLoop.getCounterExpression());
+            String statements = getCExpression(forLoop.getBlockExpression());
+
+            return String.format("for (%s; %s; %s)\n%s", initialisationExpression, comparisonExpression,
+                    counterExpression, statements);
+        } else if(expression instanceof IfStatement ifStatement) {
+            String booleanCheck = getCExpression(ifStatement.getBooleanExpression());
+            String statements = getCExpression(ifStatement.getBlockExpression());
+            String elseStatements = Optional.ofNullable(ifStatement.getElseBlockExpression())
+                    .map(this::getCExpression)
+                    .orElse("");
+
+             StringBuilder output = new StringBuilder(String.format("if(%s) \n%s", booleanCheck, statements));
+
+             for(IfStatement.ElseIfBlock elseIfBlock : ifStatement.getElseIfBlocks()) {
+                 String elseIfBooleanCheck = getCExpression(elseIfBlock.getBooleanExpression());
+                 String elseIfStatements = getCExpression(elseIfBlock.getBlockExpression());
+                 output.append(String.format(" else if(%s) %s", elseIfBooleanCheck, elseIfStatements));
+             }
+
+             if(ifStatement.getElseBlockExpression() != null) {
+                 output.append(String.format(" else {\n%s}", elseStatements));
+             }
+
+             return output.toString();
+        } else if(expression instanceof WhileLoop whileLoop) {
+            String booleanCheck = getCExpression(whileLoop.getBooleanExpression());
+            String statements = getCExpression(whileLoop.getBlockExpression());
+
+            return String.format("while(%s) %s", booleanCheck, statements);
         } else {
+            logs.add(LogEntry.warning(expression.getSource(), LogEntryCode.UNKNOWN_EXPRESSION));
             return "";
         }
     }

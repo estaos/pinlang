@@ -19,4 +19,10 @@ public class Expression {
     ///
     /// Void expressions will always have this as null.
     private @Nullable TypeReference type;
+
+    private Source source;
+
+    public Expression(@Nullable TypeReference type) {
+        this.type = type;
+    }
 }

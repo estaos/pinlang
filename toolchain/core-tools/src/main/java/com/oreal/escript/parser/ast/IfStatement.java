@@ -3,6 +3,8 @@ package com.oreal.escript.parser.ast;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -16,7 +18,10 @@ public class IfStatement extends Expression {
     private @Nullable BlockExpression elseBlockExpression;
     private List<ElseIfBlock> elseIfBlocks;
 
-    private static class ElseIfBlock {
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class ElseIfBlock {
         private Expression booleanExpression;
         private BlockExpression blockExpression;
     }

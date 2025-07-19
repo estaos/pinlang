@@ -7,7 +7,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @Data
-public class DoWhileLoop extends Expression {
-    private Expression booleanExpression;
-    private BlockExpression blockExpression;
+public class CharLiteralExpression extends Expression {
+    private char character;
 }

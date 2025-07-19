@@ -5,6 +5,6 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class SymbolValueExpression {
+public class SymbolValueExpression extends Expression {
     private String symbolName;
 }
