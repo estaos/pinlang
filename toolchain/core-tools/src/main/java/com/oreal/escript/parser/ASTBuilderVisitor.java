@@ -33,16 +33,61 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
 
     @Override
     public Import visitLanguageImport(EScriptParser.LanguageImportContext ctx) {
-        File importFile = getImportFile(ctx.SINGLE_LINE_STRING().getText(), ctx);
+        File importFile = getImportFile(ctx.importPath());
         Source source = getNodeSource(file, ctx);
         return new Import("", false, source, importFile, null);
     }
 
     @Override
     public Import visitExternalImport(EScriptParser.ExternalImportContext ctx) {
-        File importFile = getImportFile(ctx.SINGLE_LINE_STRING().getText(), ctx);
+        File importFile = getImportFile(ctx.importPath());
         Source source = getNodeSource(file, ctx);
         return new Import("", true, source, importFile, null);
+    }
+
+    @Override
+    public Object visitVariableDeclaration(EScriptParser.VariableDeclarationContext ctx) {
+        return null;
+    }
+
+    @Override
+    public Object visitVariableDeclarationWithNoInitialisation(EScriptParser.VariableDeclarationWithNoInitialisationContext ctx) {
+        return null;
+    }
+
+    @Override
+    public Object visitVariableDeclarationWithInitialisation(EScriptParser.VariableDeclarationWithInitialisationContext ctx) {
+        return null;
+    }
+
+    @Override
+    public Object visitExpression(EScriptParser.ExpressionContext ctx) {
+        return null;
+    }
+
+    @Override
+    public Object visitVariableName(EScriptParser.VariableNameContext ctx) {
+        return null;
+    }
+
+    @Override
+    public Object visitNonArrayTypeReference(EScriptParser.NonArrayTypeReferenceContext ctx) {
+        return null;
+    }
+
+    @Override
+    public Object visitArrayTypeReference(EScriptParser.ArrayTypeReferenceContext ctx) {
+        return null;
+    }
+
+    @Override
+    public Object visitArrayIndexingWithOptionalIndex(EScriptParser.ArrayIndexingWithOptionalIndexContext ctx) {
+        return null;
+    }
+
+    @Override
+    public String visitImportPath(EScriptParser.ImportPathContext ctx) {
+        return unquoteSingleLineString(ctx.getText());
     }
 
     @Override
@@ -73,13 +118,12 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
         return singleLineStringWithQuotes.substring(1, singleLineStringWithQuotes.length()-1);
     }
 
-    private File getImportFile(String singleLineStringWithQuotes, ParserRuleContext ctx) {
+    private File getImportFile(EScriptParser.ImportPathContext importPathCtx) {
         String parent = Optional.ofNullable(Path.of(file.getPath()).getParent())
                 .map(Path::toString)
                 .orElse("");
 
-        Path importPath = Path.of(parent, unquoteSingleLineString(singleLineStringWithQuotes));
+        Path importPath = Path.of(parent, visitImportPath(importPathCtx));
         return importPath.toFile();
-//        return getNodeSource(importPath.toFile(), ctx);
     }
 }
