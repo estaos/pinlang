@@ -17,8 +17,7 @@ externalImport
     ;
 
 variableDeclaration
-    : variableDeclarationWithNoInitialisation
-    | variableDeclarationWithInitialisation
+    : documentationCommentLines? (variableDeclarationWithNoInitialisation | variableDeclarationWithInitialisation)
     ;
 
 variableDeclarationWithNoInitialisation
@@ -54,4 +53,8 @@ arrayIndexingWithOptionalIndex
 
 importPath
     : SINGLE_LINE_STRING
+    ;
+
+documentationCommentLines
+    : MULTI_LINE_COMMENT_LINE+
     ;

@@ -91,6 +91,11 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
     }
 
     @Override
+    public Object visitDocumentationCommentLines(EScriptParser.DocumentationCommentLinesContext ctx) {
+        return null;
+    }
+
+    @Override
     public CompilationUnit visit(ParseTree parseTree) {
         return visitCompilationUnit((EScriptParser.CompilationUnitContext) parseTree);
     }
