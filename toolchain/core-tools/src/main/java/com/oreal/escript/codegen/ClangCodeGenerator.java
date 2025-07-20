@@ -66,7 +66,7 @@ public class ClangCodeGenerator implements  CodeGenerator {
     @Override
     public List<File> generateCode(CompilationUnit annotatedCompilationUnit) {
         Deque<Import> importQueue = new LinkedList<>();
-        importQueue.add(new Import(null, false, null, annotatedCompilationUnit));
+        importQueue.add(new Import(null, false, null, annotatedCompilationUnit.getSource(), annotatedCompilationUnit));
 
         List<File> outputs = new LinkedList<>();
         while(!importQueue.isEmpty()) {

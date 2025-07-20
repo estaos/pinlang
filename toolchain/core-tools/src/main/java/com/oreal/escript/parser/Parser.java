@@ -5,6 +5,8 @@ import com.oreal.escript.parser.ast.Import;
 import com.oreal.escript.parser.ast.Source;
 import com.oreal.escript.parser.logging.LogEntry;
 import com.oreal.escript.parser.logging.LogEntryCode;
+import lombok.Getter;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,11 +30,12 @@ public class Parser {
     /// in the parse tree.
     private final Map<String, CompilationUnit> compilationUnits = new HashMap<>();
 
+    @Getter
     private final List<LogEntry> parserLogs = new LinkedList<>();
 
     public CompilationUnit parse(File main) {
         final var source = Source.defaultSource(main);
-        final var importItem = Import.fromSource(source);
+        final var importItem = Import.fromSource(source, main);
         final Queue<Import> imports = new LinkedList<>();
         imports.add(importItem);
         resolveImports(imports);
@@ -44,18 +47,20 @@ public class Parser {
         Import importItem = imports.poll();
 
         while(importItem != null) {
-            final File sourceFile = importItem.getSource().getFile();
+            final File sourceFile = importItem.getFile();
             final String compilationUnitId = sourceFile.getAbsolutePath();
 
             if(compilationUnits.containsKey(compilationUnitId)) {
                 importItem.setCompilationUnit(compilationUnits.get(compilationUnitId));
             } else {
                 try {
-                    final CompilationUnit compilationUnit = compilationUnitParser.parseImport(importItem, parserLogs);
-                    imports.addAll(compilationUnit.getImports());
+                    final @Nullable CompilationUnit compilationUnit = compilationUnitParser.parseImport(importItem, parserLogs);
+                    if(compilationUnit != null) {
+                        imports.addAll(compilationUnit.getImports());
 
-                    compilationUnits.put(compilationUnitId, compilationUnit);
-                    importItem.setCompilationUnit(compilationUnit);
+                        compilationUnits.put(compilationUnitId, compilationUnit);
+                        importItem.setCompilationUnit(compilationUnit);
+                    }
                 } catch(FileNotFoundException exception) {
                     parserLogs.add(LogEntry.error(importItem.getSource(), LogEntryCode.SOURCE_FILE_DOES_NOT_EXIST, exception));
                 } catch(IOException exception) {
