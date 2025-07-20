@@ -126,7 +126,7 @@ public class ClangCodeGenerator implements  CodeGenerator {
     }
 
     private String getCIncludes(List<Import> imports) {
-        return imports.stream().map(importItem -> importItem.getSource().getFile().toPath().toString())
+        return imports.stream().map(importItem -> importItem.getFile().toPath().toString())
                 .map(path -> String.format("#include \"%s\"\n", path.replace("\\", "/")
                         .replace(ES_EXTENSION, ".h")))
                 .collect(Collectors.joining());

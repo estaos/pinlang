@@ -16,7 +16,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        if(args.length <= 0) {
+        if(args.length == 0) {
             System.err.println("No source to compile");
         } else {
             var compilationUnitParser = new DefaultCompilationUnitParser();
@@ -37,6 +37,8 @@ public class Main {
             if(!LogEntry.containsError(parser.getParserLogs())) {
                 List<File> cFiles = new ClangCodeGenerator().generateCode(compilationUnit);
                 saveFiles(cFiles);
+            } else {
+                throw new RuntimeException("Error compiling files ... see errors above.");
             }
         }
     }

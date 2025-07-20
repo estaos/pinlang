@@ -38,6 +38,4 @@ build/
 .DS_Store
 /gen
 
-*.c
-*.h
-*.escript
+*.exe

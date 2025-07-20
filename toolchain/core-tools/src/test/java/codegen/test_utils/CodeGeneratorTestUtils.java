@@ -15,11 +15,23 @@ import java.util.List;
 
 public class CodeGeneratorTestUtils {
     public static CompilationUnit get2ScriptCompilationUnit() {
-        var importedCompilationUnit = new CompilationUnit(new File("abc/script2.escript"), List.of(), List.of(), List.of());
-        var import1 = new Import("", false, new Source(new File("abc/script2.escript"), 0, 0, 0), importedCompilationUnit);
+        var file = new File("abc/script2.escript");
+        var mainFile = new File("main.escript");
+        var importedCompilationUnit = new CompilationUnit(file, List.of(), List.of(), List.of());
+        var import1 = new Import("", false, new Source(mainFile, 0, 0, 0), file, importedCompilationUnit);
 
         return  new CompilationUnit(
-                new File("main.escript"), List.of(import1), List.of(), List.of());
+                mainFile, List.of(import1), List.of(), List.of());
+    }
+
+    public static CompilationUnit getCompilationUnitWithExternalStdioImport() {
+        var file = new File("stdio.h");
+        var mainFile = new File("main.escript");
+        var importedCompilationUnit = new CompilationUnit(file, List.of(), List.of(), List.of());
+        var import1 = new Import("", true, new Source(mainFile, 0, 0, 0), file, importedCompilationUnit);
+
+        return  new CompilationUnit(
+                mainFile, List.of(import1), List.of(), List.of());
     }
 
     public static CompilationUnit getBuiltInTypesCompilationUnit(Scope scope) {

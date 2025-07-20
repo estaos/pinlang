@@ -60,6 +60,24 @@ public class ClangCodeGeneratorTest {
     }
 
     @Test
+    public void test_adds_include_for_external_import() {
+        var instance = new ClangCodeGenerator();
+        CompilationUnit compilationUnit = CodeGeneratorTestUtils.getCompilationUnitWithExternalStdioImport();
+
+        List<File> files = instance.generateCode(compilationUnit);
+        File file = files.getFirst();
+
+        String expectedContents = """
+#ifndef MAIN_H_
+#define MAIN_H_
+#include "stdio.h"
+#endif // MAIN_H_
+""";
+
+        assertEquals(expectedContents, file.getContents());
+    }
+
+    @Test
     public void test_can_define_built_in_types() {
         var instance = new ClangCodeGenerator();
         var scope = Scope.getProjectScope();
