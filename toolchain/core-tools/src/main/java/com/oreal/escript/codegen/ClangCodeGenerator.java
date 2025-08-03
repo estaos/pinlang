@@ -14,6 +14,7 @@ import com.oreal.escript.parser.ast.BitwiseXorExpression;
 import com.oreal.escript.parser.ast.BlockExpression;
 import com.oreal.escript.parser.ast.BooleanLiteralExpression;
 import com.oreal.escript.parser.ast.BreakStatement;
+import com.oreal.escript.parser.ast.CallableCode;
 import com.oreal.escript.parser.ast.CallableType;
 import com.oreal.escript.parser.ast.CharLiteralExpression;
 import com.oreal.escript.parser.ast.CharSequenceLiteralExpression;
@@ -46,7 +47,7 @@ import com.oreal.escript.parser.ast.SubtractExpression;
 import com.oreal.escript.parser.ast.Symbol;
 import com.oreal.escript.parser.ast.SymbolValueExpression;
 import com.oreal.escript.parser.ast.Type;
-import com.oreal.escript.parser.ast.TypeNameExpression;
+import com.oreal.escript.parser.ast.CallableCodeExpression;
 import com.oreal.escript.parser.ast.TypeReference;
 import com.oreal.escript.parser.ast.WhileLoop;
 import com.oreal.escript.parser.logging.LogEntry;
@@ -92,7 +93,7 @@ public class ClangCodeGenerator implements  CodeGenerator {
                 ClangRuntime.RUNTIME +
                 getHeaderFileHeader(headerDefinitionName) +
                 getCIncludes(compilationUnit.getImports()) +
-                getTypeForwardDeclarations(compilationUnit.getTypes()) +
+                getTypeForwardDeclarations(compilationUnit.getTypes(), compilationUnit.getCallableCodeBlocks()) +
                 getExternSymbolDeclarations(compilationUnit.getSymbols(), ";\n", ";\n") +
                 getHeaderFileFooter(headerDefinitionName);
 
@@ -103,7 +104,7 @@ public class ClangCodeGenerator implements  CodeGenerator {
         Path path = compilationUnit.getSource().toPath();
         String contents =
                 getCSelfInclude(path) +
-                getTypeDefinitions(compilationUnit.getTypes()) +
+                getTypeDefinitions(compilationUnit.getTypes(), compilationUnit.getCallableCodeBlocks()) +
                 getSymbolDefinitions(compilationUnit.getSymbols(), ";\n", ";\n");
 
         return new File(withFileExtension(".c", path), contents);
@@ -175,12 +176,13 @@ public class ClangCodeGenerator implements  CodeGenerator {
         }
     }
 
-    private String getTypeForwardDeclarations(List<? extends Type> types) {
-        return types.stream().map(this::getTypeForwardDeclaration).collect(Collectors.joining());
+    private String getTypeForwardDeclarations(List<? extends Type> types, List<CallableCode> callableCodeBlocks) {
+        return types.stream().map( type -> getTypeForwardDeclaration(type, callableCodeBlocks))
+                .collect(Collectors.joining());
     }
 
-    private String getTypeDefinitions(List<? extends Type> types) {
-        String output = types.stream().map(this::getTypeDefinition).collect(Collectors.joining());
+    private String getTypeDefinitions(List<? extends Type> types, List<CallableCode> callableCodeBlocks) {
+        String output = types.stream().map(type -> getTypeDefinition(type, callableCodeBlocks)).collect(Collectors.joining());
 
         if(output.isEmpty()) {
             return output;
@@ -197,11 +199,11 @@ public class ClangCodeGenerator implements  CodeGenerator {
             if(valueSymbol.isFunction()) {
                 CallableType callableType = Objects.requireNonNull((CallableType) valueSymbol.getType().getType());
                 if(asExtern) {
-                    return String.format("extern %s_ptr %s", callableType.getName(), cVariableName);
+                    return String.format("extern %s %s", callableType.getName(), cVariableName);
                 } else if(valueSymbol.getValue() == null) {
-                    return String.format("%s_ptr %s", callableType.getName(), cVariableName);
+                    return String.format("%s %s", callableType.getName(), cVariableName);
                 } else {
-                    return String.format("%s_ptr %s = %s", callableType.getName(), cVariableName, getCExpression(valueSymbol.getValue()));
+                    return String.format("%s %s = %s", callableType.getName(), cVariableName, getCExpression(valueSymbol.getValue()));
                 }
             } else {
                 TypeReference type = valueSymbol.getType();
@@ -239,27 +241,46 @@ public class ClangCodeGenerator implements  CodeGenerator {
         };
     }
 
-    private String getTypeForwardDeclaration(Type type) {
+    private String getTypeForwardDeclaration(Type type, List<CallableCode> callableCodeBlocks) {
         if(type instanceof CallableType callableType) {
             String returnType = getCallableTypeReturnType(callableType);
             String parameterList = getCallableTypeParameterList(callableType);
 
-            return String.format("typedef %s (*%s_ptr)(%s);\n%s %s(%s);\n",
-                    returnType, callableType.getName(), parameterList,
-                    returnType, callableType.getName(), parameterList);
+            Optional<CallableCode> callableCode = callableCodeBlocks
+                    .stream()
+                    .filter(codeItem -> codeItem.getType().getName().equals(type.getName()))
+                    .findFirst();
+
+            if(callableCode.isEmpty()) {
+                return String.format("typedef %s (*%s)(%s);\n",
+                        returnType, callableType.getName(), parameterList);
+            } else {
+                return callableCode.map(code -> String.format("typedef %s (*%s)(%s);\n%s %s(%s);\n",
+                                returnType, callableType.getName(), parameterList,
+                                returnType, code.getName(), parameterList))
+                        .orElse("");
+            }
+
+
         } else {
             return "";
         }
     }
 
-    private String getTypeDefinition(Type type) {
+    private String getTypeDefinition(Type type, List<CallableCode> callableCodeBlocks) {
         if(type instanceof CallableType callableType) {
             String returnType = getCallableTypeReturnType(callableType);
             String parameterList = getCallableTypeParameterList(callableType);
 
-            return String.format("%s %s(%s) {%s}",
-                    returnType, callableType.getName(), parameterList,
-                    getCExpressions(Objects.requireNonNull(callableType.getStatementBlock()).getStatements(), ";\n", ";\n"));
+            Optional<CallableCode> callableCode = callableCodeBlocks
+                    .stream()
+                    .filter(codeItem -> codeItem.getType().getName().equals(type.getName()))
+                    .findFirst();
+
+            return callableCode.map(code -> String.format("%s %s(%s) {%s}",
+                        returnType, code.getName(), parameterList,
+                        getCExpressions(Objects.requireNonNull(code.getStatementBlock()).getStatements(), ";\n", ";\n")))
+                    .orElse("");
         } else {
             return "";
         }
@@ -277,8 +298,8 @@ public class ClangCodeGenerator implements  CodeGenerator {
 
 
     private String getCExpression(Expression expression) {
-        if(expression instanceof TypeNameExpression typeNameExpression) {
-            return Objects.requireNonNull(typeNameExpression.getType()).getName();
+        if(expression instanceof CallableCodeExpression callableCodeExpression) {
+            return callableCodeExpression.getCallableCode().getName();
         } else if(expression instanceof ReturnStatement returnStatement) {
             return String.format("return (%s)", getCExpression(returnStatement.getReturnExpression()));
         } else if(expression instanceof ContinueStatement) {
@@ -428,12 +449,14 @@ public class ClangCodeGenerator implements  CodeGenerator {
     }
 
     private String getCallableTypeReturnType(CallableType callableType) {
-        if(Objects.requireNonNull(callableType.getStatementBlock()).getType() == null) {
+
+        if(callableType.getReturnType() == null) {
             return "void";
-        } else if(Objects.requireNonNull(callableType.getStatementBlock()).getType().getType() instanceof CallableType callableReturnType) {
-            return String.format("%s_ptr", callableReturnType.getName());
+        } else if(callableType.getReturnType().getType() instanceof CallableType) {
+            return "void*";
         }else {
-            return Objects.requireNonNull(callableType.getStatementBlock()).getType().getName();
+            String pointers = asterisks(callableType.getReturnType().getArrayDimensions());
+            return getCTypeName(callableType.getReturnType().getName()) + pointers;
         }
     }
 

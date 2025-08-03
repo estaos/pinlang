@@ -1,6 +1,10 @@
 package com.oreal.escript.parser;
 
 import com.oreal.escript.antlr.*;
+import com.oreal.escript.parser.ast.BlockExpression;
+import com.oreal.escript.parser.ast.CallableCode;
+import com.oreal.escript.parser.ast.CallableCodeExpression;
+import com.oreal.escript.parser.ast.CallableType;
 import com.oreal.escript.parser.ast.CharSequenceLiteralExpression;
 import com.oreal.escript.parser.ast.CompilationUnit;
 import com.oreal.escript.parser.ast.ExplicitCastExpression;
@@ -11,6 +15,7 @@ import com.oreal.escript.parser.ast.NumberLiteralExpression;
 import com.oreal.escript.parser.ast.Source;
 import com.oreal.escript.parser.ast.Symbol;
 import com.oreal.escript.parser.ast.SymbolValueExpression;
+import com.oreal.escript.parser.ast.Type;
 import com.oreal.escript.parser.ast.TypeReference;
 import lombok.AllArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -32,15 +37,30 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
     /// The file being parsed
     private final File file;
 
+    private static final String CALLABLE_TYPE_SIGIL = "_type__";
+    private static final String CALLABLE_CODE_SIGIL = "_code__";
+
     @Override
     public CompilationUnit visitCompilationUnit(EScriptParser.CompilationUnitContext ctx) {
         List<Import> imports = new LinkedList<>();
         imports.addAll(ctx.languageImport().stream().map(this::visitLanguageImport).toList());
         imports.addAll(ctx.externalImport().stream().map(this::visitExternalImport).toList());
 
-        List<? extends Symbol> symbols = ctx.variableDeclaration().stream().map(this:: visitVariableDeclaration).toList();
+        List<NamedValueSymbol> symbols = new LinkedList<>(ctx.variableDeclaration().stream().map(this::visitVariableDeclaration).toList());
+        List<Type> types = new LinkedList<>(ctx.functionTypeDef().stream().map(this::visitFunctionTypeDef).toList());
+        List<CallableCode> callableCodeBlocks = new LinkedList<>();
 
-        return new CompilationUnit(file, imports, symbols, List.of());
+        List<FunctionDefinition> functionDefinitions = ctx.functionDefinition().stream().map(this::visitFunctionDefinition).toList();
+        for(FunctionDefinition functionDefinition : functionDefinitions) {
+            types.add(functionDefinition.callableType);
+            callableCodeBlocks.add(functionDefinition.callableCode);
+
+            if(functionDefinition.symbol() != null) {
+                symbols.add(functionDefinition.symbol);
+            }
+        }
+
+        return new CompilationUnit(file, imports, symbols, types, callableCodeBlocks);
     }
 
     @Override
@@ -184,6 +204,84 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
     }
 
     @Override
+    public CallableType visitFunctionTypeDef(EScriptParser.FunctionTypeDefContext ctx) {
+        String typeName = visitVariableName(ctx.functionHeader().variableName());
+        CallableType callableType = visitFunctionHeader(ctx.functionHeader());
+        callableType.setName(typeName);
+        return callableType;
+    }
+
+    @Override
+    public FunctionDefinition visitFunctionDefinition(EScriptParser.FunctionDefinitionContext ctx) {
+        String symbolName = visitVariableName(ctx.functionHeader().variableName());
+        String typeName = String.format("%s_%s", symbolName, CALLABLE_TYPE_SIGIL);
+        CallableType callableType = visitFunctionHeader(ctx.functionHeader());
+        callableType.setName(typeName);
+
+        boolean isMain = symbolName.equals("main");
+        String callableBlockName = isMain ? symbolName : String.format("%s_%s", symbolName, CALLABLE_CODE_SIGIL);
+        CallableCode callableCode = new CallableCode(
+                callableBlockName,
+                callableType.getSource(), callableType, visitStatementsBlock(ctx.statementsBlock()));
+
+        NamedValueSymbol symbol = new NamedValueSymbol(
+                symbolName,
+                TypeReference.ofType(callableType),
+                callableCode.getSource(),
+                true, false, "",
+                new CallableCodeExpression(callableCode), false
+        );
+
+        if(isMain) {
+            return new FunctionDefinition(callableType, callableCode, null);
+        } else {
+            return new FunctionDefinition(callableType, callableCode, symbol);
+        }
+    }
+
+    @Override
+    public CallableType visitFunctionHeader(EScriptParser.FunctionHeaderContext ctx) {
+        Source source = getNodeSource(file, ctx);
+        List<NamedValueSymbol> parameters = ctx.functionParameterList() != null
+                ? visitFunctionParameterList(ctx.functionParameterList()) : List.of();
+        @Nullable TypeReference returnType = Optional.ofNullable(ctx.functionReturnType())
+                .map(this::visitFunctionReturnType)
+                .orElse(null);
+
+        return new CallableType(source, "", List.of(), "", parameters, returnType);
+    }
+
+    @Override
+    public List<NamedValueSymbol> visitFunctionParameterList(EScriptParser.FunctionParameterListContext ctx) {
+        return ctx.functionParameter().stream().map(this::visitFunctionParameter).toList();
+    }
+
+    @Override
+    public NamedValueSymbol visitFunctionParameter(EScriptParser.FunctionParameterContext ctx) {
+        return new NamedValueSymbol(
+                ctx.variableName().getText(),
+                visitTypeReference(ctx.typeReference()),
+                getNodeSource(file, ctx),
+                true,
+                false,
+                "",
+                null,
+                false
+        );
+    }
+
+    @Override
+    public TypeReference visitFunctionReturnType(EScriptParser.FunctionReturnTypeContext ctx) {
+        return visitTypeReference(ctx.typeReference());
+    }
+
+    @Override
+    public BlockExpression visitStatementsBlock(EScriptParser.StatementsBlockContext ctx) {
+        // TODO: parse statements
+        return new BlockExpression(List.of());
+    }
+
+    @Override
     public Object visitArrayIndexingWithOptionalIndex(EScriptParser.ArrayIndexingWithOptionalIndexContext ctx) {
         return null;
     }
@@ -234,4 +332,6 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
         Path importPath = Path.of(parent, visitImportPath(importPathCtx));
         return importPath.toFile();
     }
+
+    public record FunctionDefinition(CallableType callableType, CallableCode callableCode, @Nullable NamedValueSymbol symbol) {}
 }

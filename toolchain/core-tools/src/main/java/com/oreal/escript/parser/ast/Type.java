@@ -19,6 +19,8 @@ public class Type {
     private List<Type> superTypes;
 
     public boolean isSubTypeOf(Type other) {
-        return superTypes.stream().anyMatch(superType -> superType.name.equals(other.name) || superType.isSubTypeOf(other));
+        return name.equals(other.name)
+                || superTypes.stream().anyMatch(superType -> superType.name.equals(other.name)
+                || superType.isSubTypeOf(other));
     }
 }

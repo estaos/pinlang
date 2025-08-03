@@ -1,6 +1,7 @@
 package com.oreal.escript.semantics.filters;
 
 import com.oreal.escript.parser.ast.BooleanLiteralExpression;
+import com.oreal.escript.parser.ast.CallableType;
 import com.oreal.escript.parser.ast.CharLiteralExpression;
 import com.oreal.escript.parser.ast.CharSequenceLiteralExpression;
 import com.oreal.escript.parser.ast.CompilationUnit;
@@ -33,6 +34,16 @@ public final class Annotations {
             variable.getType().setType(type);
         } else {
             logs.add(LogEntry.error(variable.getSource(), LogEntryCode.UNKNOWN_TYPE_REFERENCE));
+        }
+    }
+
+    public void resolveReturnType(CallableType callableType, Scope scope, List<LogEntry> logs) {
+        TypeReference returnTypeReference = Objects.requireNonNull(callableType.getReturnType());
+        @Nullable Type type = scope.resolveType(returnTypeReference.getName());
+        if(type != null) {
+            callableType.getReturnType().setType(type);
+        } else {
+            logs.add(LogEntry.error(callableType.getSource(), LogEntryCode.UNKNOWN_TYPE_REFERENCE));
         }
     }
 

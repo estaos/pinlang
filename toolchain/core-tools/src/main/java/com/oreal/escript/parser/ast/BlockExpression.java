@@ -11,8 +11,7 @@ import java.util.List;
 public class BlockExpression extends Expression {
     private List<Expression> statements;
 
-    public BlockExpression(List<Expression> statements, @Nullable TypeReference type) {
-        super(type);
+    public BlockExpression(List<Expression> statements) {
         this.statements = statements;
     }
 

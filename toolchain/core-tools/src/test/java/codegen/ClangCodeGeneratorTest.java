@@ -139,9 +139,9 @@ void* myAny;
         String expectedContents = ClangRuntime.RUNTIME + """
 #ifndef MAIN_H_
 #define MAIN_H_
-typedef void (*myFunction_type_ptr)();
-void myFunction_type();
-extern myFunction_type_ptr myFunction;
+typedef void (*myFunction_type)();
+void myFunction_code();
+extern myFunction_type myFunction;
 #endif // MAIN_H_
 """;
 
@@ -158,8 +158,8 @@ extern myFunction_type_ptr myFunction;
 
         String expectedContents = """
 #include "main.h"
-void myFunction_type() {}
-myFunction_type_ptr myFunction = myFunction_type;
+void myFunction_code() {}
+myFunction_type myFunction = myFunction_code;
 """;
 
         assertEquals(expectedContents, file.getContents());
@@ -177,9 +177,9 @@ myFunction_type_ptr myFunction = myFunction_type;
         String expectedContents = ClangRuntime.RUNTIME + """
 #ifndef MAIN_H_
 #define MAIN_H_
-typedef myFunction_type_ptr (*myFunction_type_ptr)(int8 a, int16 b);
-myFunction_type_ptr myFunction_type(int8 a, int16 b);
-extern myFunction_type_ptr myFunction;
+typedef void* (*myFunction_type)(int8 a, int16 b);
+void* myFunction_code(int8 a, int16 b);
+extern myFunction_type myFunction;
 #endif // MAIN_H_
 """;
 

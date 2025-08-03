@@ -46,6 +46,7 @@ RETURN_                  : 'return';
 VOID_                    : 'void';
 WHILE_                   : 'while';
 AS_                      : 'as';
+TYPEDEF_                  : 'typedef';
 NUMBER                   : DIGIT+ ( '.' DIGIT+)? EXPONENT? | '.' DIGIT+ EXPONENT?;
 HEX_NUMBER               : '0x' HEX_DIGIT+ | '0X' HEX_DIGIT+;
 

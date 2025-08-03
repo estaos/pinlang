@@ -5,7 +5,11 @@ options {
 }
 
 compilationUnit
-    : (languageImport | externalImport | variableDeclaration)* EOF
+    : (languageImport
+    | externalImport
+    | variableDeclaration
+    | functionDefinition
+    | functionTypeDef)* EOF
     ;
 
 languageImport
@@ -80,6 +84,35 @@ nonArrayTypeReference
 
 arrayTypeReference
     : IDENTIFIER arrayIndexingWithOptionalIndex+
+    ;
+
+functionTypeDef
+    : TYPEDEF_ functionHeader SC
+    ;
+
+functionDefinition
+    : functionHeader statementsBlock
+    ;
+
+functionHeader
+    : FUNCTION_ variableName OP functionParameterList? CP (CO functionReturnType)?
+    ;
+
+functionParameterList
+    : functionParameter (C functionParameter)*
+    ;
+
+functionParameter
+    : variableName CO typeReference
+    ;
+
+functionReturnType
+    : typeReference
+    ;
+
+statementsBlock
+// TODO: Add statements to function
+    : OBC CBC
     ;
 
 arrayIndexingWithOptionalIndex

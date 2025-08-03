@@ -5,6 +5,7 @@ import com.oreal.escript.parser.logging.LogEntry;
 import com.oreal.escript.semantics.filters.AnnotationStep;
 import com.oreal.escript.semantics.filters.GlobalVariableDeclarationAnnotationStep;
 import com.oreal.escript.semantics.filters.RegisterSymbolsAnnotationStep;
+import com.oreal.escript.semantics.filters.AnnotateUserTypesAnnotationStep;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -25,6 +26,7 @@ public class AstAnnotator {
     public static AstAnnotator getDefaultAnnotator() {
         return new AstAnnotator(List.of(
                 new RegisterSymbolsAnnotationStep(),
+                new AnnotateUserTypesAnnotationStep(),
                 new GlobalVariableDeclarationAnnotationStep()
         ));
     }

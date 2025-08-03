@@ -1,12 +1,13 @@
 package codegen.test_utils;
 
 import com.oreal.escript.parser.ast.BlockExpression;
+import com.oreal.escript.parser.ast.CallableCode;
 import com.oreal.escript.parser.ast.CallableType;
 import com.oreal.escript.parser.ast.CompilationUnit;
 import com.oreal.escript.parser.ast.Import;
 import com.oreal.escript.parser.ast.NamedValueSymbol;
 import com.oreal.escript.parser.ast.Source;
-import com.oreal.escript.parser.ast.TypeNameExpression;
+import com.oreal.escript.parser.ast.CallableCodeExpression;
 import com.oreal.escript.parser.ast.TypeReference;
 import com.oreal.escript.semantics.Scope;
 
@@ -78,14 +79,15 @@ public class CodeGeneratorTestUtils {
                 source,
                 "myFunction_type",
                 List.of(), "",
-                new BlockExpression(List.of(), null),
-                List.of());
+                List.of(), null);
 
         var typeReference = new TypeReference("myFunction_type", callableType, 0, List.of());
+        var callableCode = new CallableCode("myFunction_code", source, callableType, new BlockExpression(List.of()));
         var functionSymbol = new NamedValueSymbol("myFunction", typeReference, source, true,
-                false, "", new TypeNameExpression(typeReference), false);
+                false, "", new CallableCodeExpression(callableCode), false);
 
-        return new CompilationUnit(new File("main.escript"), List.of(), List.of(functionSymbol), List.of(callableType));
+        return new CompilationUnit(new File("main.escript"), List.of(), List.of(functionSymbol),
+                List.of(callableType), List.of(callableCode));
     }
 
     public static CompilationUnit getFunctionWithArgsCompilationUnit(Scope scope) {
@@ -93,23 +95,25 @@ public class CodeGeneratorTestUtils {
         var int8TypeReference = new TypeReference("int8", scope.resolveType("int8"), 0, List.of());
         var int16TypeReference = new TypeReference("int16", scope.resolveType("int16"), 0, List.of());
 
+        var functionTypeReference = new TypeReference("myFunction_type", null, 0, List.of());
         var callableType = new CallableType(
                 source,
                 "myFunction_type",
                 List.of(), "",
-                new BlockExpression(List.of(), null),
                 List.of(
                         new NamedValueSymbol("a", int8TypeReference, source, true, false, "", null, false),
                         new NamedValueSymbol("b", int16TypeReference, source, true, false, "", null, false)
-                )
+                ),
+                functionTypeReference
         );
 
-        var functionTypeReference = new TypeReference("myFunction_type", callableType, 0, List.of());
-        callableType.setStatementBlock(new BlockExpression(List.of(), functionTypeReference));
+        functionTypeReference.setType(callableType);
+        var callableCode = new CallableCode("myFunction_code", source, callableType, new BlockExpression(List.of()));
         var functionSymbol = new NamedValueSymbol("myFunction", functionTypeReference, source, true,
-                false, "", new TypeNameExpression(functionTypeReference), false);
+                false, "", new CallableCodeExpression(callableCode), false);
 
         var symbols = List.of(functionSymbol);
-        return new CompilationUnit(new File("main.escript"), List.of(), symbols, List.of(callableType));
+        return new CompilationUnit(new File("main.escript"), List.of(), symbols,
+                List.of(callableType), List.of(callableCode));
     }
 }

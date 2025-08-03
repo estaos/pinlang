@@ -5,6 +5,7 @@ public class ClangRuntime {
 #ifndef ESCRIPT_LANGUAGE_RUNTIME
 #define ESCRIPT_LANGUAGE_RUNTIME
 
+#include <stdbool.h>
 #include <stdint.h>
 
 typedef int8_t   int8;

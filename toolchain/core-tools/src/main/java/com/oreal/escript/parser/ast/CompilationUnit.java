@@ -16,4 +16,16 @@ public class CompilationUnit {
 
     private List<? extends Symbol> symbols;
     private List<? extends Type> types;
+    private List<CallableCode> callableCodeBlocks;
+
+    public CompilationUnit(File source,
+                         List<Import> imports,
+                         List<? extends Symbol> symbols,
+                         List<? extends Type> types) {
+        this.source = source;
+        this.imports = imports;
+        this.symbols = symbols;
+        this.types = types;
+        this.callableCodeBlocks = List.of();
+    }
 }
