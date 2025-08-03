@@ -13,7 +13,7 @@ public class Struct extends Type {
             String name,
             List<TypeParameter> typeParameters,
             String documentationMarkdown) {
-        super(source, name, typeParameters, documentationMarkdown);
+        super(source, name, typeParameters, documentationMarkdown, List.of());
     }
 
     private List<NamedValueSymbol> symbols;

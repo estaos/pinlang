@@ -16,4 +16,9 @@ public class Type {
     private String name;
     private List<TypeParameter> typeParameters;
     private String documentationMarkdown;
+    private List<Type> superTypes;
+
+    public boolean isSubTypeOf(Type other) {
+        return superTypes.stream().anyMatch(superType -> superType.name.equals(other.name) || superType.isSubTypeOf(other));
+    }
 }

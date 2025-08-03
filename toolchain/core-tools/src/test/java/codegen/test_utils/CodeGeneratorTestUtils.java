@@ -46,6 +46,7 @@ public class CodeGeneratorTestUtils {
         var doubleTypeReference = new TypeReference("double", scope.resolveType("double"), List.of());
         var charTypeReference = new TypeReference("char", scope.resolveType("char"), List.of());
         var booleanTypeReference = new TypeReference("boolean", scope.resolveType("boolean"), List.of());
+        var anyTypeReference = new TypeReference("any", scope.resolveType("any"), List.of());
 
         var source = new Source(new File(""), 0, 0, 0);
 
@@ -61,7 +62,8 @@ public class CodeGeneratorTestUtils {
             new NamedValueSymbol("myDouble", doubleTypeReference, source, true, false, "", null, false),
             new NamedValueSymbol("myChar", charTypeReference, source, true, false, "", null, false),
             new NamedValueSymbol("myBoolean", booleanTypeReference, source, true, false, "", null, false),
-            new NamedValueSymbol("myCharArray", charTypeReference, source, true, false, "", null, false, 1)
+            new NamedValueSymbol("myCharArray", charTypeReference, source, true, false, "", null, false, 1),
+            new NamedValueSymbol("myAny", anyTypeReference, source, true, false, "", null, false)
         );
 
         return  new CompilationUnit(

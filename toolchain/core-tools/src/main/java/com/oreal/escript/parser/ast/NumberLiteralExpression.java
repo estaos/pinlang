@@ -7,4 +7,10 @@ import lombok.Data;
 @Data
 public class NumberLiteralExpression extends Expression {
     private String numberAsString;
+
+    public boolean isDecimal() {
+        return numberAsString.contains(".")
+                || numberAsString.contains("E")
+                || numberAsString.contains("e");
+    }
 }

@@ -10,7 +10,7 @@ import lombok.Setter;
 public abstract class Symbol {
     private final String name;
 
-    private final TypeReference type;
+    private TypeReference type;
 
     /// This is used to find this symbol in the symbols table.
     private final Source source;

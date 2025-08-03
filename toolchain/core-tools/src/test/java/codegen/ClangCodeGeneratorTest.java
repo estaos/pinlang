@@ -2,6 +2,7 @@ package codegen;
 
 import codegen.test_utils.CodeGeneratorTestUtils;
 import com.oreal.escript.codegen.ClangCodeGenerator;
+import com.oreal.escript.codegen.outputs.ClangRuntime;
 import com.oreal.escript.codegen.outputs.File;
 import com.oreal.escript.parser.ast.CompilationUnit;
 import com.oreal.escript.semantics.Scope;
@@ -34,7 +35,7 @@ public class ClangCodeGeneratorTest {
         List<File> files = instance.generateCode(compilationUnit);
         File mainHeaderFile = files.get(0);
 
-        String expectedContents = """
+        String expectedContents = ClangRuntime.RUNTIME + """
 #ifndef MAIN_H_
 #define MAIN_H_
 #include "abc/script2.h"
@@ -67,7 +68,7 @@ public class ClangCodeGeneratorTest {
         List<File> files = instance.generateCode(compilationUnit);
         File file = files.getFirst();
 
-        String expectedContents = """
+        String expectedContents = ClangRuntime.RUNTIME + """
 #ifndef MAIN_H_
 #define MAIN_H_
 #include "stdio.h"
@@ -85,10 +86,29 @@ public class ClangCodeGeneratorTest {
 
         List<File> files = instance.generateCode(compilationUnit);
         File file = files.getFirst();
+        File mainHeaderFile = files.get(1);
 
-        String expectedContents = """
+        String expectedHeaderContents = ClangRuntime.RUNTIME + """
 #ifndef MAIN_H_
 #define MAIN_H_
+extern int8 myInt8;
+extern int16 myInt16;
+extern int32 myInt32;
+extern int64 myInt64;
+extern int128 myInt128;
+extern int256 myInt256;
+extern int512 myInt512;
+extern float myFloat;
+extern double myDouble;
+extern char myChar;
+extern bool myBoolean;
+extern char[] myCharArray;
+extern void* myAny;
+#endif // MAIN_H_
+""";
+
+        String expectedMainContents = """
+#include "main.h"
 int8 myInt8;
 int16 myInt16;
 int32 myInt32;
@@ -101,10 +121,11 @@ double myDouble;
 char myChar;
 bool myBoolean;
 char[] myCharArray;
-#endif // MAIN_H_
+void* myAny;
 """;
 
-        assertEquals(expectedContents, file.getContents());
+        assertEquals(expectedHeaderContents, file.getContents());
+        assertEquals(expectedMainContents, mainHeaderFile.getContents());
     }
 
     @Test
@@ -115,7 +136,7 @@ char[] myCharArray;
         List<File> files = instance.generateCode(compilationUnit);
         File file = files.getFirst();
 
-        String expectedContents = """
+        String expectedContents = ClangRuntime.RUNTIME + """
 #ifndef MAIN_H_
 #define MAIN_H_
 typedef void (*myFunction_type_ptr)();
@@ -152,7 +173,7 @@ void myFunction_type() {}
         List<File> files = instance.generateCode(compilationUnit);
         File file = files.getFirst();
 
-        String expectedContents = """
+        String expectedContents = ClangRuntime.RUNTIME + """
 #ifndef MAIN_H_
 #define MAIN_H_
 typedef myFunction_type_ptr (*myFunction_type_ptr)(int8 a, int16 b);

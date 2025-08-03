@@ -1,5 +1,6 @@
 package com.oreal.escript.codegen;
 
+import com.oreal.escript.codegen.outputs.ClangRuntime;
 import com.oreal.escript.codegen.outputs.File;
 import com.oreal.escript.parser.ast.AddExpression;
 import com.oreal.escript.parser.ast.Argument;
@@ -87,10 +88,11 @@ public class ClangCodeGenerator implements  CodeGenerator {
         String headerDefinitionName = getHeaderDefinitionName(path);
 
         String contents =
+                ClangRuntime.RUNTIME +
                 getHeaderFileHeader(headerDefinitionName) +
                 getCIncludes(compilationUnit.getImports()) +
                 getTypeForwardDeclarations(compilationUnit.getTypes()) +
-                getSymbolDeclarations(compilationUnit.getSymbols(), ";\n", ";\n") +
+                getExternSymbolDeclarations(compilationUnit.getSymbols(), ";\n", ";\n") +
                 getHeaderFileFooter(headerDefinitionName);
 
         return new File(withFileExtension(".h", path), contents);
@@ -100,7 +102,8 @@ public class ClangCodeGenerator implements  CodeGenerator {
         Path path = compilationUnit.getSource().toPath();
         String contents =
                 getCSelfInclude(path) +
-                getTypeDefinitions(compilationUnit.getTypes());
+                getTypeDefinitions(compilationUnit.getTypes()) +
+                getSymbolDefinitions(compilationUnit.getSymbols(), ";\n", ";\n");
 
         return new File(withFileExtension(".c", path), contents);
     }
@@ -148,8 +151,21 @@ public class ClangCodeGenerator implements  CodeGenerator {
                 .replace(".", "_").toUpperCase();
     }
 
+    private String getExternSymbolDeclarations(List<? extends Symbol> symbols, String separator, String trailing) {
+        return getSymbolDeclarations(symbols, separator, trailing, true);
+    }
+
     private String getSymbolDeclarations(List<? extends Symbol> symbols, String separator, String trailing) {
-        String output = symbols.stream().map(this::getSymbolDeclaration).collect(Collectors.joining(separator));
+        return getSymbolDeclarations(symbols, separator, trailing, false);
+    }
+
+    private String getSymbolDefinitions(List<? extends Symbol> symbols, String separator, String trailing) {
+        return getSymbolDeclarations(symbols, separator, trailing, false);
+    }
+
+    private String getSymbolDeclarations(List<? extends Symbol> symbols, String separator, String trailing, boolean asExternals) {
+        String output = symbols.stream().map(symbol -> getSymbolDeclaration(symbol, asExternals))
+                .collect(Collectors.joining(separator));
 
         if(output.isEmpty()) {
             return output;
@@ -172,7 +188,7 @@ public class ClangCodeGenerator implements  CodeGenerator {
         }
     }
 
-    private String getSymbolDeclaration(Symbol symbol) {
+    private String getSymbolDeclaration(Symbol symbol, boolean asExtern) {
         if(symbol instanceof NamedValueSymbol valueSymbol) {
             if(valueSymbol.isFunction()) {
                 CallableType callableType = Objects.requireNonNull((CallableType) valueSymbol.getType().getType());
@@ -183,22 +199,36 @@ public class ClangCodeGenerator implements  CodeGenerator {
                 }
             } else {
                 TypeReference type = valueSymbol.getType();
-                var cExpression = Optional.ofNullable(valueSymbol.getValue())
+                var cExpression = asExtern ? Optional.empty() : Optional.ofNullable(valueSymbol.getValue())
                         .map(this::getCExpression);
 
                 String squareBracketPair = IntStream.range(0, valueSymbol.getArrayDimensions())
                         .mapToObj(_ -> "[]")
                         .collect(Collectors.joining());
                 String cTypeName =
-                        (type.getName().equals("boolean") ? "bool" : type.getName()) + squareBracketPair;
+                        getCTypeName(type.getName()) + squareBracketPair;
 
                 return cExpression
                         .map(value ->String.format("%s %s = %s", cTypeName, valueSymbol.getName(), value))
-                        .orElse(String.format("%s %s", cTypeName, valueSymbol.getName()));
+                        .orElseGet(() -> {
+                            if(asExtern) {
+                                return String.format("extern %s %s", cTypeName, valueSymbol.getName());
+                            } else {
+                                return String.format("%s %s", cTypeName, valueSymbol.getName());
+                            }
+                        });
             }
         } else {
             throw new IllegalArgumentException("Unknown symbol " + symbol);
         }
+    }
+
+    private String getCTypeName(String typeName) {
+        return switch(typeName) {
+            case "boolean" -> "bool";
+            case "any" -> "void*";
+            default -> typeName;
+        };
     }
 
     private String getTypeForwardDeclaration(Type type) {

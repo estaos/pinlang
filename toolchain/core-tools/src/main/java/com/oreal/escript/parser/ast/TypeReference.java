@@ -26,4 +26,8 @@ public class TypeReference {
     /// ```
     /// The type arguments for this symbol are: `String` and `int32` in that specific order.
     private List<TypeReference> typeArguments;
+
+    public static TypeReference ofType(Type type) {
+        return new TypeReference(type.getName(), type, List.of());
+    }
 }

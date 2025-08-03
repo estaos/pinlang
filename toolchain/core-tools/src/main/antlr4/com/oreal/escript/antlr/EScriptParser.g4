@@ -32,6 +32,10 @@ variableDeclarationWithInitialisation
 
 expression
 // TODO: Come back to add literals and all other types of expressions. Also includes array expressions.
+    : numberLiteralExpression
+    ;
+
+numberLiteralExpression
     : NUMBER
     ;
 
@@ -44,11 +48,13 @@ nonArrayTypeReference
     ;
 
 arrayTypeReference
-    : IDENTIFIER + arrayIndexingWithOptionalIndex+
+    : IDENTIFIER arrayIndexingWithOptionalIndex+
     ;
 
 arrayIndexingWithOptionalIndex
-    : (OB expression? CB)
+    : (OB CB)
+    // TODO: Add optional expression once AST supports it
+//    : (OB expression? CB)
     ;
 
 importPath

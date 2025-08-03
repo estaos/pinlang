@@ -8,6 +8,7 @@ import com.oreal.escript.parser.ast.CompilationUnit;
 import com.oreal.escript.parser.logging.LogEntry;
 import com.oreal.escript.parser.logging.LogEntryType;
 import com.oreal.escript.semantics.AstAnnotator;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -23,14 +24,16 @@ public class Main {
             var parser = new Parser(compilationUnitParser);
             var astAnnotator = AstAnnotator.getDefaultAnnotator();
 
-            CompilationUnit compilationUnit = parser.parse(new java.io.File(args[0]));
-            astAnnotator.annotate(compilationUnit, parser.getParserLogs());
+            @Nullable CompilationUnit compilationUnit = parser.parse(new java.io.File(args[0]));
+            if(compilationUnit != null) {
+                astAnnotator.annotate(compilationUnit, parser.getParserLogs());
+            }
 
             for (LogEntry entry : parser.getParserLogs()) {
                 if(entry.type() == LogEntryType.WARNING) {
-                    System.out.println(entry.message() + " - " + entry.type() + " - " + entry.source() + " - " + entry.exception());
+                    System.out.println(getLogEntryMessage(entry));
                 } else {
-                    System.err.println(entry.message() + " - " + entry.type() + " - " + entry.source() + " - " + entry.exception());
+                    System.err.println(getLogEntryMessage(entry));
                 }
             }
 
@@ -49,5 +52,9 @@ public class Main {
                 writer.write(file.getContents());
             }
         }
+    }
+
+    private static String getLogEntryMessage(LogEntry entry) {
+        return entry.toString();
     }
 }

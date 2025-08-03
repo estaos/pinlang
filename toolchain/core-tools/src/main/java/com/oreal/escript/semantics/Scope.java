@@ -1,5 +1,6 @@
 package com.oreal.escript.semantics;
 
+import com.oreal.escript.parser.ast.Symbol;
 import com.oreal.escript.parser.ast.Type;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +16,7 @@ public class Scope {
     private final @Nullable Scope parent;
     private final String name;
     private final List<Type> types = new LinkedList<>();
+    private final List<Symbol> symbols = new LinkedList<>();
 
     /// Represents a scope of symbols that is imported under an alias.
     ///
@@ -37,9 +39,24 @@ public class Scope {
         this.name = name;
     }
 
-    public Scope registerType(Type type) {
+    public Scope registerType(Type type) throws IllegalStateException {
         // TODO: Do not register type if there is already a symbol with same name
-        types.add(type);
+        if(resolveType(type.getName()) == null) {
+            types.add(type);
+        } else {
+            throw new IllegalStateException("Type already present in scope");
+        }
+
+        return this;
+    }
+
+    public Scope registerSymbol(Symbol symbol) throws IllegalStateException {
+        if(resolveSymbol(symbol.getName()) == null) {
+            symbols.add(symbol);
+        } else {
+            throw new IllegalStateException("Symbol already present in scope");
+        }
+
         return this;
     }
 
@@ -60,6 +77,18 @@ public class Scope {
 
     }
 
+    public @Nullable Symbol resolveSymbol(String name) {
+        return symbols.stream().filter(symbol -> symbol.getName().equals(name))
+                .findFirst()
+                .orElseGet(
+                        () -> Optional.ofNullable(parent)
+                                .map(parent -> parent.resolveSymbol(name))
+                                .orElse(null)
+                );
+
+    }
+
+
     /// Symbols defined in project scope are accessible from any scope.
     ///
     /// Therefore, all scopes should be supersets of the project scope.
@@ -67,18 +96,20 @@ public class Scope {
     /// The project scope has no parent.
     public static Scope getProjectScope() {
         // Note that these are the built in types, i.e, not user defined.
-        var int8Type = new Type(null, "int8", List.of(), "");
-        var int16Type = new Type(null, "int16", List.of(), "");
-        var int32Type = new Type(null, "int32", List.of(), "");
-        var int64Type = new Type(null, "int64", List.of(), "");
-        var int128Type = new Type(null, "int128", List.of(), "");
-        var int256Type = new Type(null, "int256", List.of(), "");
-        var int512Type = new Type(null, "int512", List.of(), "");
-        var floatType = new Type(null, "float", List.of(), "");
-        var doubleType = new Type(null, "double", List.of(), "");
+        var doubleType = new Type(null, "double", List.of(), "", List.of());
+        var floatType = new Type(null, "float", List.of(), "", List.of(doubleType));
+        var int512Type = new Type(null, "int512", List.of(), "", List.of());
+        var int256Type = new Type(null, "int256", List.of(), "", List.of(int512Type));
+        var int128Type = new Type(null, "int128", List.of(), "", List.of(int256Type));
+        var int64Type = new Type(null, "int64", List.of(), "", List.of(int128Type, doubleType));
+        var int32Type = new Type(null, "int32", List.of(), "", List.of(int64Type, floatType));
+        var int16Type = new Type(null, "int16", List.of(), "", List.of(int32Type));
+        var int8Type = new Type(null, "int8", List.of(), "", List.of(int16Type));
 
-        var charType = new Type(null, "char", List.of(), "");
-        var booleanType = new Type(null, "boolean", List.of(), "");
+
+        var charType = new Type(null, "char", List.of(), "", List.of());
+        var booleanType = new Type(null, "boolean", List.of(), "", List.of());
+        var anyType = new Type(null, "any", List.of(), "", List.of());
 
         return new Scope("")
                 .registerType(int8Type)
@@ -91,6 +122,7 @@ public class Scope {
                 .registerType(floatType)
                 .registerType(doubleType)
                 .registerType(charType)
-                .registerType(booleanType);
+                .registerType(booleanType)
+                .registerType(anyType);
     }
 }

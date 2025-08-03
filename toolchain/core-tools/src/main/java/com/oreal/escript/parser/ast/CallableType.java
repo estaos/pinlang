@@ -16,7 +16,7 @@ public class CallableType extends Type {
             String documentationMarkdown,
             @Nullable BlockExpression statementBlock,
             List<Symbol> parameters) {
-        super(source, identifier, typeParameters, documentationMarkdown);
+        super(source, identifier, typeParameters, documentationMarkdown, List.of());
         this.statementBlock = statementBlock;
         this.parameters = parameters;
     }

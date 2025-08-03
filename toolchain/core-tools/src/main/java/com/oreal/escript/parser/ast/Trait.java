@@ -14,7 +14,7 @@ public class Trait extends Type {
             List<TypeParameter> typeParameters,
             String documentationMarkdown,
             List<CallableType> methodDeclarations) {
-        super(source, name, typeParameters, documentationMarkdown);
+        super(source, name, typeParameters, documentationMarkdown, List.of());
         this.methodDeclarations = methodDeclarations;
     }
 
