@@ -1,4 +1,3 @@
 var myInt = 45;
-var myTypedInt: int16 = 4;
 
-var noValueType: int16;
+var addressOfMyInt = myInt as int16;

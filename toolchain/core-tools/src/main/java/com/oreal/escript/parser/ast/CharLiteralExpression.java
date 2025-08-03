@@ -9,4 +9,9 @@ import lombok.EqualsAndHashCode;
 @Data
 public class CharLiteralExpression extends Expression {
     private char character;
+
+    @Override
+    public boolean isConstExpression() {
+        return true;
+    }
 }

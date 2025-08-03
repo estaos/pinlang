@@ -13,4 +13,9 @@ public class NumberLiteralExpression extends Expression {
                 || numberAsString.contains("E")
                 || numberAsString.contains("e");
     }
+
+    @Override
+    public boolean isConstExpression() {
+        return true;
+    }
 }

@@ -18,4 +18,6 @@ typedef int64_t  int512;
 extern int8 myInt;
 extern int16 myTypedInt;
 extern int16 noValue;
+extern char *myNativeString;
+extern void* addressOfMyInt;
 #endif // VARIABLES_H_

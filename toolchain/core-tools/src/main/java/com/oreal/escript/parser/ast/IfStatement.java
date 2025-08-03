@@ -18,6 +18,11 @@ public class IfStatement extends Expression {
     private @Nullable BlockExpression elseBlockExpression;
     private List<ElseIfBlock> elseIfBlocks;
 
+    @Override
+    public boolean isConstExpression() {
+        return false;
+    }
+
     @Getter
     @Setter
     @AllArgsConstructor

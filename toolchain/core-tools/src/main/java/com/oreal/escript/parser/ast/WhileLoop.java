@@ -8,4 +8,9 @@ import lombok.Data;
 public class WhileLoop extends Expression {
     private Expression booleanExpression;
     private BlockExpression blockExpression;
+
+    @Override
+    public boolean isConstExpression() {
+        return false;
+    }
 }

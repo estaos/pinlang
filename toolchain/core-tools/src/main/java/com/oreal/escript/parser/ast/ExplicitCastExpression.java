@@ -7,7 +7,14 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @Data
-public class NullExpression extends Expression {
+public class ExplicitCastExpression extends Expression {
+    private Expression operand;
+
+    public ExplicitCastExpression(Source source, Expression operand, TypeReference toType) {
+        super(toType, source);
+        this.operand = operand;
+    }
+
     @Override
     public boolean isConstExpression() {
         return true;

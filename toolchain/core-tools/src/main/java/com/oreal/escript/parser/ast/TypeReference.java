@@ -18,6 +18,8 @@ public class TypeReference {
     /// Set during annotation.
     private @Nullable Type type;
 
+    private int arrayDimensions;
+
     /// Keeps a list of type arguments to this TypeReference.
     ///
     /// For example, given:
@@ -28,6 +30,10 @@ public class TypeReference {
     private List<TypeReference> typeArguments;
 
     public static TypeReference ofType(Type type) {
-        return new TypeReference(type.getName(), type, List.of());
+        return new TypeReference(type.getName(), type, 0, List.of());
+    }
+
+    public static TypeReference ofType(Type type, int arrayDimensions) {
+        return new TypeReference(type.getName(), type, arrayDimensions, List.of());
     }
 }

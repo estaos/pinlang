@@ -10,4 +10,9 @@ import lombok.EqualsAndHashCode;
 public class BinaryOperatorExpression extends Expression {
     private Expression left;
     private Expression right;
+
+    @Override
+    public boolean isConstExpression() {
+        return left.isConstExpression() && right.isConstExpression();
+    }
 }

@@ -1,6 +1,6 @@
 mvn clean install --file ../pom.xml
 
-# Imports
+Imports
 cd ./regression/imports
 rm a.*
 rm file_*.h

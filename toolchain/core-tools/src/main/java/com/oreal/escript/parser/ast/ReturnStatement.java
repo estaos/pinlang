@@ -9,4 +9,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ReturnStatement extends Expression {
     private Expression returnExpression;
+
+    @Override
+    public boolean isConstExpression() {
+        return false;
+    }
 }

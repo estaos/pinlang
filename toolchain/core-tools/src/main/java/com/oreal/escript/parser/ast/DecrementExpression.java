@@ -10,4 +10,9 @@ import lombok.EqualsAndHashCode;
 public class DecrementExpression extends Expression {
     private SymbolValueExpression operand;
     private boolean isPreDecrement;
+
+    @Override
+    public boolean isConstExpression() {
+        return false;
+    }
 }

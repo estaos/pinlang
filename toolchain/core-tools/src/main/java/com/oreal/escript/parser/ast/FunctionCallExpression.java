@@ -14,4 +14,9 @@ public class FunctionCallExpression extends Expression {
     public FunctionCallExpression() {
         super(null);
     }
+
+    @Override
+    public boolean isConstExpression() {
+        return false;
+    }
 }

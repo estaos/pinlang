@@ -17,6 +17,7 @@ public class Scope {
     private final String name;
     private final List<Type> types = new LinkedList<>();
     private final List<Symbol> symbols = new LinkedList<>();
+    private final boolean isForProject;
 
     /// Represents a scope of symbols that is imported under an alias.
     ///
@@ -29,14 +30,16 @@ public class Scope {
     /// of def will be under 'name' aliased scope.
     private final Map<String, Scope> aliasedScopes = new HashMap<>();
 
-    public Scope(@Nullable Scope parent, String name) {
+    public Scope(@Nullable Scope parent, String name, boolean isProjectScope) {
         this.parent = parent;
         this.name = name;
+        this.isForProject = isProjectScope;
     }
 
-    public Scope(String name) {
+    public Scope(String name, boolean isProjectScope) {
         this.parent = null;
         this.name = name;
+        this.isForProject = isProjectScope;
     }
 
     public Scope registerType(Type type) throws IllegalStateException {
@@ -111,7 +114,7 @@ public class Scope {
         var booleanType = new Type(null, "boolean", List.of(), "", List.of());
         var anyType = new Type(null, "any", List.of(), "", List.of());
 
-        return new Scope("")
+        return new Scope("", true)
                 .registerType(int8Type)
                 .registerType(int16Type)
                 .registerType(int32Type)

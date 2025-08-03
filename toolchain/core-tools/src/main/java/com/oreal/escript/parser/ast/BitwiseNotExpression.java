@@ -7,4 +7,8 @@ import lombok.Data;
 @Data
 public class BitwiseNotExpression extends Expression {
     private Expression operand;
+    @Override
+    public boolean isConstExpression() {
+        return operand.isConstExpression();
+    }
 }

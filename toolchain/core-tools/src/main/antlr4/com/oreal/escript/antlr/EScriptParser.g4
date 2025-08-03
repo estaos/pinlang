@@ -26,21 +26,52 @@ variableDeclarationWithNoInitialisation
     ;
 
 variableDeclarationWithInitialisation
-    : VAR_ variableName (CO nonArrayTypeReference)? EQ expression SC
-    | VAR_ variableName (CO arrayTypeReference)? EQ expression SC
+    : VAR_ variableName (CO typeReference)? EQ expression SC
     ;
 
 expression
 // TODO: Come back to add literals and all other types of expressions. Also includes array expressions.
+    : primaryExpression explicitTypeCastSigil?
+    ;
+
+primaryExpression
     : numberLiteralExpression
+    | charSequenceExpression
+    | symbolValueExpression
     ;
 
 numberLiteralExpression
     : NUMBER
     ;
 
+symbolValueExpression
+    : IDENTIFIER
+    ;
+
+charSequenceExpression
+    : singleLineCharSequenceExpression
+    | multilineCharSequenceExpression
+    ;
+
+singleLineCharSequenceExpression
+    : SINGLE_LINE_STRING
+    ;
+
+multilineCharSequenceExpression
+    : MULTI_LINE_STRING
+    ;
+
+explicitTypeCastSigil
+    : AS_ typeReference
+    ;
+
 variableName
     : IDENTIFIER
+    ;
+
+typeReference
+    : nonArrayTypeReference
+    | arrayTypeReference
     ;
 
 nonArrayTypeReference

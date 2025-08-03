@@ -10,4 +10,9 @@ import lombok.EqualsAndHashCode;
 public class DoWhileLoop extends Expression {
     private Expression booleanExpression;
     private BlockExpression blockExpression;
+
+    @Override
+    public boolean isConstExpression() {
+        return false;
+    }
 }

@@ -10,4 +10,9 @@ import lombok.EqualsAndHashCode;
 public class IncrementExpression extends Expression {
     private SymbolValueExpression operand;
     private boolean isPreIncrement;
+
+    @Override
+    public boolean isConstExpression() {
+        return false;
+    }
 }

@@ -10,4 +10,9 @@ import lombok.EqualsAndHashCode;
 public class ForEachLoop extends Expression {
     private NamedValueSymbol iteratorAndSource;
     private BlockExpression blockExpression;
+
+    @Override
+    public boolean isConstExpression() {
+        return false;
+    }
 }

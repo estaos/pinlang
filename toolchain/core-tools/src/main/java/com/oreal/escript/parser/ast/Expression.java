@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Expression {
+public abstract class Expression {
     /// The type this expression evaluates to.
     ///
     /// For block expressions, the un-annotated type is set
@@ -25,4 +25,6 @@ public class Expression {
     public Expression(@Nullable TypeReference type) {
         this.type = type;
     }
+
+    public abstract boolean isConstExpression();
 }

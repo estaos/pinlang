@@ -26,6 +26,7 @@ import com.oreal.escript.parser.ast.ContinueStatement;
 import com.oreal.escript.parser.ast.DecrementExpression;
 import com.oreal.escript.parser.ast.DivisionExpression;
 import com.oreal.escript.parser.ast.DoWhileLoop;
+import com.oreal.escript.parser.ast.ExplicitCastExpression;
 import com.oreal.escript.parser.ast.Expression;
 import com.oreal.escript.parser.ast.ForLoop;
 import com.oreal.escript.parser.ast.FunctionCallExpression;
@@ -190,37 +191,44 @@ public class ClangCodeGenerator implements  CodeGenerator {
 
     private String getSymbolDeclaration(Symbol symbol, boolean asExtern) {
         if(symbol instanceof NamedValueSymbol valueSymbol) {
+            String asterisks = asterisks(valueSymbol.getType().getArrayDimensions());
+            String cVariableName = asterisks + valueSymbol.getName();
+
             if(valueSymbol.isFunction()) {
                 CallableType callableType = Objects.requireNonNull((CallableType) valueSymbol.getType().getType());
-                if(valueSymbol.getValue() == null) {
-                    return String.format("%s_ptr %s", callableType.getName(), valueSymbol.getName());
+                if(asExtern) {
+                    return String.format("extern %s_ptr %s", callableType.getName(), cVariableName);
+                } else if(valueSymbol.getValue() == null) {
+                    return String.format("%s_ptr %s", callableType.getName(), cVariableName);
                 } else {
-                    return String.format("%s_ptr %s = %s", callableType.getName(), valueSymbol.getName(), getCExpression(valueSymbol.getValue()));
+                    return String.format("%s_ptr %s = %s", callableType.getName(), cVariableName, getCExpression(valueSymbol.getValue()));
                 }
             } else {
                 TypeReference type = valueSymbol.getType();
-                var cExpression = asExtern ? Optional.empty() : Optional.ofNullable(valueSymbol.getValue())
-                        .map(this::getCExpression);
+                var cExpression = Optional.ofNullable(valueSymbol.getValue())
+                        .map(this::getCExpression)
+                        .orElse("");
 
-                String squareBracketPair = IntStream.range(0, valueSymbol.getArrayDimensions())
-                        .mapToObj(_ -> "[]")
-                        .collect(Collectors.joining());
                 String cTypeName =
-                        getCTypeName(type.getName()) + squareBracketPair;
+                        getCTypeName(type.getName());
 
-                return cExpression
-                        .map(value ->String.format("%s %s = %s", cTypeName, valueSymbol.getName(), value))
-                        .orElseGet(() -> {
-                            if(asExtern) {
-                                return String.format("extern %s %s", cTypeName, valueSymbol.getName());
-                            } else {
-                                return String.format("%s %s", cTypeName, valueSymbol.getName());
-                            }
-                        });
+                if(asExtern) {
+                    return String.format("extern %s %s", cTypeName, cVariableName);
+                } else if(valueSymbol.getValue() == null) {
+                    return String.format("%s %s", cTypeName, cVariableName);
+                } else {
+                    return String.format("%s %s = %s", cTypeName, cVariableName, cExpression);
+                }
             }
         } else {
             throw new IllegalArgumentException("Unknown symbol " + symbol);
         }
+    }
+
+    private static String asterisks(int arrayDimensions) {
+        return IntStream.range(0, arrayDimensions)
+                .mapToObj(_ -> "*")
+                .collect(Collectors.joining());
     }
 
     private String getCTypeName(String typeName) {
@@ -391,7 +399,29 @@ public class ClangCodeGenerator implements  CodeGenerator {
             String statements = getCExpression(whileLoop.getBlockExpression());
 
             return String.format("while(%s) %s", booleanCheck, statements);
-        } else {
+        } else if(expression instanceof ExplicitCastExpression explicitCastExpression) {
+            String operandCExpression = getCExpression(explicitCastExpression.getOperand());
+            TypeReference operandType = Objects.requireNonNull(explicitCastExpression.getOperand().getType());
+            TypeReference targetType = Objects.requireNonNull(explicitCastExpression.getType());
+            String targetTypeName = targetType.getName();
+            String targetCType = getCTypeName(targetTypeName) + asterisks(targetType.getArrayDimensions());
+
+            if(targetTypeName.equals("any")) {
+                if(operandType.getArrayDimensions() > 0) {
+                    return String.format("(%s)(%s)", targetCType, operandCExpression);
+                } else {
+                    return String.format("(&%s)", operandCExpression);
+                }
+            } else if(operandType.getName().equals("any")) {
+                if(targetType.getArrayDimensions() > 0) {
+                    return String.format("(%s)(%s)", targetCType, operandCExpression);
+                } else {
+                    return String.format("*((%s*)(%s))", targetCType, operandCExpression);
+                }
+            } else {
+                return String.format("(%s)(%s)", targetCType, operandCExpression);
+            }
+        }else {
             logs.add(LogEntry.warning(expression.getSource(), LogEntryCode.UNKNOWN_EXPRESSION));
             return "";
         }

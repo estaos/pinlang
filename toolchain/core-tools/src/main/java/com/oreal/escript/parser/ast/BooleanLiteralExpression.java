@@ -7,4 +7,9 @@ import lombok.Data;
 @Data
 public class BooleanLiteralExpression extends Expression {
     private boolean value;
+
+    @Override
+    public boolean isConstExpression() {
+        return true;
+    }
 }

@@ -35,18 +35,19 @@ public class CodeGeneratorTestUtils {
     }
 
     public static CompilationUnit getBuiltInTypesCompilationUnit(Scope scope) {
-        var int8TypeReference = new TypeReference("int8", scope.resolveType("int8"), List.of());
-        var int16TypeReference = new TypeReference("int16", scope.resolveType("int16"), List.of());
-        var int32TypeReference = new TypeReference("int32", scope.resolveType("int32"), List.of());
-        var int64TypeReference = new TypeReference("int64", scope.resolveType("int64"), List.of());
-        var int128TypeReference = new TypeReference("int128", scope.resolveType("int128"), List.of());
-        var int256TypeReference = new TypeReference("int256", scope.resolveType("int256"), List.of());
-        var int512TypeReference = new TypeReference("int512", scope.resolveType("int512"), List.of());
-        var floatTypeReference = new TypeReference("float", scope.resolveType("float"), List.of());
-        var doubleTypeReference = new TypeReference("double", scope.resolveType("double"), List.of());
-        var charTypeReference = new TypeReference("char", scope.resolveType("char"), List.of());
-        var booleanTypeReference = new TypeReference("boolean", scope.resolveType("boolean"), List.of());
-        var anyTypeReference = new TypeReference("any", scope.resolveType("any"), List.of());
+        var int8TypeReference = new TypeReference("int8", scope.resolveType("int8"), 0, List.of());
+        var int16TypeReference = new TypeReference("int16", scope.resolveType("int16"), 0, List.of());
+        var int32TypeReference = new TypeReference("int32", scope.resolveType("int32"), 0, List.of());
+        var int64TypeReference = new TypeReference("int64", scope.resolveType("int64"), 0, List.of());
+        var int128TypeReference = new TypeReference("int128", scope.resolveType("int128"), 0, List.of());
+        var int256TypeReference = new TypeReference("int256", scope.resolveType("int256"), 0, List.of());
+        var int512TypeReference = new TypeReference("int512", scope.resolveType("int512"), 0, List.of());
+        var floatTypeReference = new TypeReference("float", scope.resolveType("float"), 0, List.of());
+        var doubleTypeReference = new TypeReference("double", scope.resolveType("double"), 0, List.of());
+        var charTypeReference = new TypeReference("char", scope.resolveType("char"), 0, List.of());
+        var charArrayTypeReference = new TypeReference("char", scope.resolveType("char"), 1, List.of());
+        var booleanTypeReference = new TypeReference("boolean", scope.resolveType("boolean"), 0, List.of());
+        var anyTypeReference = new TypeReference("any", scope.resolveType("any"), 0, List.of());
 
         var source = new Source(new File(""), 0, 0, 0);
 
@@ -62,7 +63,7 @@ public class CodeGeneratorTestUtils {
             new NamedValueSymbol("myDouble", doubleTypeReference, source, true, false, "", null, false),
             new NamedValueSymbol("myChar", charTypeReference, source, true, false, "", null, false),
             new NamedValueSymbol("myBoolean", booleanTypeReference, source, true, false, "", null, false),
-            new NamedValueSymbol("myCharArray", charTypeReference, source, true, false, "", null, false, 1),
+            new NamedValueSymbol("myCharArray", charArrayTypeReference, source, true, false, "", null, false),
             new NamedValueSymbol("myAny", anyTypeReference, source, true, false, "", null, false)
         );
 
@@ -80,7 +81,7 @@ public class CodeGeneratorTestUtils {
                 new BlockExpression(List.of(), null),
                 List.of());
 
-        var typeReference = new TypeReference("myFunction_type", callableType, List.of());
+        var typeReference = new TypeReference("myFunction_type", callableType, 0, List.of());
         var functionSymbol = new NamedValueSymbol("myFunction", typeReference, source, true,
                 false, "", new TypeNameExpression(typeReference), false);
 
@@ -89,8 +90,8 @@ public class CodeGeneratorTestUtils {
 
     public static CompilationUnit getFunctionWithArgsCompilationUnit(Scope scope) {
         var source = new Source(new File(""), 0, 0, 0);
-        var int8TypeReference = new TypeReference("int8", scope.resolveType("int8"), List.of());
-        var int16TypeReference = new TypeReference("int16", scope.resolveType("int16"), List.of());
+        var int8TypeReference = new TypeReference("int8", scope.resolveType("int8"), 0, List.of());
+        var int16TypeReference = new TypeReference("int16", scope.resolveType("int16"), 0, List.of());
 
         var callableType = new CallableType(
                 source,
@@ -103,7 +104,7 @@ public class CodeGeneratorTestUtils {
                 )
         );
 
-        var functionTypeReference = new TypeReference("myFunction_type", callableType, List.of());
+        var functionTypeReference = new TypeReference("myFunction_type", callableType, 0, List.of());
         callableType.setStatementBlock(new BlockExpression(List.of(), functionTypeReference));
         var functionSymbol = new NamedValueSymbol("myFunction", functionTypeReference, source, true,
                 false, "", new TypeNameExpression(functionTypeReference), false);

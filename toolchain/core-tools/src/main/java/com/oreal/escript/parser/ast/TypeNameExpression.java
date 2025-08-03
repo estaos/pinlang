@@ -6,4 +6,9 @@ public class TypeNameExpression extends Expression {
     public TypeNameExpression(TypeReference type) {
         super(type);
     }
+
+    @Override
+    public boolean isConstExpression() {
+        return true;
+    }
 }

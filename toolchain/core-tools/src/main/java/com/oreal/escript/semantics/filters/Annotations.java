@@ -4,6 +4,7 @@ import com.oreal.escript.parser.ast.BooleanLiteralExpression;
 import com.oreal.escript.parser.ast.CharLiteralExpression;
 import com.oreal.escript.parser.ast.CharSequenceLiteralExpression;
 import com.oreal.escript.parser.ast.CompilationUnit;
+import com.oreal.escript.parser.ast.ExplicitCastExpression;
 import com.oreal.escript.parser.ast.Expression;
 import com.oreal.escript.parser.ast.Import;
 import com.oreal.escript.parser.ast.NamedValueSymbol;
@@ -39,7 +40,7 @@ public final class Annotations {
         if(variable.getValue() == null) {
             logs.add(LogEntry.error(variable.getSource(), LogEntryCode.NO_TYPE_INFORMATION));
         } else {
-            @Nullable TypeReference type = resolveExpressionType(variable.getValue(), scope, logs);
+            @Nullable TypeReference type = visitExpression(variable.getValue(), scope, logs);
             if(type == null) {
                 logs.add(LogEntry.error(variable.getSource(), LogEntryCode.VALUE_HAS_NO_TYPE));
             } else {
@@ -49,16 +50,51 @@ public final class Annotations {
     }
 
     public void checkValueTypeIsVariableType(NamedValueSymbol namedValueSymbol, Scope scope, List<LogEntry> logs) {
-        if(namedValueSymbol.getType() != null && namedValueSymbol.getValue() != null) {
+        if(namedValueSymbol.getType() != null) {
             @Nullable TypeReference typeReference = getExpressionTypeInFavorOfHint(namedValueSymbol.getValue(), namedValueSymbol.getType(), scope, logs);
-            if(typeReference == null || !namedValueSymbol.getType().getName().equals(typeReference.getName())) {
+            if(typeReference == null
+                    || !namedValueSymbol.getType().getName().equals(typeReference.getName())
+                    || namedValueSymbol.getType().getArrayDimensions() != typeReference.getArrayDimensions()) {
                 logs.add(LogEntry.error(namedValueSymbol.getSource(), LogEntryCode.TYPE_MISMATCH));
             }
         }
     }
 
-    public @Nullable TypeReference resolveExpressionType(Expression expression, Scope scope, List<LogEntry> logs) {
-        if(expression.getType() != null) {
+    public void requireConstExpression(Expression expression, List<LogEntry> logs) {
+        if(!expression.isConstExpression()) {
+            logs.add(LogEntry.error(expression.getSource(), LogEntryCode.EXPRESSION_IS_NOT_CONST));
+        }
+    }
+
+    // Applied to all explicit cast expressions
+    public void checkExplicitCastIsValid(ExplicitCastExpression expression, Scope scope, List<LogEntry> logs) {
+        TypeReference targetType = Objects.requireNonNull(expression.getType());
+        Expression operand = expression.getOperand();
+
+        if(targetType.getName().equals("any")) {
+            if(!(operand instanceof SymbolValueExpression)) {
+                // If casting to any, operand must be a variable name
+                logs.add(LogEntry.error(expression.getSource(), LogEntryCode.CAST_OPERAND_HAS_NO_ADDRESS));
+            }
+        }
+
+//        else if(scope.isForProject()) {
+//            // Not allowed to cast to types other than any outside of project scope
+//            logs.add(LogEntry.error(expression.getSource(), LogEntryCode.EXPRESSION_IS_NOT_CONST));
+//        }
+
+        else {
+            // All other castings are valid if type being cast to is a subtype of type being cast from
+            TypeReference operandType = Objects.requireNonNull(getExpressionTypeInFavorOfHint(operand, targetType, scope, logs));
+            if(!isSubType(targetType, operandType)) {
+                logs.add(LogEntry.error(expression.getSource(), LogEntryCode.TYPE_MISMATCH));
+            }
+        }
+    }
+
+    /// Visits given expression, applies validation rules and returns the type this expression resolves to
+    public @Nullable TypeReference visitExpression(Expression expression, Scope scope, List<LogEntry> logs) {
+        if(expression.getType() != null && expression.getType().getType() != null) {
             return expression.getType();
         } else {
             @Nullable TypeReference typeReference = null;
@@ -76,10 +112,8 @@ public final class Annotations {
                     typeReference = TypeReference.ofType(charType);
                 }
                 case CharSequenceLiteralExpression _ -> {
-                    // TODO: circle back on this as it should be type char[] instead of char.
-                    // Need to update type references to be the ones that denote an array type reference or not instead of the symbol
                     Type charSequenceType = scope.resolveType("char");
-                    typeReference = TypeReference.ofType(charSequenceType);
+                    typeReference = TypeReference.ofType(charSequenceType, 1);
                 }
                 case NullExpression _ -> {
                     Type anyType = scope.resolveType("any");
@@ -91,6 +125,18 @@ public final class Annotations {
                         logs.add(LogEntry.error(expression.getSource(), LogEntryCode.NO_SUCH_SYMBOL));
                     } else {
                         typeReference = symbol.getType();
+                    }
+                }
+                case ExplicitCastExpression explicitCastExpression -> {
+                    visitExpression(explicitCastExpression.getOperand(), scope, logs);
+                    TypeReference targetType = explicitCastExpression.getType();
+                    @Nullable Type type = scope.resolveType(targetType.getName());
+                    if(type == null) {
+                        logs.add(LogEntry.error(expression.getSource(), LogEntryCode.NO_SUCH_SYMBOL));
+                    } else {
+                        typeReference = TypeReference.ofType(type, targetType.getArrayDimensions());
+                        explicitCastExpression.setType(typeReference);
+                        checkExplicitCastIsValid(explicitCastExpression, scope, logs);
                     }
                 }
                 default -> {
@@ -140,16 +186,24 @@ public final class Annotations {
     /// otherwise the expression is returned.
     ///
     /// Returns null if expression type could not be determined.
-    private@Nullable TypeReference getExpressionTypeInFavorOfHint(Expression expression, TypeReference hint, Scope scope, List<LogEntry> logs) {
-        @Nullable TypeReference expressionType = resolveExpressionType(expression, scope, logs);
-        if(expressionType != null && expressionType.getType() != null ) {
-            if(expressionType.getType().isSubTypeOf(hint.getType())) {
+    private @Nullable TypeReference getExpressionTypeInFavorOfHint(Expression expression, TypeReference hint, Scope scope, List<LogEntry> logs) {
+        @Nullable TypeReference expressionType = visitExpression(expression, scope, logs);
+        if(expressionType != null) {
+            if(isSubType(expressionType, hint)) {
                 return hint;
             } else {
                 return expressionType;
             }
         } else {
             return null;
+        }
+    }
+
+    private boolean isSubType(TypeReference typeA, TypeReference typeB) {
+        if(typeA.getType() != null && typeB.getType() != null) {
+            return typeA.getType().isSubTypeOf(typeB.getType()) && typeA.getArrayDimensions() == typeB.getArrayDimensions();
+        } else {
+            return false;
         }
     }
 

@@ -1,16 +1,18 @@
 package com.oreal.escript.parser;
 
 import com.oreal.escript.antlr.*;
+import com.oreal.escript.parser.ast.CharSequenceLiteralExpression;
 import com.oreal.escript.parser.ast.CompilationUnit;
+import com.oreal.escript.parser.ast.ExplicitCastExpression;
 import com.oreal.escript.parser.ast.Expression;
 import com.oreal.escript.parser.ast.Import;
 import com.oreal.escript.parser.ast.NamedValueSymbol;
 import com.oreal.escript.parser.ast.NumberLiteralExpression;
 import com.oreal.escript.parser.ast.Source;
 import com.oreal.escript.parser.ast.Symbol;
+import com.oreal.escript.parser.ast.SymbolValueExpression;
 import com.oreal.escript.parser.ast.TypeReference;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -72,43 +74,51 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
     @Override
     public NamedValueSymbol visitVariableDeclarationWithNoInitialisation(EScriptParser.VariableDeclarationWithNoInitialisationContext ctx) {
         String variableName = visitVariableName(ctx.variableName());
-        ParserTypeReference typeReference = Optional.ofNullable(ctx.nonArrayTypeReference())
+        TypeReference typeReference = Optional.ofNullable(ctx.nonArrayTypeReference())
                 .map(this::visitNonArrayTypeReference)
                 .orElseGet(() -> visitArrayTypeReference(ctx.arrayTypeReference()));
 
         return new NamedValueSymbol(
-                variableName, typeReference.typeReference,
+                variableName, typeReference,
                 getNodeSource(file, ctx), true, false,
-                "", null, false,
-                typeReference.arrayDimensions);
+                "", null, false);
     }
 
     @Override
     public NamedValueSymbol visitVariableDeclarationWithInitialisation(EScriptParser.VariableDeclarationWithInitialisationContext ctx) {
         String variableName = visitVariableName(ctx.variableName());
-        ParserTypeReference typeReference;
-        if(ctx.nonArrayTypeReference() != null) {
-            typeReference = visitNonArrayTypeReference(ctx.nonArrayTypeReference());
-        } else if(ctx.arrayTypeReference() != null) {
-            typeReference = visitArrayTypeReference(ctx.arrayTypeReference());
-        } else {
-            // Type was not given, need to be inferred.
-            typeReference = new ParserTypeReference(null, 0);
-        }
+        @Nullable TypeReference typeReference = Optional.ofNullable(ctx.typeReference())
+                .map(this::visitTypeReference)
+                .orElse(null);
 
         Expression value = visitExpression(ctx.expression());
 
         return new NamedValueSymbol(
-                variableName, typeReference.typeReference,
+                variableName, typeReference,
                 getNodeSource(file, ctx), true, false,
-                "", value, false,
-                typeReference.arrayDimensions);
+                "", value, false);
     }
 
     @Override
     public Expression visitExpression(EScriptParser.ExpressionContext ctx) {
+        if(ctx.explicitTypeCastSigil() != null) {
+            return new ExplicitCastExpression(
+                    getNodeSource(file, ctx),
+                    visitPrimaryExpression(ctx.primaryExpression()),
+                    visitExplicitTypeCastSigil(ctx.explicitTypeCastSigil()));
+        } else {
+            return visitPrimaryExpression(ctx.primaryExpression());
+        }
+    }
+
+    @Override
+    public Expression visitPrimaryExpression(EScriptParser.PrimaryExpressionContext ctx) {
         if(ctx.numberLiteralExpression() != null) {
             return visitNumberLiteralExpression(ctx.numberLiteralExpression());
+        } else if(ctx.charSequenceExpression() != null) {
+            return visitCharSequenceExpression(ctx.charSequenceExpression());
+        } else if(ctx.symbolValueExpression() != null) {
+            return visitSymbolValueExpression(ctx.symbolValueExpression());
         } else {
             throw new IllegalArgumentException("Unknown expression " + ctx);
         }
@@ -120,22 +130,57 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
     }
 
     @Override
+    public SymbolValueExpression visitSymbolValueExpression(EScriptParser.SymbolValueExpressionContext ctx) {
+        return new SymbolValueExpression(ctx.IDENTIFIER().getText());
+    }
+
+    @Override
+    public CharSequenceLiteralExpression visitCharSequenceExpression(EScriptParser.CharSequenceExpressionContext ctx) {
+        if(ctx.singleLineCharSequenceExpression() != null) {
+            return visitSingleLineCharSequenceExpression(ctx.singleLineCharSequenceExpression());
+        } else {
+            return visitMultilineCharSequenceExpression(ctx.multilineCharSequenceExpression());
+        }
+    }
+
+    @Override
+    public CharSequenceLiteralExpression visitSingleLineCharSequenceExpression(EScriptParser.SingleLineCharSequenceExpressionContext ctx) {
+        return new CharSequenceLiteralExpression(unquoteString(ctx.SINGLE_LINE_STRING().getText()));
+    }
+
+    @Override
+    public CharSequenceLiteralExpression visitMultilineCharSequenceExpression(EScriptParser.MultilineCharSequenceExpressionContext ctx) {
+        return new CharSequenceLiteralExpression(unquoteString(ctx.MULTI_LINE_STRING().getText()));
+    }
+
+    @Override
+    public TypeReference visitExplicitTypeCastSigil(EScriptParser.ExplicitTypeCastSigilContext ctx) {
+        return visitTypeReference(ctx.typeReference());
+    }
+
+    @Override
     public String visitVariableName(EScriptParser.VariableNameContext ctx) {
         return ctx.IDENTIFIER().getText();
     }
 
     @Override
-    public ParserTypeReference visitNonArrayTypeReference(EScriptParser.NonArrayTypeReferenceContext ctx) {
-        TypeReference typeReference = new TypeReference(ctx.IDENTIFIER().getText(), null, List.of());
-        return new ParserTypeReference(typeReference, 0);
+    public TypeReference visitTypeReference(EScriptParser.TypeReferenceContext ctx) {
+        if(ctx.nonArrayTypeReference() != null) {
+            return visitNonArrayTypeReference(ctx.nonArrayTypeReference());
+        } else {
+            return visitArrayTypeReference(ctx.arrayTypeReference());
+        }
     }
 
     @Override
-    public ParserTypeReference visitArrayTypeReference(EScriptParser.ArrayTypeReferenceContext ctx) {
-        int dimensionsCount = ctx.arrayIndexingWithOptionalIndex().size();
-        TypeReference typeReference = new TypeReference(ctx.IDENTIFIER().getText(), null, List.of());
+    public TypeReference visitNonArrayTypeReference(EScriptParser.NonArrayTypeReferenceContext ctx) {
+        return new TypeReference(ctx.IDENTIFIER().getText(), null, 0, List.of());
+    }
 
-        return new ParserTypeReference(typeReference, dimensionsCount);
+    @Override
+    public TypeReference visitArrayTypeReference(EScriptParser.ArrayTypeReferenceContext ctx) {
+        int dimensionsCount = ctx.arrayIndexingWithOptionalIndex().size();
+        return new TypeReference(ctx.IDENTIFIER().getText(), null, dimensionsCount, List.of());
     }
 
     @Override
@@ -145,7 +190,7 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
 
     @Override
     public String visitImportPath(EScriptParser.ImportPathContext ctx) {
-        return unquoteSingleLineString(ctx.getText());
+        return unquoteString(ctx.getText());
     }
 
     @Override
@@ -177,7 +222,7 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
         return new Source(file, ctx.start.getLine(), ctx.getStart().getStartIndex(), ctx.stop.getStopIndex());
     }
 
-    private String unquoteSingleLineString(String singleLineStringWithQuotes) {
+    private String unquoteString(String singleLineStringWithQuotes) {
         return singleLineStringWithQuotes.substring(1, singleLineStringWithQuotes.length()-1);
     }
 
@@ -188,12 +233,5 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
 
         Path importPath = Path.of(parent, visitImportPath(importPathCtx));
         return importPath.toFile();
-    }
-
-    @AllArgsConstructor
-    @Data
-    public static class ParserTypeReference {
-        private @Nullable TypeReference typeReference;
-        private int arrayDimensions;
     }
 }

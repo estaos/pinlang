@@ -102,7 +102,7 @@ extern float myFloat;
 extern double myDouble;
 extern char myChar;
 extern bool myBoolean;
-extern char[] myCharArray;
+extern char *myCharArray;
 extern void* myAny;
 #endif // MAIN_H_
 """;
@@ -120,7 +120,7 @@ float myFloat;
 double myDouble;
 char myChar;
 bool myBoolean;
-char[] myCharArray;
+char *myCharArray;
 void* myAny;
 """;
 
@@ -141,7 +141,7 @@ void* myAny;
 #define MAIN_H_
 typedef void (*myFunction_type_ptr)();
 void myFunction_type();
-myFunction_type_ptr myFunction = myFunction_type;
+extern myFunction_type_ptr myFunction;
 #endif // MAIN_H_
 """;
 
@@ -159,6 +159,7 @@ myFunction_type_ptr myFunction = myFunction_type;
         String expectedContents = """
 #include "main.h"
 void myFunction_type() {}
+myFunction_type_ptr myFunction = myFunction_type;
 """;
 
         assertEquals(expectedContents, file.getContents());
@@ -178,7 +179,7 @@ void myFunction_type() {}
 #define MAIN_H_
 typedef myFunction_type_ptr (*myFunction_type_ptr)(int8 a, int16 b);
 myFunction_type_ptr myFunction_type(int8 a, int16 b);
-myFunction_type_ptr myFunction = myFunction_type;
+extern myFunction_type_ptr myFunction;
 #endif // MAIN_H_
 """;
 

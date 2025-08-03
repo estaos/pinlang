@@ -13,4 +13,9 @@ public class ForLoop extends Expression {
     private @Nullable Expression comparisonExpression;
     private @Nullable Expression counterExpression;
     private BlockExpression blockExpression;
+
+    @Override
+    public boolean isConstExpression() {
+        return false;
+    }
 }

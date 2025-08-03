@@ -17,24 +17,11 @@ public class NamedValueSymbol extends Symbol {
                             String documentationMarkdown,
                             @Nullable Expression value,
                             boolean overrides) {
-        this(name, type, source, reAssignable, immutable, documentationMarkdown, value, overrides, 0);
-    }
-
-    public NamedValueSymbol(String name,
-                            TypeReference type,
-                            Source source,
-                            boolean reAssignable,
-                            boolean immutable,
-                            String documentationMarkdown,
-                            @Nullable Expression value,
-                            boolean overrides,
-                            int arrayDimensions) {
         super(name, type, source, documentationMarkdown);
         this.reAssignable = reAssignable;
         this.immutable = immutable;
         this.value = value;
         this.overrides = overrides;
-        this.arrayDimensions = arrayDimensions;
     }
 
     /**
@@ -52,10 +39,8 @@ public class NamedValueSymbol extends Symbol {
     /// Set to true if this symbol should shadow same symbol in super class.
     private boolean overrides;
 
-    private int arrayDimensions = 0;
-
     public boolean isArray() {
-        return arrayDimensions > 0;
+        return getType().getArrayDimensions() > 0;
     }
 
     public boolean isFunction() {

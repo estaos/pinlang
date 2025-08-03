@@ -8,4 +8,9 @@ import lombok.Data;
 public class AssignmentExpression extends Expression {
     private String symbolName;
     private Expression value;
+
+    @Override
+    public boolean isConstExpression() {
+        return false;
+    }
 }

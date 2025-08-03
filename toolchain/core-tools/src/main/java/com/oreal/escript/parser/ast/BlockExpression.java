@@ -15,4 +15,9 @@ public class BlockExpression extends Expression {
         super(type);
         this.statements = statements;
     }
+
+    @Override
+    public boolean isConstExpression() {
+        return false;
+    }
 }

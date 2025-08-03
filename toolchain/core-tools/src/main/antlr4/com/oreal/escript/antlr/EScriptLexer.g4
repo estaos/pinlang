@@ -39,18 +39,18 @@ FALSE_                   : 'false';
 FINAL_                   : 'final';
 FOR_                     : 'for';
 FUNCTION_                : 'function';
-ANY_                     : 'any';
 IF_                      : 'if';
 IMPORT_                  : 'import';
 VAR_                     : 'var';
 RETURN_                  : 'return';
 VOID_                    : 'void';
 WHILE_                   : 'while';
+AS_                      : 'as';
 NUMBER                   : DIGIT+ ( '.' DIGIT+)? EXPONENT? | '.' DIGIT+ EXPONENT?;
 HEX_NUMBER               : '0x' HEX_DIGIT+ | '0X' HEX_DIGIT+;
 
 SINGLE_LINE_STRING       : '"' SINGLE_LINE_STRING_CONTENT '"';
-MULTI_LINE_STRING        : '"""' MULTI_LINE_STRING_CONTENT '"""';
+MULTI_LINE_STRING        : '`' MULTI_LINE_STRING_CONTENT '`';
 
 IDENTIFIER               : IDENTIFIER_START IDENTIFIER_PART*;
 WHITESPACE               : ( '\t' | ' ' | NEWLINE)+              -> skip;

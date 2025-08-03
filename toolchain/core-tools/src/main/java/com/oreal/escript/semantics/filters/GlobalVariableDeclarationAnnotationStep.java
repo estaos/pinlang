@@ -21,7 +21,12 @@ public class GlobalVariableDeclarationAnnotationStep implements AnnotationStep {
 
                 if(variableDeclaration.getType() != null) {
                     annotations.resolveVariableTypeReference(variableDeclaration, scope, logs);
-                    annotations.checkValueTypeIsVariableType(variableDeclaration, scope, logs);
+
+                    if(variableDeclaration.getValue() != null) {
+                        // Global scope values must be constants and value types must match type specified
+                        annotations.requireConstExpression(variableDeclaration.getValue(), logs);
+                        annotations.checkValueTypeIsVariableType(variableDeclaration, scope, logs);
+                    }
                 }
             }
         }

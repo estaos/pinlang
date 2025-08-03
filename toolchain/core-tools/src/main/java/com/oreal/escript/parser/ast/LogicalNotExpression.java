@@ -7,4 +7,9 @@ import lombok.Data;
 @Data
 public class LogicalNotExpression extends Expression {
     private Expression operand;
+
+    @Override
+    public boolean isConstExpression() {
+        return operand.isConstExpression();
+    }
 }

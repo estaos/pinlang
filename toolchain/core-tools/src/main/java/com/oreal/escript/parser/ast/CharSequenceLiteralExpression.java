@@ -7,4 +7,9 @@ import lombok.Data;
 @Data
 public class CharSequenceLiteralExpression extends Expression {
     private CharSequence charSequence;
+
+    @Override
+    public boolean isConstExpression() {
+        return true;
+    }
 }

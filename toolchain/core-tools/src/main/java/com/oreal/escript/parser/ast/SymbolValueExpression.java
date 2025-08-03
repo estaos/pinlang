@@ -7,4 +7,9 @@ import lombok.Data;
 @Data
 public class SymbolValueExpression extends Expression {
     private String symbolName;
+
+    @Override
+    public boolean isConstExpression() {
+        return true;
+    }
 }
