@@ -177,8 +177,8 @@ myFunction_type myFunction = myFunction_code;
         String expectedContents = ClangRuntime.RUNTIME + """
 #ifndef MAIN_H_
 #define MAIN_H_
-typedef void* (*myFunction_type)(int8 a, int16 b);
-void* myFunction_code(int8 a, int16 b);
+typedef myFunction_type (*myFunction_type)(int8 a, int16 b);
+myFunction_type myFunction_code(int8 a, int16 b);
 extern myFunction_type myFunction;
 #endif // MAIN_H_
 """;
