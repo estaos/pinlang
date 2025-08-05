@@ -43,11 +43,7 @@ public class AnnotateUserTypesAnnotationStep implements AnnotationStep {
         }
 
         for(CallableCode callableCode: compilationUnit.getCallableCodeBlocks()) {
-            @Nullable Type returnType = Optional
-                    .ofNullable(callableCode.getType().getReturnType())
-                    .map(TypeReference::getType)
-                    .orElse(null);
-            annotations.visitBlockExpression(callableCode.getStatementBlock(), scope, logs, returnType);
+            annotations.visitCallableCode(callableCode, scope.findProjectScope(), logs);
         }
     }
 }

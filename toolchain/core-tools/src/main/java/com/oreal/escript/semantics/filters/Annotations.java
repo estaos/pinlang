@@ -136,6 +136,25 @@ public final class Annotations {
         }
     }
 
+    public void visitCallableCode(CallableCode callableCode, Scope projectScope, List<LogEntry> logs) {
+        @Nullable Type returnType = Optional
+                .ofNullable(callableCode.getType().getReturnType())
+                .map(TypeReference::getType)
+                .orElse(null);
+
+        Scope functionScope = new Scope(projectScope, "", false);
+        for(Symbol parameter: callableCode.getType().getParameters()) {
+            if(parameter instanceof NamedValueSymbol namedValueSymbol) {
+                var declaration = new VariableDeclaration(callableCode.getSource(), namedValueSymbol);
+                visitExpression(declaration, functionScope, logs);
+            } else {
+                throw new UnsupportedOperationException("Unknown symbol type "+ parameter);
+            }
+        }
+
+        visitBlockExpression(callableCode.getStatementBlock(), functionScope, logs, returnType);
+    }
+
     /// Visits given expression, applies validation rules and returns the type this expression resolves to
     public @Nullable TypeReference visitExpression(Expression expression, Scope scope, List<LogEntry> logs) {
         if(expression.getType() != null && expression.getType().getType() != null) {

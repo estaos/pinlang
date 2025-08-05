@@ -94,6 +94,22 @@ public class Scope {
         return resolveType(name) != null || resolveSymbol(name) != null;
     }
 
+    public Scope findProjectScope() {
+        return findProjectScope(this);
+    }
+
+    private Scope findProjectScope(Scope scope) {
+        if(scope.isForProject) {
+            return scope;
+        } else {
+            if(scope.parent == null) {
+                // Should never happen as root scope should be project scope in any context.
+                throw new IllegalStateException("Scope is not descendant of project scope.");
+            } else {
+                return findProjectScope(scope.parent);
+            }
+        }
+    }
 
     /// Symbols defined in project scope are accessible from any scope.
     ///

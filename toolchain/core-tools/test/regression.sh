@@ -67,5 +67,18 @@ rm *.h
 rm *.c
 mvn exec:java -Dexec.args="scan_input.escript" --file ../../../pom.xml
 clang scan_input.c
+./a <<EOF
+James Bond
+35
+EOF
+cd ../../
+
+# Functions first class function
+cd ./regression/functions
+rm a.*
+rm *.h
+rm *.c
+mvn exec:java -Dexec.args="first_class_functions.escript" --file ../../../pom.xml
+clang first_class_functions.c
 ./a
 cd ../../

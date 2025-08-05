@@ -460,8 +460,8 @@ public class ClangCodeGenerator implements  CodeGenerator {
 
         if(callableType.getReturnType() == null) {
             return "void";
-        } else if(callableType.getReturnType().getType() instanceof CallableType) {
-            return callableType.getName();
+        } else if(callableType.getReturnType().getType() instanceof CallableType returnTypeCallable) {
+            return returnTypeCallable.getName();
         }else {
             String pointers = asterisks(callableType.getReturnType().getArrayDimensions());
             return getCTypeName(callableType.getReturnType().getName()) + pointers;
