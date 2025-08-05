@@ -1,20 +1,29 @@
 package com.oreal.escript.semantics.filters;
 
+import com.oreal.escript.parser.ast.Argument;
+import com.oreal.escript.parser.ast.AssignmentExpression;
+import com.oreal.escript.parser.ast.BlockExpression;
 import com.oreal.escript.parser.ast.BooleanLiteralExpression;
+import com.oreal.escript.parser.ast.CallableCode;
 import com.oreal.escript.parser.ast.CallableType;
 import com.oreal.escript.parser.ast.CharLiteralExpression;
 import com.oreal.escript.parser.ast.CharSequenceLiteralExpression;
 import com.oreal.escript.parser.ast.CompilationUnit;
 import com.oreal.escript.parser.ast.ExplicitCastExpression;
 import com.oreal.escript.parser.ast.Expression;
+import com.oreal.escript.parser.ast.FunctionCallExpression;
 import com.oreal.escript.parser.ast.Import;
 import com.oreal.escript.parser.ast.NamedValueSymbol;
 import com.oreal.escript.parser.ast.NullExpression;
 import com.oreal.escript.parser.ast.NumberLiteralExpression;
+import com.oreal.escript.parser.ast.ReturnStatement;
+import com.oreal.escript.parser.ast.Source;
 import com.oreal.escript.parser.ast.Symbol;
 import com.oreal.escript.parser.ast.SymbolValueExpression;
 import com.oreal.escript.parser.ast.Type;
+import com.oreal.escript.parser.ast.TypePassExpression;
 import com.oreal.escript.parser.ast.TypeReference;
+import com.oreal.escript.parser.ast.VariableDeclaration;
 import com.oreal.escript.parser.logging.LogEntry;
 import com.oreal.escript.parser.logging.LogEntryCode;
 import com.oreal.escript.semantics.Scope;
@@ -22,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public final class Annotations {
     /// Resolves the Type for variables that have their types explicitly defined.
@@ -87,18 +97,41 @@ public final class Annotations {
                 // If casting to any, operand must be a variable name
                 logs.add(LogEntry.error(expression.getSource(), LogEntryCode.CAST_OPERAND_HAS_NO_ADDRESS));
             }
-        }
-
-//        else if(scope.isForProject()) {
-//            // Not allowed to cast to types other than any outside of project scope
-//            logs.add(LogEntry.error(expression.getSource(), LogEntryCode.EXPRESSION_IS_NOT_CONST));
-//        }
-
-        else {
+        } else if(scope.isForProject()) {
+            // Not allowed to cast to types other than any outside of project scope
+            logs.add(LogEntry.error(expression.getSource(), LogEntryCode.EXPRESSION_IS_NOT_CONST));
+        } else {
             // All other castings are valid if type being cast to is a subtype of type being cast from
-            TypeReference operandType = Objects.requireNonNull(getExpressionTypeInFavorOfHint(operand, targetType, scope, logs));
-            if(!isSubType(targetType, operandType)) {
-                logs.add(LogEntry.error(expression.getSource(), LogEntryCode.TYPE_MISMATCH));
+            @Nullable TypeReference operandType = getExpressionTypeInFavorOfHint(operand, targetType, scope, logs);
+            if(operandType == null) {
+                logs.add(LogEntry.error(expression.getSource(), LogEntryCode.NO_TYPE_INFORMATION));
+            } else {
+                if(!isSubType(targetType, operandType)) {
+                    logs.add(LogEntry.error(expression.getSource(), LogEntryCode.TYPE_MISMATCH));
+                }
+            }
+        }
+    }
+
+    public void visitBlockExpression(BlockExpression blockExpression, Scope parentScope, List<LogEntry> logs, @Nullable Type expectedReturnValue) {
+        Scope scope = new Scope(parentScope, "", false);
+
+        for(Expression statement : blockExpression.getStatements()) {
+            visitExpression(statement, scope, logs);
+
+            if(statement instanceof ReturnStatement returnStatement) {
+                if(expectedReturnValue == null) {
+                    logs.add(LogEntry.error(statement.getSource(),
+                            LogEntryCode.RETURNING_FROM_VOID_CONTEXT, "Cannot return from void", null));
+                } else {
+                    @Nullable Type returnType = Objects.requireNonNull(returnStatement.getReturnExpression().getType()).getType();
+                    if(returnType == null || !returnType.isSubTypeOf(expectedReturnValue)) {
+                        logs.add(LogEntry.error(statement.getSource(),
+                                LogEntryCode.TYPE_MISMATCH, String.format("Expression does not fulfil expected return type %s", expectedReturnValue.getName()), null));
+                    }
+                }
+            } else if(statement instanceof BlockExpression innerBlock) {
+                visitBlockExpression(innerBlock, scope, logs, expectedReturnValue);
             }
         }
     }
@@ -150,6 +183,80 @@ public final class Annotations {
                         checkExplicitCastIsValid(explicitCastExpression, scope, logs);
                     }
                 }
+                case TypePassExpression typePassExpression -> {
+                    @Nullable Type type = scope.resolveType(typePassExpression.getTypeReference().getName());
+                    if(type == null) {
+                        logs.add(LogEntry.error(expression.getSource(), LogEntryCode.NO_SUCH_SYMBOL));
+                    }
+
+                    typeReference = typePassExpression.getType();
+                }
+                case ReturnStatement returnStatement -> {
+                    visitExpression(returnStatement.getReturnExpression(), scope, logs);
+                    typeReference = returnStatement.getType();
+                }
+                case FunctionCallExpression functionCallExpression -> {
+                    Expression callableExpression = functionCallExpression.getCallableExpression();
+                    visitExpression(callableExpression, scope, logs);
+                    for(Argument argument: functionCallExpression.getArguments()) {
+                        visitExpression(argument.getExpression(), scope, logs);
+                    }
+
+                    @Nullable Type type = Optional.ofNullable(callableExpression.getType())
+                            .map(TypeReference::getType)
+                            .orElse(null);
+                    if(!(type instanceof CallableType callableType)) {
+                        logs.add(LogEntry.error(expression.getSource(), LogEntryCode.EXPRESSION_IS_NOT_CALLABLE));
+                    } else {
+                        callableCanBeCalledWithArguments(expression.getSource(), callableType,
+                                functionCallExpression.getArguments(), logs);
+
+                        typeReference = callableType.getReturnType();
+                    }
+                }
+                case VariableDeclaration variableDeclaration -> {
+                    NamedValueSymbol symbol = variableDeclaration.getNamedValueSymbol();
+                    boolean alreadyInScope = scope.nameAlreadyInScope(symbol.getName());
+                    if(alreadyInScope) {
+                        logs.add(LogEntry.error(expression.getSource(), LogEntryCode.SYMBOL_ALREADY_IN_SCOPE));
+                    } else {
+                        if(symbol.getType() == null) {
+                            inferVariableType(symbol, scope, logs);
+                        }
+
+                        if(symbol.getType() != null) {
+                            resolveVariableTypeReference(symbol, scope, logs);
+                            if(symbol.getValue() != null) {
+                                checkValueTypeIsVariableType(symbol, scope, logs);
+                            }
+                        }
+                    }
+
+                    scope.registerSymbol(symbol);
+                    typeReference = variableDeclaration.getType();
+                }
+                case AssignmentExpression assignmentExpression -> {
+                    @Nullable Symbol symbol = scope.resolveSymbol(assignmentExpression.getSymbolName());
+                    if(symbol == null) {
+                        boolean alreadyInScope = scope.nameAlreadyInScope(assignmentExpression.getSymbolName());
+                        if(alreadyInScope) {
+                            logs.add(LogEntry.error(expression.getSource(), LogEntryCode.TYPE_MISMATCH));
+                        } else {
+                            @Nullable TypeReference valueType = visitExpression(assignmentExpression.getValue(), scope, logs);
+                            if(valueType == null) {
+                                logs.add(LogEntry.error(expression.getSource(), LogEntryCode.VALUE_HAS_NO_TYPE));
+                            } else if(
+                                    !getExpressionTypeInFavorOfHint(assignmentExpression.getValue(), symbol.getType(), scope, logs)
+                                            .equals(symbol.getType().getName())) {
+                                logs.add(LogEntry.error(expression.getSource(), LogEntryCode.TYPE_MISMATCH));
+                            } else {
+                                typeReference = symbol.getType();
+                            }
+                        }
+                    } else {
+                        logs.add(LogEntry.error(expression.getSource(), LogEntryCode.SYMBOL_ALREADY_IN_SCOPE));
+                    }
+                }
                 default -> {
                 }
             }
@@ -162,16 +269,20 @@ public final class Annotations {
     }
 
     public void addSymbolsToScope(CompilationUnit compilationUnit, Scope scope, List<LogEntry> logs) {
-        for(Import importItem : compilationUnit.getImports()) {
-            addSymbolsToScope(Objects.requireNonNull(importItem.getCompilationUnit()), scope, logs);
-        }
+        if(!compilationUnit.isAddedToGlobalScope()) {
+            for(Import importItem : compilationUnit.getImports()) {
+                addSymbolsToScope(Objects.requireNonNull(importItem.getCompilationUnit()), scope, logs);
+            }
 
-        for(Symbol symbol : compilationUnit.getSymbols()) {
-            addSymbolToScope(symbol, scope, logs);
-        }
+            for(Symbol symbol : compilationUnit.getSymbols()) {
+                addSymbolToScope(symbol, scope, logs);
+            }
 
-        for(Type type : compilationUnit.getTypes()) {
-            addTypeToScope(type, scope, logs);
+            for(Type type : compilationUnit.getTypes()) {
+                addTypeToScope(type, scope, logs);
+            }
+
+            compilationUnit.setAddedToGlobalScope(true);
         }
     }
 
@@ -238,5 +349,34 @@ public final class Annotations {
                 return scope.resolveType("int8");
             }
         }
+    }
+
+    private void callableCanBeCalledWithArguments(Source source, CallableType callableType, List<Argument> arguments, List<LogEntry> logs) {
+        int minimumArgumentCount = Math.min(arguments.size(), callableType.getParameters().size());
+        for(int index = 0; index < minimumArgumentCount; index++) {
+            Argument argument = arguments.get(index);
+            Symbol parameter = callableType.getParameters().get(index);
+
+            Type argumentType = Objects.requireNonNull(Objects.requireNonNull(argument.getExpression().getType()).getType());
+            Type parameterType = Objects.requireNonNull(parameter.getType().getType());
+
+            if(!isSubType(TypeReference.ofType(parameterType), TypeReference.ofType(argumentType))) {
+                logs.add(LogEntry.error(
+                        source, LogEntryCode.TYPE_MISMATCH,
+                        String.format("Cannot assign %s to %s", argumentType.getName(), parameterType.getName()),
+                        null));
+            }
+        }
+
+        if(arguments.size() < callableType.getParameters().size()) {
+            logs.add(LogEntry.error(
+                    source, LogEntryCode.NOT_ENOUGH_ARGUMENTS_TO_FUNCTION,
+                    String.format("Not enough arguments to %s", callableType.getName()),
+                    null));
+        } else if(!callableType.isVarArgs() && arguments.size() > callableType.getParameters().size()) {
+            logs.add(LogEntry.error(
+                    source, LogEntryCode.TOO_MANY_ARGUMENTS_TO_FUNCTIONS,
+                    String.format("Too many arguments to %s", callableType.getName()),
+                    null));        }
     }
 }

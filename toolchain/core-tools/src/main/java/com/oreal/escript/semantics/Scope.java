@@ -43,8 +43,7 @@ public class Scope {
     }
 
     public Scope registerType(Type type) throws IllegalStateException {
-        // TODO: Do not register type if there is already a symbol with same name
-        if(resolveType(type.getName()) == null) {
+        if(!nameAlreadyInScope(type.getName())) {
             types.add(type);
         } else {
             throw new IllegalStateException("Type already present in scope");
@@ -54,7 +53,7 @@ public class Scope {
     }
 
     public Scope registerSymbol(Symbol symbol) throws IllegalStateException {
-        if(resolveSymbol(symbol.getName()) == null) {
+        if(!nameAlreadyInScope(symbol.getName())) {
             symbols.add(symbol);
         } else {
             throw new IllegalStateException("Symbol already present in scope");
@@ -89,6 +88,10 @@ public class Scope {
                                 .orElse(null)
                 );
 
+    }
+
+    public boolean nameAlreadyInScope(String name) {
+        return resolveType(name) != null || resolveSymbol(name) != null;
     }
 
 

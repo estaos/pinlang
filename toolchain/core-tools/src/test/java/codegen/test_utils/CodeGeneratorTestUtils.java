@@ -82,9 +82,9 @@ public class CodeGeneratorTestUtils {
                 List.of(), null);
 
         var typeReference = new TypeReference("myFunction_type", callableType, 0, List.of());
-        var callableCode = new CallableCode("myFunction_code", source, callableType, new BlockExpression(List.of()));
+        var callableCode = new CallableCode("myFunction_code", source, callableType, new BlockExpression(null, List.of()));
         var functionSymbol = new NamedValueSymbol("myFunction", typeReference, source, true,
-                false, "", new CallableCodeExpression(callableCode), false);
+                false, "", new CallableCodeExpression(null, callableCode), false);
 
         return new CompilationUnit(new File("main.escript"), List.of(), List.of(functionSymbol),
                 List.of(callableType), List.of(callableCode));
@@ -108,9 +108,9 @@ public class CodeGeneratorTestUtils {
         );
 
         functionTypeReference.setType(callableType);
-        var callableCode = new CallableCode("myFunction_code", source, callableType, new BlockExpression(List.of()));
+        var callableCode = new CallableCode("myFunction_code", source, callableType, new BlockExpression(null, List.of()));
         var functionSymbol = new NamedValueSymbol("myFunction", functionTypeReference, source, true,
-                false, "", new CallableCodeExpression(callableCode), false);
+                false, "", new CallableCodeExpression(null, callableCode), false);
 
         var symbols = List.of(functionSymbol);
         return new CompilationUnit(new File("main.escript"), List.of(), symbols,

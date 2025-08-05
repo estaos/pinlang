@@ -24,9 +24,21 @@ public class Main {
             var parser = new Parser(compilationUnitParser);
             var astAnnotator = AstAnnotator.getDefaultAnnotator();
 
-            @Nullable CompilationUnit compilationUnit = parser.parse(new java.io.File(args[0]));
-            if(compilationUnit != null) {
-                astAnnotator.annotate(compilationUnit, parser.getParserLogs());
+            try {
+                @Nullable CompilationUnit compilationUnit = parser.parse(new java.io.File(args[0]));
+                if(compilationUnit != null && !LogEntry.containsError(parser.getParserLogs())) {
+                    astAnnotator.annotate(compilationUnit, parser.getParserLogs());
+                }
+
+                if(!LogEntry.containsError(parser.getParserLogs())) {
+                    List<File> cFiles = new ClangCodeGenerator().generateCode(compilationUnit);
+                    saveFiles(cFiles);
+                } else {
+                    throw new RuntimeException("Error compiling files ... see errors above.");
+                }
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+                e.printStackTrace();
             }
 
             for (LogEntry entry : parser.getParserLogs()) {
@@ -35,13 +47,6 @@ public class Main {
                 } else {
                     System.err.println(getLogEntryMessage(entry));
                 }
-            }
-
-            if(!LogEntry.containsError(parser.getParserLogs())) {
-                List<File> cFiles = new ClangCodeGenerator().generateCode(compilationUnit);
-                saveFiles(cFiles);
-            } else {
-                throw new RuntimeException("Error compiling files ... see errors above.");
             }
         }
     }

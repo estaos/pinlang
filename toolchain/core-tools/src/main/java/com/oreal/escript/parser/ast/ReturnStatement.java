@@ -10,6 +10,11 @@ import lombok.Setter;
 public class ReturnStatement extends Expression {
     private Expression returnExpression;
 
+    public ReturnStatement(Source source, Expression returnExpression) {
+        setSource(source);
+        this.returnExpression = returnExpression;
+    }
+
     @Override
     public boolean isConstExpression() {
         return false;

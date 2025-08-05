@@ -49,3 +49,23 @@ mvn exec:java -Dexec.args="typedef.escript" --file ../../../pom.xml
 clang typedef.c
 ./a
 cd ../../
+
+# Functions hello world
+cd ./regression/functions
+rm a.*
+rm *.h
+rm *.c
+mvn exec:java -Dexec.args="hello_world.escript" --file ../../../pom.xml
+clang hello_world.c
+./a
+cd ../../
+
+# Functions scan input
+cd ./regression/functions
+rm a.*
+rm *.h
+rm *.c
+mvn exec:java -Dexec.args="scan_input.escript" --file ../../../pom.xml
+clang scan_input.c
+./a
+cd ../../

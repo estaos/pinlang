@@ -10,6 +10,11 @@ import lombok.EqualsAndHashCode;
 public class CharLiteralExpression extends Expression {
     private char character;
 
+    public CharLiteralExpression(Source source, char character) {
+        setSource(source);
+        this.character = character;
+    }
+
     @Override
     public boolean isConstExpression() {
         return true;

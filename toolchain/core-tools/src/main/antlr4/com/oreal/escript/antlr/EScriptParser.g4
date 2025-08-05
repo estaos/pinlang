@@ -36,20 +36,49 @@ variableDeclarationWithInitialisation
 expression
 // TODO: Come back to add literals and all other types of expressions. Also includes array expressions.
     : primaryExpression explicitTypeCastSigil?
+    | functionCallExpression explicitTypeCastSigil?
     ;
 
 primaryExpression
     : numberLiteralExpression
     | charSequenceExpression
+    | typePassExpression
     | symbolValueExpression
+    | booleanLiteralExpression
+    | charLiteralExpression
+    | assignmentExpression
+    ;
+
+statement
+    : functionCallStatement
+    | returnStatement
+    | variableDeclarationStatement
+    | statementsBlock
+    | assignmentStatement
+    ;
+
+functionCallStatement
+    : functionCallExpression SC
+    ;
+
+returnStatement
+    : RETURN_ expression SC
+    ;
+
+variableDeclarationStatement
+    : variableDeclaration
+    ;
+
+assignmentStatement
+    : assignmentExpression SC
+    ;
+
+statementsBlock
+    : OBC statement* CBC
     ;
 
 numberLiteralExpression
     : NUMBER
-    ;
-
-symbolValueExpression
-    : IDENTIFIER
     ;
 
 charSequenceExpression
@@ -63,6 +92,31 @@ singleLineCharSequenceExpression
 
 multilineCharSequenceExpression
     : MULTI_LINE_STRING
+    ;
+
+typePassExpression
+    : HASH IDENTIFIER
+    ;
+
+symbolValueExpression
+    : IDENTIFIER
+    ;
+
+booleanLiteralExpression
+    : TRUE_ | FALSE_
+    ;
+
+charLiteralExpression
+    : CHAR
+    ;
+
+assignmentExpression
+    : variableName EQ (primaryExpression | functionCallExpression)
+    ;
+
+functionCallExpression
+    : primaryExpression OP functionCallArgumentList? CP
+    | functionCallExpression OP functionCallArgumentList? CP
     ;
 
 explicitTypeCastSigil
@@ -99,20 +153,20 @@ functionHeader
     ;
 
 functionParameterList
-    : functionParameter (C functionParameter)*
+    : functionParameter (C functionParameter)* (C functionVarArgsIndicator)?
+    | functionVarArgsIndicator
     ;
 
 functionParameter
     : variableName CO typeReference
     ;
 
-functionReturnType
-    : typeReference
+functionCallArgumentList
+    : expression (C expression)*
     ;
 
-statementsBlock
-// TODO: Add statements to function
-    : OBC CBC
+functionReturnType
+    : typeReference
     ;
 
 arrayIndexingWithOptionalIndex
@@ -127,4 +181,8 @@ importPath
 
 documentationCommentLines
     : MULTI_LINE_COMMENT_LINE+
+    ;
+
+functionVarArgsIndicator
+    : DDD
     ;

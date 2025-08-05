@@ -28,4 +28,18 @@ public class CompilationUnit {
         this.types = types;
         this.callableCodeBlocks = List.of();
     }
+
+    public CompilationUnit(File source,
+                           List<Import> imports,
+                           List<? extends Symbol> symbols,
+                           List<? extends Type> types,
+                           List<CallableCode> callableCodeBlocks) {
+        this.source = source;
+        this.imports = imports;
+        this.symbols = symbols;
+        this.types = types;
+        this.callableCodeBlocks = callableCodeBlocks;
+    }
+
+    private boolean addedToGlobalScope = false;
 }

@@ -48,7 +48,9 @@ import com.oreal.escript.parser.ast.Symbol;
 import com.oreal.escript.parser.ast.SymbolValueExpression;
 import com.oreal.escript.parser.ast.Type;
 import com.oreal.escript.parser.ast.CallableCodeExpression;
+import com.oreal.escript.parser.ast.TypePassExpression;
 import com.oreal.escript.parser.ast.TypeReference;
+import com.oreal.escript.parser.ast.VariableDeclaration;
 import com.oreal.escript.parser.ast.WhileLoop;
 import com.oreal.escript.parser.logging.LogEntry;
 import com.oreal.escript.parser.logging.LogEntryCode;
@@ -255,9 +257,10 @@ public class ClangCodeGenerator implements  CodeGenerator {
                 return String.format("typedef %s (*%s)(%s);\n",
                         returnType, callableType.getName(), parameterList);
             } else {
-                return callableCode.map(code -> String.format("typedef %s (*%s)(%s);\n%s %s(%s);\n",
-                                returnType, callableType.getName(), parameterList,
-                                returnType, code.getName(), parameterList))
+                String varArgs = callableType.isVarArgs() ? ", ...": "";
+                return callableCode.map(code -> String.format("typedef %s (*%s)(%s%s);\n%s %s(%s%s);\n",
+                                returnType, callableType.getName(), parameterList, varArgs,
+                                returnType, code.getName(), parameterList, varArgs))
                         .orElse("");
             }
 
@@ -379,10 +382,11 @@ public class ClangCodeGenerator implements  CodeGenerator {
         } else if (expression instanceof FunctionCallExpression functionCallExpression) {
             String arguments = functionCallExpression.getArguments().stream().map(Argument::getExpression)
                     .map(this::getCExpression)
-                    .map(cExpression -> String.format("(%s)", cExpression))
+                    .map(cExpression -> String.format("%s", cExpression))
                     .collect(Collectors.joining(", "));
 
-            return String.format("%s(%s)", functionCallExpression.getFunctionName(), arguments);
+            String callableCExpression = getCExpression(functionCallExpression.getCallableExpression());
+            return String.format("%s(%s)", callableCExpression, arguments);
         } else if(expression instanceof DoWhileLoop doWhileLoop) {
             String statements = getCExpression(doWhileLoop.getBlockExpression());
             String booleanCheck = getCExpression(doWhileLoop.getBooleanExpression());
@@ -428,13 +432,13 @@ public class ClangCodeGenerator implements  CodeGenerator {
             String targetCType = getCTypeName(targetTypeName) + asterisks(targetType.getArrayDimensions());
 
             if(targetTypeName.equals("any")) {
-                if(operandType.getArrayDimensions() > 0) {
+                if(operandType.getArrayDimensions() > 0 || operandType.getType() instanceof  CallableType) {
                     return String.format("(%s)(%s)", targetCType, operandCExpression);
                 } else {
                     return String.format("(&%s)", operandCExpression);
                 }
             } else if(operandType.getName().equals("any")) {
-                if(targetType.getArrayDimensions() > 0) {
+                if(targetType.getArrayDimensions() > 0 || targetType.getType() instanceof CallableType) {
                     return String.format("(%s)(%s)", targetCType, operandCExpression);
                 } else {
                     return String.format("*((%s*)(%s))", targetCType, operandCExpression);
@@ -442,6 +446,10 @@ public class ClangCodeGenerator implements  CodeGenerator {
             } else {
                 return String.format("(%s)(%s)", targetCType, operandCExpression);
             }
+        } else if(expression instanceof TypePassExpression typePassExpression) {
+            return typePassExpression.getTypeReference().getName();
+        } else if(expression instanceof VariableDeclaration variableDeclaration) {
+            return getSymbolDeclaration(variableDeclaration.getNamedValueSymbol(), false);
         }else {
             logs.add(LogEntry.warning(expression.getSource(), LogEntryCode.UNKNOWN_EXPRESSION));
             return "";

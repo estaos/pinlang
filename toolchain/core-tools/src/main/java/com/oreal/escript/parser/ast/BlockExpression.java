@@ -11,7 +11,8 @@ import java.util.List;
 public class BlockExpression extends Expression {
     private List<Expression> statements;
 
-    public BlockExpression(List<Expression> statements) {
+    public BlockExpression(Source source, List<Expression> statements) {
+        setSource(source);
         this.statements = statements;
     }
 

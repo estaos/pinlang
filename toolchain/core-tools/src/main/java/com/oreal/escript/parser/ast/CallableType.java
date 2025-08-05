@@ -22,6 +22,20 @@ public class CallableType extends Type {
         this.returnType = returnType;
     }
 
+    public CallableType(
+            Source source,
+            String identifier,
+            List<TypeParameter> typeParameters,
+            String documentationMarkdown,
+            List<? extends Symbol> parameters,
+            @Nullable TypeReference returnType,
+            boolean isVarArgs) {
+        super(source, identifier, typeParameters, documentationMarkdown, List.of());
+        this.parameters = parameters;
+        this.returnType = returnType;
+        this.isVarArgs = isVarArgs;
+    }
+
     /// These are the parameters it should be called with.
     ///
     /// It is the number and type of parameters that differentiate callable types
@@ -29,6 +43,8 @@ public class CallableType extends Type {
     private List<? extends Symbol> parameters;
 
     @Nullable TypeReference returnType;
+
+    private boolean isVarArgs = false;
 
     @Override
     public boolean isSubTypeOf(Type other) {

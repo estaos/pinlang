@@ -8,6 +8,11 @@ import lombok.Data;
 public class SymbolValueExpression extends Expression {
     private String symbolName;
 
+    public SymbolValueExpression(Source source, String symbolName) {
+        setSource(source);
+        this.symbolName = symbolName;
+    }
+
     @Override
     public boolean isConstExpression() {
         return true;

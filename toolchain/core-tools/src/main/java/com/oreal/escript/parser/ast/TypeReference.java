@@ -36,4 +36,12 @@ public class TypeReference {
     public static TypeReference ofType(Type type, int arrayDimensions) {
         return new TypeReference(type.getName(), type, arrayDimensions, List.of());
     }
+
+    public static TypeReference ofType(String typeName) {
+        return new TypeReference(typeName, null, 0, List.of());
+    }
+
+    public static TypeReference ofType(String typeName, int arrayDimensions) {
+        return new TypeReference(typeName, null, arrayDimensions, List.of());
+    }
 }

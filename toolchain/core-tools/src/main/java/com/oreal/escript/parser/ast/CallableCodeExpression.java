@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 public class CallableCodeExpression extends Expression {
     private final CallableCode callableCode;
-    public CallableCodeExpression(CallableCode callableCode) {
+    public CallableCodeExpression(Source source, CallableCode callableCode) {
         super(TypeReference.ofType(callableCode.getType()));
         this.callableCode = callableCode;
     }

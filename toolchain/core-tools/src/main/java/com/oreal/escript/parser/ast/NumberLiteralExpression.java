@@ -8,6 +8,11 @@ import lombok.Data;
 public class NumberLiteralExpression extends Expression {
     private String numberAsString;
 
+    public NumberLiteralExpression(Source source, String numberAsString) {
+        setSource(source);
+        this.numberAsString = numberAsString;
+    }
+
     public boolean isDecimal() {
         return numberAsString.contains(".")
                 || numberAsString.contains("E")

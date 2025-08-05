@@ -1,5 +1,6 @@
 package com.oreal.escript.parser.ast;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,12 +8,15 @@ import java.util.List;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class FunctionCallExpression extends Expression {
     private List<Argument> arguments;
-    private String functionName;
+    private Expression callableExpression;
 
-    public FunctionCallExpression() {
-        super(null);
+    public FunctionCallExpression(Source source, List<Argument> arguments, Expression callableExpression) {
+        setSource(source);
+        this.arguments = arguments;
+        this.callableExpression = callableExpression;
     }
 
     @Override
