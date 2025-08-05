@@ -129,7 +129,7 @@ public class Scope {
         var int8Type = new Type(null, "int8", List.of(), "", List.of(int16Type));
 
 
-        var charType = new Type(null, "char", List.of(), "", List.of());
+        var charType = new Type(null, "char", List.of(), "", List.of(int8Type));
         var booleanType = new Type(null, "boolean", List.of(), "", List.of());
         var anyType = new Type(null, "any", List.of(), "", List.of());
 

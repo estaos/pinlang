@@ -22,6 +22,18 @@ function main(): int32 {
         // Should not execute
         assert(0);
     }
+
+    var a = 5;
+    var b = 512;
+
+    if(a > b) {
+        // Should never happen
+        assert(0);
+    }
+
+    if(a == 5 && b == 512) {
+        printf("a==5 and b==512\n");
+    }
     
     return 0;
 }

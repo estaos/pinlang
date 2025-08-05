@@ -2,18 +2,29 @@ package com.oreal.escript.semantics.filters;
 
 import com.oreal.escript.parser.ast.Argument;
 import com.oreal.escript.parser.ast.AssignmentExpression;
+import com.oreal.escript.parser.ast.BinaryOperatorExpression;
+import com.oreal.escript.parser.ast.BitwiseNotExpression;
 import com.oreal.escript.parser.ast.BlockExpression;
 import com.oreal.escript.parser.ast.BooleanLiteralExpression;
 import com.oreal.escript.parser.ast.CallableCode;
 import com.oreal.escript.parser.ast.CallableType;
 import com.oreal.escript.parser.ast.CharLiteralExpression;
 import com.oreal.escript.parser.ast.CharSequenceLiteralExpression;
+import com.oreal.escript.parser.ast.CompareEqualToExpression;
+import com.oreal.escript.parser.ast.CompareGreaterThanEqualToExpression;
+import com.oreal.escript.parser.ast.CompareGreaterThanExpression;
+import com.oreal.escript.parser.ast.CompareLessThanEqualToExpression;
+import com.oreal.escript.parser.ast.CompareLessThanExpression;
+import com.oreal.escript.parser.ast.CompareNotEqualToExpression;
 import com.oreal.escript.parser.ast.CompilationUnit;
 import com.oreal.escript.parser.ast.ExplicitCastExpression;
 import com.oreal.escript.parser.ast.Expression;
 import com.oreal.escript.parser.ast.FunctionCallExpression;
 import com.oreal.escript.parser.ast.IfStatement;
 import com.oreal.escript.parser.ast.Import;
+import com.oreal.escript.parser.ast.LogicalAndExpression;
+import com.oreal.escript.parser.ast.LogicalNotExpression;
+import com.oreal.escript.parser.ast.LogicalOrExpression;
 import com.oreal.escript.parser.ast.NamedValueSymbol;
 import com.oreal.escript.parser.ast.NullExpression;
 import com.oreal.escript.parser.ast.NumberLiteralExpression;
@@ -289,6 +300,38 @@ public final class Annotations {
                         logs.add(LogEntry.error(expression.getSource(), LogEntryCode.SYMBOL_ALREADY_IN_SCOPE));
                     }
                 }
+                case LogicalNotExpression logicalNotExpression -> {
+                    expectBoolean(logicalNotExpression.getOperand(), scope, logs);
+                    typeReference = logicalNotExpression.getType();
+                }
+                case BitwiseNotExpression bitwiseNotExpression -> {
+                    expectNumber(bitwiseNotExpression.getOperand(), scope, logs);
+                    typeReference = bitwiseNotExpression.getType();
+                }
+                case BinaryOperatorExpression binaryOperatorExpression -> {
+                    if(binaryOperatorExpression instanceof LogicalAndExpression
+                        || binaryOperatorExpression instanceof LogicalOrExpression) {
+                        expectBoolean(binaryOperatorExpression.getLeft(), scope, logs);
+                        expectBoolean(binaryOperatorExpression.getRight(), scope, logs);
+                    } else {
+                        expectNumber(binaryOperatorExpression.getLeft(), scope, logs);
+                        expectNumber(binaryOperatorExpression.getRight(), scope, logs);
+                    }
+
+                    if(binaryOperatorExpression instanceof CompareLessThanExpression
+                        || binaryOperatorExpression instanceof CompareLessThanEqualToExpression
+                        || binaryOperatorExpression instanceof CompareEqualToExpression
+                        || binaryOperatorExpression instanceof CompareGreaterThanExpression
+                        || binaryOperatorExpression instanceof CompareGreaterThanEqualToExpression
+                        || binaryOperatorExpression instanceof CompareNotEqualToExpression
+                        || binaryOperatorExpression instanceof LogicalOrExpression
+                        || binaryOperatorExpression instanceof LogicalAndExpression) {
+                        Type booleanType = scope.resolveType("boolean");
+                        typeReference = TypeReference.ofType(booleanType);
+                    } else {
+                        typeReference = getNumberBinaryExpressionType(binaryOperatorExpression, scope);
+                    }
+                }
                 default -> {
                 }
             }
@@ -385,10 +428,43 @@ public final class Annotations {
 
     private void expectBoolean(Expression expression, Scope scope, List<LogEntry> logs) {
         @Nullable TypeReference expressionType = visitExpression(expression, scope, logs);
-        if(expressionType == null || !expressionType.getName().equals("boolean")) {
+        if(expressionType == null
+                || expressionType.getArrayDimensions() > 0
+                || !expressionType.getName().equals("boolean")) {
             logs.add(LogEntry.error(expression.getSource(), LogEntryCode.EXPRESSION_IS_NOT_BOOLEAN));
         }
     }
+
+    private void expectNumber(Expression expression, Scope scope, List<LogEntry> logs) {
+        @Nullable TypeReference expressionType = visitExpression(expression, scope, logs);
+        if(expressionType == null
+                || expressionType.getArrayDimensions() > 0
+                || !List.of("double", "float", "int512", "int256", "int128",
+                "int64", "int32", "int16", "int8", "char").contains(expressionType.getName())) {
+            logs.add(LogEntry.error(expression.getSource(), LogEntryCode.EXPRESSION_IS_NOT_NUMBER));
+        }
+    }
+
+    private @Nullable TypeReference getNumberBinaryExpressionType(BinaryOperatorExpression expression, Scope scope) {
+        @Nullable TypeReference leftType = expression.getLeft().getType();
+        @Nullable TypeReference rightType = expression.getRight().getType();
+
+        Type doubleType = Objects.requireNonNull(scope.resolveType("double"));
+        Type int64Type = Objects.requireNonNull(scope.resolveType("int64"));
+
+        if(leftType == null || leftType.getType() == null || rightType == null || rightType.getType() == null) {
+            return null;
+        } else if(leftType.getType().isSubTypeOf(rightType.getType())) {
+            return rightType;
+        } else if(rightType.getType().isSubTypeOf(leftType.getType())) {
+            return leftType;
+        } else if(leftType.getType().isSubTypeOf(doubleType) || rightType.getType().isSubTypeOf(doubleType)) {
+            return TypeReference.ofType(doubleType);
+        } else {
+            return TypeReference.ofType(int64Type);
+        }
+    }
+
 
     private void callableCanBeCalledWithArguments(Source source, CallableType callableType, List<Argument> arguments, List<LogEntry> logs) {
         int minimumArgumentCount = Math.min(arguments.size(), callableType.getParameters().size());

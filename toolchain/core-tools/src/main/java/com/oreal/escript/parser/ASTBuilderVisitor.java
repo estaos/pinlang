@@ -35,6 +35,7 @@ import com.oreal.escript.parser.ast.IfStatement;
 import com.oreal.escript.parser.ast.Import;
 import com.oreal.escript.parser.ast.LogicalAndExpression;
 import com.oreal.escript.parser.ast.LogicalNotExpression;
+import com.oreal.escript.parser.ast.LogicalOrExpression;
 import com.oreal.escript.parser.ast.ModulusExpression;
 import com.oreal.escript.parser.ast.MultiplyExpression;
 import com.oreal.escript.parser.ast.NamedValueSymbol;
@@ -582,6 +583,8 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
             expression = new BitwiseOrExpression(left, right);
         } else if (ctx.AA() != null) {
             expression = new LogicalAndExpression(left, right);
+        } else if(ctx.PP() != null) {
+            expression = new LogicalOrExpression(left, right);
         } else {
             throw new UnsupportedOperationException("Cannot parse binary operator " + ctx);
         }

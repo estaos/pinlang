@@ -58,6 +58,7 @@ expression2
     | expression2 CIR expression2
     | expression2 P expression2
     | expression2 AA expression2
+    | expression2 PP expression2
     | variableName EQ expression2
     | OP expression2 CP // In brackets
     | primaryExpression2
