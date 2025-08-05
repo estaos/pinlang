@@ -37,16 +37,23 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-@AllArgsConstructor
 public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
     /// The file being parsed
     private final File file;
+    private List<FunctionDefinition> pendingFunctionDefinitions = new LinkedList<>();
 
     public static final String CALLABLE_TYPE_SIGIL = "_type__";
     public static final String CALLABLE_CODE_SIGIL = "_code__";
+
+    public ASTBuilderVisitor(File file) {
+        this.file = file;
+    }
 
     @Override
     public CompilationUnit visitCompilationUnit(EScriptParser.CompilationUnitContext ctx) {
@@ -58,7 +65,10 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
         List<Type> types = new LinkedList<>(ctx.functionTypeDef().stream().map(this::visitFunctionTypeDef).toList());
         List<CallableCode> callableCodeBlocks = new LinkedList<>();
 
-        List<FunctionDefinition> functionDefinitions = ctx.functionDefinition().stream().map(this::visitFunctionDefinition).toList();
+        List<FunctionDefinition> functionDefinitions = new LinkedList<>();
+        functionDefinitions.addAll(ctx.functionDefinition().stream().map(this::visitFunctionDefinition).toList());
+        functionDefinitions.addAll(pendingFunctionDefinitions);
+
         for(FunctionDefinition functionDefinition : functionDefinitions) {
             types.add(functionDefinition.callableType);
             callableCodeBlocks.add(functionDefinition.callableCode);
@@ -132,8 +142,10 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
         Expression expression;
         if(ctx.primaryExpression() != null) {
             expression = visitPrimaryExpression(ctx.primaryExpression());
-        } else {
+        } else if(ctx.functionCallExpression() != null) {
             expression = visitFunctionCallExpression(ctx.functionCallExpression());
+        } else {
+            expression = visitAnonymousFunctionExpression(ctx.anonymousFunctionExpression());
         }
 
         if(ctx.explicitTypeCastSigil() != null) {
@@ -285,6 +297,19 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
     }
 
     @Override
+    public SymbolValueExpression visitAnonymousFunctionExpression(EScriptParser.AnonymousFunctionExpressionContext ctx) {
+        FunctionDefinition functionDefinition;
+        if(ctx.anonymousFunctionDefinition() != null) {
+            functionDefinition = visitAnonymousFunctionDefinition(ctx.anonymousFunctionDefinition());
+        } else {
+            functionDefinition = visitLambdaDefinition(ctx.lambdaDefinition());
+        }
+
+        pendingFunctionDefinitions.add(functionDefinition);
+        return new SymbolValueExpression(getNodeSource(file, ctx), Objects.requireNonNull(functionDefinition.symbol()).getName());
+    }
+
+    @Override
     public TypeReference visitExplicitTypeCastSigil(EScriptParser.ExplicitTypeCastSigilContext ctx) {
         return visitTypeReference(ctx.typeReference());
     }
@@ -325,29 +350,40 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
     @Override
     public FunctionDefinition visitFunctionDefinition(EScriptParser.FunctionDefinitionContext ctx) {
         String symbolName = visitVariableName(ctx.functionHeader().variableName());
-        String typeName = String.format("%s_%s", symbolName, CALLABLE_TYPE_SIGIL);
         CallableType callableType = visitFunctionHeader(ctx.functionHeader());
-        callableType.setName(typeName);
+        BlockExpression blockExpression = visitStatementsBlock(ctx.statementsBlock());
+        Source source = getNodeSource(file, ctx);
 
-        boolean isMain = symbolName.equals("main");
-        String callableBlockName = isMain ? symbolName : String.format("%s_%s", symbolName, CALLABLE_CODE_SIGIL);
-        CallableCode callableCode = new CallableCode(
-                callableBlockName,
-                callableType.getSource(), callableType, visitStatementsBlock(ctx.statementsBlock()));
+        return getFunctionDefinition(source, symbolName, callableType, blockExpression);
+    }
 
-        NamedValueSymbol symbol = new NamedValueSymbol(
-                symbolName,
-                TypeReference.ofType(callableType),
-                callableCode.getSource(),
-                true, false, "",
-                new CallableCodeExpression(getNodeSource(file, ctx), callableCode), false
-        );
+    @Override
+    public FunctionDefinition visitAnonymousFunctionDefinition(EScriptParser.AnonymousFunctionDefinitionContext ctx) {
+        BlockExpression blockExpression = visitStatementsBlock(ctx.statementsBlock());
+        CallableType callableType = visitAnonymousFunctionHeader(ctx.anonymousFunctionHeader());
+        String symbolName = getRandomSymbolName();
+        Source source = getNodeSource(file, ctx);
 
-        if(isMain) {
-            return new FunctionDefinition(callableType, callableCode, null);
+        return getFunctionDefinition(source, symbolName, callableType, blockExpression);
+    }
+
+    @Override
+    public FunctionDefinition visitLambdaDefinition(EScriptParser.LambdaDefinitionContext ctx) {
+        CallableType callableType = visitAnonymousFunctionHeader(ctx.anonymousFunctionHeader());
+        String symbolName = getRandomSymbolName();
+        Source source = getNodeSource(file, ctx);
+
+        Expression expression;
+        if(ctx.primaryExpression() != null) {
+            expression = visitPrimaryExpression(ctx.primaryExpression());
         } else {
-            return new FunctionDefinition(callableType, callableCode, symbol);
+            expression = visitFunctionCallExpression(ctx.functionCallExpression());
         }
+
+        BlockExpression blockExpression = new BlockExpression(source, List.of(
+                new ReturnStatement(source, expression)
+        ));
+        return getFunctionDefinition(source, symbolName, callableType, blockExpression);
     }
 
     @Override
@@ -357,10 +393,24 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
         List<NamedValueSymbol> parameters = List.of();
         if(ctx.functionParameterList() != null) {
             parameters = visitFunctionParameterList(ctx.functionParameterList());
+            isVarArgs = ctx.functionParameterList().functionVarArgsIndicator() != null;
+        }
 
-            if(ctx.functionParameterList().functionVarArgsIndicator() != null) {
-                isVarArgs = true;
-            }
+        @Nullable TypeReference returnType = Optional.ofNullable(ctx.functionReturnType())
+                .map(this::visitFunctionReturnType)
+                .orElse(null);
+
+        return new CallableType(source, "", List.of(), "", parameters, returnType, isVarArgs);
+    }
+
+    @Override
+    public CallableType visitAnonymousFunctionHeader(EScriptParser.AnonymousFunctionHeaderContext ctx) {
+        Source source = getNodeSource(file, ctx);
+        boolean isVarArgs = false;
+        List<NamedValueSymbol> parameters = List.of();
+        if(ctx.functionParameterList() != null) {
+            parameters = visitFunctionParameterList(ctx.functionParameterList());
+            isVarArgs = ctx.functionParameterList().functionVarArgsIndicator() != null;
         }
 
         @Nullable TypeReference returnType = Optional.ofNullable(ctx.functionReturnType())
@@ -459,6 +509,35 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
 
         Path importPath = Path.of(parent, visitImportPath(importPathCtx));
         return importPath.toFile();
+    }
+
+    private FunctionDefinition getFunctionDefinition(Source source, String symbolName, CallableType callableType, BlockExpression blockExpression) {
+        String typeName = String.format("%s_%s", symbolName, CALLABLE_TYPE_SIGIL);
+        callableType.setName(typeName);
+
+        boolean isMain = symbolName.equals("main");
+        String callableBlockName = isMain ? symbolName : String.format("%s_%s", symbolName, CALLABLE_CODE_SIGIL);
+        CallableCode callableCode = new CallableCode(
+                callableBlockName,
+                callableType.getSource(), callableType, blockExpression);
+
+        NamedValueSymbol symbol = new NamedValueSymbol(
+                symbolName,
+                TypeReference.ofType(callableType),
+                callableCode.getSource(),
+                true, false, "",
+                new CallableCodeExpression(source, callableCode), false
+        );
+
+        if(isMain) {
+            return new FunctionDefinition(callableType, callableCode, null);
+        } else {
+            return new FunctionDefinition(callableType, callableCode, symbol);
+        }
+    }
+
+    private String getRandomSymbolName() {
+        return String.format("temp_%s", UUID.randomUUID().toString().replaceAll("-", "_"));
     }
 
     public record FunctionDefinition(CallableType callableType, CallableCode callableCode, @Nullable NamedValueSymbol symbol) {}

@@ -37,6 +37,7 @@ expression
 // TODO: Come back to add literals and all other types of expressions. Also includes array expressions.
     : primaryExpression explicitTypeCastSigil?
     | functionCallExpression explicitTypeCastSigil?
+    | anonymousFunctionExpression explicitTypeCastSigil?
     ;
 
 primaryExpression
@@ -119,6 +120,11 @@ functionCallExpression
     | functionCallExpression OP functionCallArgumentList? CP
     ;
 
+anonymousFunctionExpression
+    : anonymousFunctionDefinition
+    | lambdaDefinition
+    ;
+
 explicitTypeCastSigil
     : AS_ typeReference
     ;
@@ -148,8 +154,20 @@ functionDefinition
     : functionHeader statementsBlock
     ;
 
+anonymousFunctionDefinition
+    : anonymousFunctionHeader statementsBlock
+    ;
+
+lambdaDefinition
+    : anonymousFunctionHeader EG (primaryExpression | functionCallExpression)
+    ;
+
 functionHeader
     : FUNCTION_ variableName OP functionParameterList? CP (CO functionReturnType)?
+    ;
+
+anonymousFunctionHeader
+    : OP functionParameterList? CP (CO functionReturnType)?
     ;
 
 functionParameterList

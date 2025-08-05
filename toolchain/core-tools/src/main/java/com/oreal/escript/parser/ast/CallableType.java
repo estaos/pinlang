@@ -51,8 +51,8 @@ public class CallableType extends Type {
         if(other instanceof CallableType otherCallableType) {
             return getName().equals(other.getName())
                     || (
-                    returnTypeIsSubTypeOf(Objects.requireNonNull(otherCallableType.returnType).getType())
-                    && parametersAreAreSubTypesOf(otherCallableType.parameters)
+                    returnValuesCheck(otherCallableType)
+                    && parametersCheck(otherCallableType.parameters)
             );
         } else {
             return false;
@@ -60,16 +60,13 @@ public class CallableType extends Type {
 
     }
 
-    private boolean returnTypeIsSubTypeOf(Type other) {
-        return Objects.requireNonNull(Objects.requireNonNull(returnType).getType()).isSubTypeOf(other);
-    }
-
-    private boolean parametersAreAreSubTypesOf(List<? extends Symbol> otherParameters) {
+    /// Reject if any of this params is not other params and is subtype of other params
+    private boolean parametersCheck(List<? extends Symbol> otherParameters) {
         if(parameters.size() == otherParameters.size()) {
             for(int index = 0; index < parameters.size(); index++) {
                 Type thisType = Objects.requireNonNull(parameters.get(index).getType().getType());
                 Type otherType = Objects.requireNonNull(otherParameters.get(index).getType().getType());
-                if(!thisType.isSubTypeOf(otherType)) {
+                if(!thisType.getName().equals(otherType.getName()) && thisType.isSubTypeOf(otherType)) {
                     return false;
                 }
             }
@@ -78,5 +75,15 @@ public class CallableType extends Type {
         } else {
             return false;
         }
+    }
+
+    /// For return types allow if both are null or this return type is subtype
+    /// of other return type.
+    private boolean returnValuesCheck(CallableType other) {
+        return (returnType == null && other.returnType == null) || (
+                    (returnType != null && other.returnType != null)
+                            && Objects.requireNonNull(returnType.getType())
+                            .isSubTypeOf(Objects.requireNonNull(other.getReturnType().getType()))
+                );
     }
 }

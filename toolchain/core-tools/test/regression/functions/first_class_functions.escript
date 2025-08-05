@@ -2,6 +2,7 @@ import extern "stdio.h";
 
 typedef function NumberSupplier(): double;
 typedef function NoArgsCallable(): double;
+typedef function CallableWithArg(arg: double): double;
 
 function getNumber(): double {
     return 45;
@@ -19,8 +20,21 @@ function callNoArgsCallable(callable: NoArgsCallable): double {
     return callable();
 }
 
-function main() {
+function callCallableWithArg(arg: double, callable: CallableWithArg): double {
+    return callable(arg);
+}
+
+function main(): int32 {
     var supplier = getNumberSupplier();
     printf("Supplier returned %f\n", callSupplier(supplier));
-    printf("No args callable returned %f", callNoArgsCallable(supplier));
+    printf("No args callable returned %f\n", callNoArgsCallable(supplier));
+    printf("Lambda returned %f\n", callNoArgsCallable((): double => 64));
+    printf("Anonymouse function returned %f\n", callNoArgsCallable((): double {
+        return 128;
+    }));
+
+    var someInt: double = 256;
+    printf("Callable with arg passed %f and returned %f", someInt, callCallableWithArg(someInt, (arg: double): double => arg));
+
+    return 0;
 }
