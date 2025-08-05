@@ -36,16 +36,13 @@ public class Main {
                 } else {
                     throw new RuntimeException("Error compiling files ... see errors above.");
                 }
-            } catch (Exception e) {
-                System.err.println(e.getMessage());
-                e.printStackTrace();
-            }
-
-            for (LogEntry entry : parser.getParserLogs()) {
-                if(entry.type() == LogEntryType.WARNING) {
-                    System.out.println(getLogEntryMessage(entry));
-                } else {
-                    System.err.println(getLogEntryMessage(entry));
+            } finally {
+                for (LogEntry entry : parser.getParserLogs()) {
+                    if(entry.type() == LogEntryType.WARNING) {
+                        System.out.println(getLogEntryMessage(entry));
+                    } else {
+                        System.err.println(getLogEntryMessage(entry));
+                    }
                 }
             }
         }
