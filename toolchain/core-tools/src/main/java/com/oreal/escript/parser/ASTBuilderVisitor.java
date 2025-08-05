@@ -1,8 +1,16 @@
 package com.oreal.escript.parser;
 
 import com.oreal.escript.antlr.*;
+import com.oreal.escript.parser.ast.AddExpression;
 import com.oreal.escript.parser.ast.Argument;
 import com.oreal.escript.parser.ast.AssignmentExpression;
+import com.oreal.escript.parser.ast.BinaryOperatorExpression;
+import com.oreal.escript.parser.ast.BitwiseAndExpression;
+import com.oreal.escript.parser.ast.BitwiseLeftShift;
+import com.oreal.escript.parser.ast.BitwiseNotExpression;
+import com.oreal.escript.parser.ast.BitwiseOrExpression;
+import com.oreal.escript.parser.ast.BitwiseRightShift;
+import com.oreal.escript.parser.ast.BitwiseXorExpression;
 import com.oreal.escript.parser.ast.BlockExpression;
 import com.oreal.escript.parser.ast.BooleanLiteralExpression;
 import com.oreal.escript.parser.ast.BreakStatement;
@@ -11,18 +19,30 @@ import com.oreal.escript.parser.ast.CallableCodeExpression;
 import com.oreal.escript.parser.ast.CallableType;
 import com.oreal.escript.parser.ast.CharLiteralExpression;
 import com.oreal.escript.parser.ast.CharSequenceLiteralExpression;
+import com.oreal.escript.parser.ast.CompareEqualToExpression;
+import com.oreal.escript.parser.ast.CompareGreaterThanEqualToExpression;
+import com.oreal.escript.parser.ast.CompareGreaterThanExpression;
+import com.oreal.escript.parser.ast.CompareLessThanEqualToExpression;
+import com.oreal.escript.parser.ast.CompareLessThanExpression;
+import com.oreal.escript.parser.ast.CompareNotEqualToExpression;
 import com.oreal.escript.parser.ast.CompilationUnit;
 import com.oreal.escript.parser.ast.ContinueStatement;
+import com.oreal.escript.parser.ast.DivisionExpression;
 import com.oreal.escript.parser.ast.ExplicitCastExpression;
 import com.oreal.escript.parser.ast.Expression;
 import com.oreal.escript.parser.ast.FunctionCallExpression;
 import com.oreal.escript.parser.ast.IfStatement;
 import com.oreal.escript.parser.ast.Import;
+import com.oreal.escript.parser.ast.LogicalAndExpression;
+import com.oreal.escript.parser.ast.LogicalNotExpression;
+import com.oreal.escript.parser.ast.ModulusExpression;
+import com.oreal.escript.parser.ast.MultiplyExpression;
 import com.oreal.escript.parser.ast.NamedValueSymbol;
 import com.oreal.escript.parser.ast.NullExpression;
 import com.oreal.escript.parser.ast.NumberLiteralExpression;
 import com.oreal.escript.parser.ast.ReturnStatement;
 import com.oreal.escript.parser.ast.Source;
+import com.oreal.escript.parser.ast.SubtractExpression;
 import com.oreal.escript.parser.ast.Symbol;
 import com.oreal.escript.parser.ast.SymbolValueExpression;
 import com.oreal.escript.parser.ast.Type;
@@ -133,7 +153,7 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
                 .map(this::visitTypeReference)
                 .orElse(null);
 
-        Expression value = visitExpression(ctx.expression());
+        Expression value = visitExpression2(ctx.expression2());
 
         return new NamedValueSymbol(
                 variableName, typeReference,
@@ -142,42 +162,52 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
     }
 
     @Override
-    public Expression visitExpression(EScriptParser.ExpressionContext ctx) {
-        Expression expression;
-        if(ctx.primaryExpression() != null) {
-            expression = visitPrimaryExpression(ctx.primaryExpression());
-        } else if(ctx.functionCallExpression() != null) {
-            expression = visitFunctionCallExpression(ctx.functionCallExpression());
+    public Expression visitExpression2(EScriptParser.Expression2Context ctx) {
+        if(ctx.primaryExpression2() != null) {
+            return visitPrimaryExpression2(ctx.primaryExpression2());
+        } else if(ctx.typePassExpression() != null) {
+            return visitTypePassExpression(ctx.typePassExpression());
+        } else if(ctx.statementsBlock() != null && ctx.anonymousFunctionHeader() != null) {
+            // Anonymous function
+            FunctionDefinition functionDefinition = getAnonymousFunction(ctx.anonymousFunctionHeader(), ctx.statementsBlock());
+            pendingFunctionDefinitions.add(functionDefinition);
+            return new SymbolValueExpression(getNodeSource(file, ctx), Objects.requireNonNull(functionDefinition.symbol()).getName());
+        } else if(!ctx.expression2().isEmpty()) {
+            Expression left = visitExpression2(ctx.expression2().getFirst());
+            if(ctx.expression2().size() > 1) {
+                Expression right = visitExpression2(ctx.expression2().get(1));
+                return getBinaryExpression(ctx, left, right);
+            } else if(ctx.EG() != null) {
+                // lambda
+                FunctionDefinition functionDefinition = getLambda(ctx.anonymousFunctionHeader(), left);
+                pendingFunctionDefinitions.add(functionDefinition);
+                return new SymbolValueExpression(getNodeSource(file, ctx), Objects.requireNonNull(functionDefinition.symbol()).getName());
+            } else if(ctx.functionCallArgumentEnclosure() != null) {
+                // Function call
+                return getFunctionCall(ctx, left, ctx.functionCallArgumentEnclosure());
+            } else if(ctx.OP() != null && ctx.CP() != null) {
+                // Brackets
+                return left;
+            } else {
+                return getUnaryExpression(left, ctx);
+            }
         } else {
-            expression = visitAnonymousFunctionExpression(ctx.anonymousFunctionExpression());
-        }
-
-        if(ctx.explicitTypeCastSigil() != null) {
-            return new ExplicitCastExpression(
-                    getNodeSource(file, ctx),
-                    expression,
-                    visitExplicitTypeCastSigil(ctx.explicitTypeCastSigil()));
-        } else {
-            return expression;
+            throw new UnsupportedOperationException("Cannot parse expression " + ctx);
         }
     }
 
     @Override
-    public Expression visitPrimaryExpression(EScriptParser.PrimaryExpressionContext ctx) {
+    public Expression visitPrimaryExpression2(EScriptParser.PrimaryExpression2Context ctx) {
         if(ctx.numberLiteralExpression() != null) {
             return visitNumberLiteralExpression(ctx.numberLiteralExpression());
         } else if(ctx.charSequenceExpression() != null) {
             return visitCharSequenceExpression(ctx.charSequenceExpression());
         } else if(ctx.symbolValueExpression() != null) {
             return visitSymbolValueExpression(ctx.symbolValueExpression());
-        } else if(ctx.typePassExpression() != null) {
-            return visitTypePassExpression(ctx.typePassExpression());
         } else if(ctx.booleanLiteralExpression() != null) {
             return visitBooleanLiteralExpression(ctx.booleanLiteralExpression());
         } else if(ctx.charLiteralExpression() != null) {
             return visitCharLiteralExpression(ctx.charLiteralExpression());
-        } else if(ctx.assignmentExpression() != null) {
-            return visitAssignmentExpression(ctx.assignmentExpression());
         } else if(ctx.nullExpression() != null) {
             return visitNullExpression(ctx.nullExpression());
         } else {
@@ -189,20 +219,18 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
     public Expression visitStatement(EScriptParser.StatementContext ctx) {
         if(ctx.returnStatement() != null) {
             return visitReturnStatement(ctx.returnStatement());
-        } else if(ctx.functionCallStatement() != null) {
-            return visitFunctionCallStatement(ctx.functionCallStatement());
         } else if(ctx.variableDeclarationStatement() != null) {
             return visitVariableDeclarationStatement(ctx.variableDeclarationStatement());
         } else if(ctx.statementsBlock() != null) {
             return visitStatementsBlock(ctx.statementsBlock());
-        } else if(ctx.assignmentStatement() != null) {
-            return visitAssignmentStatement(ctx.assignmentStatement());
         } else if(ctx.ifStatement() != null) {
             return visitIfStatement(ctx.ifStatement());
         } else if(ctx.continueStatement() != null) {
             return visitContinueStatement(ctx.continueStatement());
         } else if(ctx.breakStatement() != null) {
             return visitBreakStatement(ctx.breakStatement());
+        } else if(ctx.expressionStatement() != null) {
+            return visitExpressionStatement(ctx.expressionStatement());
         } else {
             throw new IllegalArgumentException("Unknown statement " + ctx);
         }
@@ -210,7 +238,7 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
 
     @Override
     public IfStatement visitIfStatement(EScriptParser.IfStatementContext ctx) {
-        Expression expression = visitExpression(ctx.expression());
+        Expression expression = visitExpression2(ctx.expression2());
         BlockExpression blockExpression = visitStatementsBlock(ctx.statementsBlock());
 
         @Nullable BlockExpression elseBlock = Optional.ofNullable(ctx.elseBlock())
@@ -223,13 +251,8 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
     }
 
     @Override
-    public FunctionCallExpression visitFunctionCallStatement(EScriptParser.FunctionCallStatementContext ctx) {
-        return visitFunctionCallExpression(ctx.functionCallExpression());
-    }
-
-    @Override
     public ReturnStatement visitReturnStatement(EScriptParser.ReturnStatementContext ctx) {
-        return new ReturnStatement(getNodeSource(file, ctx), visitExpression(ctx.expression()));
+        return new ReturnStatement(getNodeSource(file, ctx), visitExpression2(ctx.expression2()));
     }
 
     @Override
@@ -240,11 +263,6 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
     }
 
     @Override
-    public AssignmentExpression visitAssignmentStatement(EScriptParser.AssignmentStatementContext ctx) {
-        return visitAssignmentExpression(ctx.assignmentExpression());
-    }
-
-    @Override
     public ContinueStatement visitContinueStatement(EScriptParser.ContinueStatementContext ctx) {
         return new ContinueStatement(getNodeSource(file, ctx));
     }
@@ -252,6 +270,11 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
     @Override
     public BreakStatement visitBreakStatement(EScriptParser.BreakStatementContext ctx) {
         return new BreakStatement(getNodeSource(file, ctx));
+    }
+
+    @Override
+    public Expression visitExpressionStatement(EScriptParser.ExpressionStatementContext ctx) {
+        return visitExpression2(ctx.expression2());
     }
 
     @Override
@@ -308,49 +331,6 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
     }
 
     @Override
-    public AssignmentExpression visitAssignmentExpression(EScriptParser.AssignmentExpressionContext ctx) {
-        Expression value;
-        if(ctx.primaryExpression() != null) {
-            value = visitPrimaryExpression(ctx.primaryExpression());
-        } else {
-            value = visitFunctionCallExpression(ctx.functionCallExpression());
-        }
-
-        return new AssignmentExpression(getNodeSource(file, ctx),
-                visitVariableName(ctx.variableName()), value);
-    }
-
-    @Override
-    public FunctionCallExpression visitFunctionCallExpression(EScriptParser.FunctionCallExpressionContext ctx) {
-        Expression callableExpression;
-        if(ctx.primaryExpression() != null) {
-            callableExpression = visitPrimaryExpression(ctx.primaryExpression());
-        } else {
-            callableExpression = visitFunctionCallExpression(ctx.functionCallExpression());
-        }
-
-        if(ctx.functionCallArgumentList() == null) {
-            return new FunctionCallExpression(getNodeSource(file, ctx), List.of(), callableExpression);
-        } else {
-            List<Argument> arguments = visitFunctionCallArgumentList(ctx.functionCallArgumentList());
-            return new FunctionCallExpression(getNodeSource(file, ctx), arguments, callableExpression);
-        }
-    }
-
-    @Override
-    public SymbolValueExpression visitAnonymousFunctionExpression(EScriptParser.AnonymousFunctionExpressionContext ctx) {
-        FunctionDefinition functionDefinition;
-        if(ctx.anonymousFunctionDefinition() != null) {
-            functionDefinition = visitAnonymousFunctionDefinition(ctx.anonymousFunctionDefinition());
-        } else {
-            functionDefinition = visitLambdaDefinition(ctx.lambdaDefinition());
-        }
-
-        pendingFunctionDefinitions.add(functionDefinition);
-        return new SymbolValueExpression(getNodeSource(file, ctx), Objects.requireNonNull(functionDefinition.symbol()).getName());
-    }
-
-    @Override
     public TypeReference visitExplicitTypeCastSigil(EScriptParser.ExplicitTypeCastSigilContext ctx) {
         return visitTypeReference(ctx.typeReference());
     }
@@ -395,35 +375,6 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
         BlockExpression blockExpression = visitStatementsBlock(ctx.statementsBlock());
         Source source = getNodeSource(file, ctx);
 
-        return getFunctionDefinition(source, symbolName, callableType, blockExpression);
-    }
-
-    @Override
-    public FunctionDefinition visitAnonymousFunctionDefinition(EScriptParser.AnonymousFunctionDefinitionContext ctx) {
-        BlockExpression blockExpression = visitStatementsBlock(ctx.statementsBlock());
-        CallableType callableType = visitAnonymousFunctionHeader(ctx.anonymousFunctionHeader());
-        String symbolName = getRandomSymbolName();
-        Source source = getNodeSource(file, ctx);
-
-        return getFunctionDefinition(source, symbolName, callableType, blockExpression);
-    }
-
-    @Override
-    public FunctionDefinition visitLambdaDefinition(EScriptParser.LambdaDefinitionContext ctx) {
-        CallableType callableType = visitAnonymousFunctionHeader(ctx.anonymousFunctionHeader());
-        String symbolName = getRandomSymbolName();
-        Source source = getNodeSource(file, ctx);
-
-        Expression expression;
-        if(ctx.primaryExpression() != null) {
-            expression = visitPrimaryExpression(ctx.primaryExpression());
-        } else {
-            expression = visitFunctionCallExpression(ctx.functionCallExpression());
-        }
-
-        BlockExpression blockExpression = new BlockExpression(source, List.of(
-                new ReturnStatement(source, expression)
-        ));
         return getFunctionDefinition(source, symbolName, callableType, blockExpression);
     }
 
@@ -481,8 +432,8 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
     }
 
     @Override
-    public List<Argument> visitFunctionCallArgumentList(EScriptParser.FunctionCallArgumentListContext ctx) {
-        return ctx.expression().stream().map(this::visitExpression).map(Argument::new).toList();
+    public List<Argument> visitFunctionCallArgumentEnclosure(EScriptParser.FunctionCallArgumentEnclosureContext ctx) {
+        return ctx.expression2().stream().map(this::visitExpression2).map(Argument::new).toList();
     }
 
     @Override
@@ -497,7 +448,7 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
 
     @Override
     public IfStatement.ElseIfBlock visitElseIfBlock(EScriptParser.ElseIfBlockContext ctx) {
-        Expression expression = visitExpression(ctx.expression());
+        Expression expression = visitExpression2(ctx.expression2());
         BlockExpression blockExpression = visitStatementsBlock(ctx.statementsBlock());
 
         return new IfStatement.ElseIfBlock(expression, blockExpression);
@@ -592,6 +543,95 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
 
     private String getRandomSymbolName() {
         return String.format("temp_%s", UUID.randomUUID().toString().replaceAll("-", "_"));
+    }
+
+    private Expression getBinaryExpression(EScriptParser.Expression2Context ctx, Expression left, Expression right) {
+        BinaryOperatorExpression expression;
+
+        if (ctx.ST() != null) {
+            expression = new MultiplyExpression(left, right);
+        } else if (ctx.SL() != null) {
+            expression = new DivisionExpression(left, right);
+        } else if (ctx.PC() != null) {
+            expression = new ModulusExpression(left, right);
+        } else if (ctx.PL() != null) {
+            expression = new AddExpression(left, right);
+        } else if (ctx.MINUS() != null) {
+            expression = new SubtractExpression(left, right);
+        } else if (ctx.LTLT() != null) {
+            expression = new BitwiseLeftShift(left, right);
+        } else if (ctx.GTGT() != null) {
+            expression = new BitwiseRightShift(left, right);
+        } else if (ctx.LT() != null) {
+            expression = new CompareLessThanExpression(left, right);
+        } else if (ctx.LTEQ() != null) {
+            expression = new CompareLessThanEqualToExpression(left, right);
+        } else if (ctx.GT() != null) {
+            expression = new CompareGreaterThanExpression(left, right);
+        } else if (ctx.GTEQ() != null) {
+            expression = new CompareGreaterThanEqualToExpression(left, right);
+        } else if (ctx.EE() != null) {
+            expression = new CompareEqualToExpression(left, right);
+        } else if (ctx.NE() != null) {
+            expression = new CompareNotEqualToExpression(left, right);
+        } else if (ctx.A() != null) {
+            expression = new BitwiseAndExpression(left, right);
+        } else if (ctx.CIR() != null) {
+            expression = new BitwiseXorExpression(left, right);
+        } else if (ctx.P() != null) {
+            expression = new BitwiseOrExpression(left, right);
+        } else if (ctx.AA() != null) {
+            expression = new LogicalAndExpression(left, right);
+        } else {
+            throw new UnsupportedOperationException("Cannot parse binary operator " + ctx);
+        }
+
+        expression.setSource(getNodeSource(file, ctx));
+        return expression;
+    }
+
+    private Expression getUnaryExpression(Expression operand, EScriptParser.Expression2Context ctx) {
+        if(ctx.NOT() != null) {
+            return new LogicalNotExpression(getNodeSource(file, ctx), operand);
+        } else if(ctx.SQUIG() != null) {
+            return new BitwiseNotExpression(getNodeSource(file, ctx), operand);
+        } else if(ctx.EQ() != null) {
+            return new AssignmentExpression(getNodeSource(file, ctx), visitVariableName(ctx.variableName()), operand);
+        } else if(ctx.explicitTypeCastSigil() != null) {
+            return getExplicitCast(operand, ctx.explicitTypeCastSigil());
+        } else {
+            throw new UnsupportedOperationException("Cannot parse operator yet " + ctx);
+        }
+    }
+
+    private ExplicitCastExpression getExplicitCast(Expression operand, EScriptParser.ExplicitTypeCastSigilContext ctx) {
+        return new ExplicitCastExpression(getNodeSource(file, ctx), operand, visitExplicitTypeCastSigil(ctx));
+    }
+
+    private FunctionDefinition getAnonymousFunction(EScriptParser.AnonymousFunctionHeaderContext headerContext, EScriptParser.StatementsBlockContext statementsBlockContext) {
+        BlockExpression blockExpression = visitStatementsBlock(statementsBlockContext);
+        CallableType callableType = visitAnonymousFunctionHeader(headerContext);
+        String symbolName = getRandomSymbolName();
+        Source source = getNodeSource(file, headerContext);
+
+        return getFunctionDefinition(source, symbolName, callableType, blockExpression);
+    }
+
+    private FunctionDefinition getLambda(EScriptParser.AnonymousFunctionHeaderContext headerContext, Expression returnValue) {
+        CallableType callableType = visitAnonymousFunctionHeader(headerContext);
+        String symbolName = getRandomSymbolName();
+        Source source = getNodeSource(file, headerContext);
+
+        BlockExpression blockExpression = new BlockExpression(source, List.of(
+                new ReturnStatement(source, returnValue)
+        ));
+
+        return getFunctionDefinition(source, symbolName, callableType, blockExpression);
+    }
+
+    private FunctionCallExpression getFunctionCall(ParserRuleContext ctx, Expression callableExpression, EScriptParser.FunctionCallArgumentEnclosureContext functionCallArgumentEnclosureContext) {
+        List<Argument> arguments = visitFunctionCallArgumentEnclosure(functionCallArgumentEnclosureContext);
+        return new FunctionCallExpression(getNodeSource(file, ctx), arguments, callableExpression);
     }
 
     public record FunctionDefinition(CallableType callableType, CallableCode callableCode, @Nullable NamedValueSymbol symbol) {}

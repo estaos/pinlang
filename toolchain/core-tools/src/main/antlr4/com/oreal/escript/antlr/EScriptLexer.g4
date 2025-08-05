@@ -14,6 +14,8 @@ EG                       : '=>';
 EQ                       : '=';
 GT                       : '>';
 LT                       : '<';
+LTEQ                     : '<=';
+GTEQ                     : '>=';
 LTLT                     : '<<';
 GTGT                     : '>>';
 MINUS                    : '-';

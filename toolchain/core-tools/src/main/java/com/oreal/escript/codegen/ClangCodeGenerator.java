@@ -19,7 +19,9 @@ import com.oreal.escript.parser.ast.CallableType;
 import com.oreal.escript.parser.ast.CharLiteralExpression;
 import com.oreal.escript.parser.ast.CharSequenceLiteralExpression;
 import com.oreal.escript.parser.ast.CompareEqualToExpression;
+import com.oreal.escript.parser.ast.CompareGreaterThanEqualToExpression;
 import com.oreal.escript.parser.ast.CompareGreaterThanExpression;
+import com.oreal.escript.parser.ast.CompareLessThanEqualToExpression;
 import com.oreal.escript.parser.ast.CompareLessThanExpression;
 import com.oreal.escript.parser.ast.CompareNotEqualToExpression;
 import com.oreal.escript.parser.ast.CompilationUnit;
@@ -345,9 +347,13 @@ public class ClangCodeGenerator implements  CodeGenerator {
             return String.format("(%s) == (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
         } else if(expression instanceof CompareGreaterThanExpression operator) {
             return String.format("(%s) > (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
+        } else if(expression instanceof CompareGreaterThanEqualToExpression operator) {
+            return String.format("(%s) >= (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
         } else if(expression instanceof CompareLessThanExpression operator) {
             return String.format("(%s) < (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
-        } else if(expression instanceof CompareNotEqualToExpression operator) {
+        } else if(expression instanceof CompareLessThanEqualToExpression operator) {
+            return String.format("(%s) <= (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
+        }  else if(expression instanceof CompareNotEqualToExpression operator) {
             return String.format("(%s) != (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));
         } else if(expression instanceof AddExpression operator) {
             return String.format("(%s) + (%s)", getCExpression(operator.getLeft()), getCExpression(operator.getRight()));

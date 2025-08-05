@@ -30,58 +30,71 @@ variableDeclarationWithNoInitialisation
     ;
 
 variableDeclarationWithInitialisation
-    : VAR_ variableName (CO typeReference)? EQ expression SC
+    : VAR_ variableName (CO typeReference)? EQ expression2 SC
     ;
 
-expression
-// TODO: Come back to add literals and all other types of expressions. Also includes array expressions.
-    : primaryExpression explicitTypeCastSigil?
-    | functionCallExpression explicitTypeCastSigil?
-    | anonymousFunctionExpression explicitTypeCastSigil?
+expression2
+    : expression2 functionCallArgumentEnclosure
+    | typePassExpression
+    | anonymousFunctionHeader EG expression2    // lambda
+    | anonymousFunctionHeader statementsBlock   // anonymous function
+    | expression2 explicitTypeCastSigil
+    | NOT expression2
+    | SQUIG expression2
+    | expression2 ST expression2
+    | expression2 SL expression2
+    | expression2 PC expression2
+    | expression2 PL expression2
+    | expression2 MINUS expression2
+    | expression2 LTLT expression2
+    | expression2 GTGT expression2
+    | expression2 LT expression2
+    | expression2 LTEQ expression2
+    | expression2 GT expression2
+    | expression2 GTEQ expression2
+    | expression2 EE expression2
+    | expression2 NE expression2
+    | expression2 A expression2
+    | expression2 CIR expression2
+    | expression2 P expression2
+    | expression2 AA expression2
+    | variableName EQ expression2
+    | OP expression2 CP // In brackets
+    | primaryExpression2
     ;
 
-primaryExpression
+// Primary expressions are expressions that cannot have other expressions
+primaryExpression2
     : numberLiteralExpression
     | charSequenceExpression
-    | typePassExpression
     | nullExpression
     | symbolValueExpression
     | booleanLiteralExpression
     | charLiteralExpression
-    | assignmentExpression
     ;
 
 statement
-    : functionCallStatement
-    | returnStatement
+    : returnStatement
     | variableDeclarationStatement
     | statementsBlock
-    | assignmentStatement
     | ifStatement
     | continueStatement
     | breakStatement
+    | expressionStatement
     ;
 
 ifStatement
-    : IF_ OP expression CP statementsBlock
+    : IF_ OP expression2 CP statementsBlock
       elseIfBlock*
       elseBlock?
     ;
 
-functionCallStatement
-    : functionCallExpression SC
-    ;
-
 returnStatement
-    : RETURN_ expression SC
+    : RETURN_ expression2 SC
     ;
 
 variableDeclarationStatement
     : variableDeclaration
-    ;
-
-assignmentStatement
-    : assignmentExpression SC
     ;
 
 continueStatement
@@ -92,12 +105,16 @@ breakStatement
     : BREAK_
     ;
 
+expressionStatement
+    : expression2 SC
+    ;
+
 statementsBlock
     : OBC statement* CBC
     ;
 
 elseIfBlock
-    : ELSE_ IF_ OP expression CP statementsBlock
+    : ELSE_ IF_ OP expression2 CP statementsBlock
     ;
 
 elseBlock
@@ -141,20 +158,6 @@ charLiteralExpression
     : CHAR
     ;
 
-assignmentExpression
-    : variableName EQ (primaryExpression | functionCallExpression)
-    ;
-
-functionCallExpression
-    : primaryExpression OP functionCallArgumentList? CP
-    | functionCallExpression OP functionCallArgumentList? CP
-    ;
-
-anonymousFunctionExpression
-    : anonymousFunctionDefinition
-    | lambdaDefinition
-    ;
-
 explicitTypeCastSigil
     : AS_ typeReference
     ;
@@ -184,14 +187,6 @@ functionDefinition
     : functionHeader statementsBlock
     ;
 
-anonymousFunctionDefinition
-    : anonymousFunctionHeader statementsBlock
-    ;
-
-lambdaDefinition
-    : anonymousFunctionHeader EG (primaryExpression | functionCallExpression)
-    ;
-
 functionHeader
     : FUNCTION_ variableName OP functionParameterList? CP (CO functionReturnType)?
     ;
@@ -209,8 +204,8 @@ functionParameter
     : variableName CO typeReference
     ;
 
-functionCallArgumentList
-    : expression (C expression)*
+functionCallArgumentEnclosure
+    : OP (expression2 (C expression2)*)? CP
     ;
 
 functionReturnType
