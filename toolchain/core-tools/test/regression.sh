@@ -82,3 +82,14 @@ mvn exec:java -Dexec.args="first_class_functions.escript" --file ../../../pom.xm
 clang first_class_functions.c
 ./a
 cd ../../
+
+# Control flow
+cd ./regression/control_flow
+rm a.*
+rm *.h
+rm *.c
+mvn exec:java -Dexec.args="main.escript" --file ../../../pom.xml
+clang main.c
+./a
+echo $?
+cd ../../

@@ -14,6 +14,7 @@ import com.oreal.escript.parser.ast.CompilationUnit;
 import com.oreal.escript.parser.ast.ExplicitCastExpression;
 import com.oreal.escript.parser.ast.Expression;
 import com.oreal.escript.parser.ast.FunctionCallExpression;
+import com.oreal.escript.parser.ast.IfStatement;
 import com.oreal.escript.parser.ast.Import;
 import com.oreal.escript.parser.ast.NamedValueSymbol;
 import com.oreal.escript.parser.ast.NumberLiteralExpression;
@@ -46,7 +47,7 @@ import java.util.stream.Stream;
 public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
     /// The file being parsed
     private final File file;
-    private List<FunctionDefinition> pendingFunctionDefinitions = new LinkedList<>();
+    private final List<FunctionDefinition> pendingFunctionDefinitions = new LinkedList<>();
 
     public static final String CALLABLE_TYPE_SIGIL = "_type__";
     public static final String CALLABLE_CODE_SIGIL = "_code__";
@@ -191,9 +192,25 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
             return visitStatementsBlock(ctx.statementsBlock());
         } else if(ctx.assignmentStatement() != null) {
             return visitAssignmentStatement(ctx.assignmentStatement());
+        } else if(ctx.ifStatement() != null) {
+            return visitIfStatement(ctx.ifStatement());
         } else {
             throw new IllegalArgumentException("Unknown statement " + ctx);
         }
+    }
+
+    @Override
+    public IfStatement visitIfStatement(EScriptParser.IfStatementContext ctx) {
+        Expression expression = visitExpression(ctx.expression());
+        BlockExpression blockExpression = visitStatementsBlock(ctx.statementsBlock());
+
+        @Nullable BlockExpression elseBlock = Optional.ofNullable(ctx.elseBlock())
+                .map(this::visitElseBlock)
+                .orElse(null);
+
+        List<IfStatement.ElseIfBlock> elseIfBlocks = ctx.elseIfBlock().stream().map(this::visitElseIfBlock).toList();
+
+        return new IfStatement(getNodeSource(file, ctx), expression, blockExpression, elseBlock, elseIfBlocks);
     }
 
     @Override
@@ -452,6 +469,19 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
     @Override
     public BlockExpression visitStatementsBlock(EScriptParser.StatementsBlockContext ctx) {
         return new BlockExpression(getNodeSource(file, ctx), ctx.statement().stream().map(this::visitStatement).toList());
+    }
+
+    @Override
+    public IfStatement.ElseIfBlock visitElseIfBlock(EScriptParser.ElseIfBlockContext ctx) {
+        Expression expression = visitExpression(ctx.expression());
+        BlockExpression blockExpression = visitStatementsBlock(ctx.statementsBlock());
+
+        return new IfStatement.ElseIfBlock(expression, blockExpression);
+    }
+
+    @Override
+    public BlockExpression visitElseBlock(EScriptParser.ElseBlockContext ctx) {
+        return visitStatementsBlock(ctx.statementsBlock());
     }
 
     @Override

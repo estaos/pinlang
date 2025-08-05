@@ -12,6 +12,7 @@ import com.oreal.escript.parser.ast.CompilationUnit;
 import com.oreal.escript.parser.ast.ExplicitCastExpression;
 import com.oreal.escript.parser.ast.Expression;
 import com.oreal.escript.parser.ast.FunctionCallExpression;
+import com.oreal.escript.parser.ast.IfStatement;
 import com.oreal.escript.parser.ast.Import;
 import com.oreal.escript.parser.ast.NamedValueSymbol;
 import com.oreal.escript.parser.ast.NullExpression;
@@ -132,6 +133,18 @@ public final class Annotations {
                 }
             } else if(statement instanceof BlockExpression innerBlock) {
                 visitBlockExpression(innerBlock, scope, logs, expectedReturnValue);
+            } else if(statement instanceof IfStatement ifStatement) {
+                expectBoolean(ifStatement.getBooleanExpression(), scope, logs);
+                visitBlockExpression(ifStatement.getBlockExpression(), scope, logs, expectedReturnValue);
+
+                for(IfStatement.ElseIfBlock elseIfBlock : ifStatement.getElseIfBlocks()) {
+                    expectBoolean(elseIfBlock.getBooleanExpression(), scope, logs);
+                    visitBlockExpression(elseIfBlock.getBlockExpression(), scope, logs, expectedReturnValue);
+                }
+
+                if(ifStatement.getElseBlockExpression() != null) {
+                    visitBlockExpression(ifStatement.getElseBlockExpression(), scope, logs, expectedReturnValue);
+                }
             }
         }
     }
@@ -370,6 +383,13 @@ public final class Annotations {
         }
     }
 
+    private void expectBoolean(Expression expression, Scope scope, List<LogEntry> logs) {
+        @Nullable TypeReference expressionType = visitExpression(expression, scope, logs);
+        if(expressionType == null || !expressionType.getName().equals("boolean")) {
+            logs.add(LogEntry.error(expression.getSource(), LogEntryCode.EXPRESSION_IS_NOT_BOOLEAN));
+        }
+    }
+
     private void callableCanBeCalledWithArguments(Source source, CallableType callableType, List<Argument> arguments, List<LogEntry> logs) {
         int minimumArgumentCount = Math.min(arguments.size(), callableType.getParameters().size());
         for(int index = 0; index < minimumArgumentCount; index++) {
@@ -396,6 +416,7 @@ public final class Annotations {
             logs.add(LogEntry.error(
                     source, LogEntryCode.TOO_MANY_ARGUMENTS_TO_FUNCTIONS,
                     String.format("Too many arguments to %s", callableType.getName()),
-                    null));        }
+                    null));
+        }
     }
 }

@@ -372,7 +372,7 @@ public class ClangCodeGenerator implements  CodeGenerator {
                 return String.format("(%s)++", getCExpression(operator.getOperand()));
             }
         } else if(expression instanceof BlockExpression blockExpression) {
-            String output = blockExpression.getStatements().stream().map(this::getCExpression).collect(Collectors.joining(";\n"));
+            String output = getCExpressions(blockExpression.getStatements(), ";\n", ";\n");
 
             if(output.isEmpty()) {
                 return String.format("{%s}", output);

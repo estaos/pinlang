@@ -1,5 +1,6 @@
 package com.oreal.escript.parser;
 
+import com.oreal.escript.extern.Assert;
 import com.oreal.escript.extern.Stdio;
 import com.oreal.escript.extern.Stdlib;
 import com.oreal.escript.parser.ast.CompilationUnit;
@@ -14,6 +15,7 @@ public class ExternalImportResolver {
         return switch(fileName) {
             case "stdio.h" -> Stdio.getCompilationUnit();
             case "stdlib.h" -> Stdlib.getCompilationUnit();
+            case "assert.h" -> Assert.getCompilationUnit();
             default -> throw new FileNotFoundException(String.format("Cannot find external import %s", fileName));
         };
     }

@@ -10,13 +10,23 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
-@AllArgsConstructor
 @Data
 public class IfStatement extends Expression {
     private Expression booleanExpression;
     private BlockExpression blockExpression;
     private @Nullable BlockExpression elseBlockExpression;
     private List<ElseIfBlock> elseIfBlocks;
+
+    public IfStatement(Source source, Expression booleanExpression,
+                       BlockExpression blockExpression,
+                       @Nullable BlockExpression elseBlockExpression,
+                       List<ElseIfBlock> elseIfBlocks) {
+        setSource(source);
+        this.booleanExpression = booleanExpression;
+        this.blockExpression = blockExpression;
+        this.elseBlockExpression = elseBlockExpression;
+        this.elseIfBlocks = elseIfBlocks;
+    }
 
     @Override
     public boolean isConstExpression() {

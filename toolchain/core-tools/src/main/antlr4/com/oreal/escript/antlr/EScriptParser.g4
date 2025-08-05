@@ -56,6 +56,13 @@ statement
     | variableDeclarationStatement
     | statementsBlock
     | assignmentStatement
+    | ifStatement
+    ;
+
+ifStatement
+    : IF_ OP expression CP statementsBlock
+      elseIfBlock*
+      elseBlock?
     ;
 
 functionCallStatement
@@ -76,6 +83,14 @@ assignmentStatement
 
 statementsBlock
     : OBC statement* CBC
+    ;
+
+elseIfBlock
+    : ELSE_ IF_ OP expression CP statementsBlock
+    ;
+
+elseBlock
+    : ELSE_ statementsBlock
     ;
 
 numberLiteralExpression
