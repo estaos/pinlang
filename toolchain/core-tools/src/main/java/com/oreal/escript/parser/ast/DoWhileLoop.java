@@ -11,6 +11,12 @@ public class DoWhileLoop extends Expression {
     private Expression booleanExpression;
     private BlockExpression blockExpression;
 
+    public DoWhileLoop(Source source, Expression booleanExpression, BlockExpression blockExpression) {
+        this.booleanExpression = booleanExpression;
+        this.blockExpression = blockExpression;
+        setSource(source);
+    }
+
     @Override
     public boolean isConstExpression() {
         return false;

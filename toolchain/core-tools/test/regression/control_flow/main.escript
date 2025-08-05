@@ -34,6 +34,28 @@ function main(): int32 {
     if(a == 5 && b == 512) {
         printf("a==5 and b==512\n");
     }
+
+    var counter = 10;
+    while(counter > 0) {
+        counter = counter - 1;
+    }
+    assert(counter == 0);
+
+    counter = 10;
+    do {
+        counter = counter - 1;
+    } while(counter > 0);
+    assert(counter == 0);
     
+    counter = 10;
+    for(var iii = 0; iii < 10; iii = iii+1) {
+        counter = counter -1;
+    }
+    assert(counter == 0);
+
+    counter = 10;
+    for(counter > 0; counter = counter - 1) {}
+    assert(counter == 0);
+
     return 0;
 }

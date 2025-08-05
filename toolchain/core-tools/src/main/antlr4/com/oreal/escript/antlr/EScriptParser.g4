@@ -81,6 +81,9 @@ statement
     | ifStatement
     | continueStatement
     | breakStatement
+    | whileLoopStatement
+    | doWhileLoopStatement
+    | forLoopStatement
     | expressionStatement
     ;
 
@@ -88,6 +91,18 @@ ifStatement
     : IF_ OP expression2 CP statementsBlock
       elseIfBlock*
       elseBlock?
+    ;
+
+whileLoopStatement
+    : WHILE_ OP expression2 CP statementsBlock
+    ;
+
+doWhileLoopStatement
+    : DO_ statementsBlock WHILE_ OP expression2 CP SC
+    ;
+
+forLoopStatement
+    : FOR_ OP variableDeclaration? expression2 SC expression2 CP statementsBlock
     ;
 
 returnStatement
@@ -99,11 +114,11 @@ variableDeclarationStatement
     ;
 
 continueStatement
-    : CONTINUE_
+    : CONTINUE_ SC
     ;
 
 breakStatement
-    : BREAK_
+    : BREAK_ SC
     ;
 
 expressionStatement

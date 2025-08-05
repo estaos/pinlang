@@ -28,8 +28,10 @@ import com.oreal.escript.parser.ast.CompareNotEqualToExpression;
 import com.oreal.escript.parser.ast.CompilationUnit;
 import com.oreal.escript.parser.ast.ContinueStatement;
 import com.oreal.escript.parser.ast.DivisionExpression;
+import com.oreal.escript.parser.ast.DoWhileLoop;
 import com.oreal.escript.parser.ast.ExplicitCastExpression;
 import com.oreal.escript.parser.ast.Expression;
+import com.oreal.escript.parser.ast.ForLoop;
 import com.oreal.escript.parser.ast.FunctionCallExpression;
 import com.oreal.escript.parser.ast.IfStatement;
 import com.oreal.escript.parser.ast.Import;
@@ -50,6 +52,7 @@ import com.oreal.escript.parser.ast.Type;
 import com.oreal.escript.parser.ast.TypePassExpression;
 import com.oreal.escript.parser.ast.TypeReference;
 import com.oreal.escript.parser.ast.VariableDeclaration;
+import com.oreal.escript.parser.ast.WhileLoop;
 import lombok.AllArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -232,6 +235,12 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
             return visitBreakStatement(ctx.breakStatement());
         } else if(ctx.expressionStatement() != null) {
             return visitExpressionStatement(ctx.expressionStatement());
+        } else if(ctx.whileLoopStatement() != null) {
+            return visitWhileLoopStatement(ctx.whileLoopStatement());
+        } else if(ctx.doWhileLoopStatement() != null) {
+            return visitDoWhileLoopStatement(ctx.doWhileLoopStatement());
+        } else if(ctx.forLoopStatement() != null) {
+            return visitForLoopStatement(ctx.forLoopStatement());
         } else {
             throw new IllegalArgumentException("Unknown statement " + ctx);
         }
@@ -249,6 +258,47 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
         List<IfStatement.ElseIfBlock> elseIfBlocks = ctx.elseIfBlock().stream().map(this::visitElseIfBlock).toList();
 
         return new IfStatement(getNodeSource(file, ctx), expression, blockExpression, elseBlock, elseIfBlocks);
+    }
+
+    @Override
+    public WhileLoop visitWhileLoopStatement(EScriptParser.WhileLoopStatementContext ctx) {
+        Expression expression = visitExpression2(ctx.expression2());
+        BlockExpression blockExpression = visitStatementsBlock(ctx.statementsBlock());
+        return new WhileLoop(getNodeSource(file, ctx), expression, blockExpression);
+    }
+
+    @Override
+    public DoWhileLoop visitDoWhileLoopStatement(EScriptParser.DoWhileLoopStatementContext ctx) {
+        Expression expression = visitExpression2(ctx.expression2());
+        BlockExpression blockExpression = visitStatementsBlock(ctx.statementsBlock());
+        return new DoWhileLoop(getNodeSource(file, ctx), expression, blockExpression);
+    }
+
+    @Override
+    public ForLoop visitForLoopStatement(EScriptParser.ForLoopStatementContext ctx) {
+        Source source = getNodeSource(file, ctx);
+
+        @Nullable VariableDeclaration declarationExpression = null;
+        if(ctx.variableDeclaration() != null) {
+            declarationExpression =
+                    new VariableDeclaration(source, visitVariableDeclaration(ctx.variableDeclaration()));
+        }
+
+        // TODO: For now parser does not allow single expression because we need to get this
+        // code to be able to tell which expression (first or last) was passed.
+        @Nullable Expression comparisonExpression = null;
+        if(!ctx.expression2().isEmpty()) {
+            comparisonExpression = visitExpression2(ctx.expression2().getFirst());
+        }
+
+        @Nullable Expression counterExpression = null;
+        if(ctx.expression2().size() > 1) {
+            counterExpression = visitExpression2(ctx.expression2().get(1));
+        }
+
+        BlockExpression blockExpression = visitStatementsBlock(ctx.statementsBlock());
+
+        return new ForLoop(source, declarationExpression, comparisonExpression, counterExpression, blockExpression);
     }
 
     @Override

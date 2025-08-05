@@ -398,9 +398,16 @@ public class ClangCodeGenerator implements  CodeGenerator {
             String booleanCheck = getCExpression(doWhileLoop.getBooleanExpression());
             return String.format("do %s while(%s);", statements, booleanCheck);
         } else if(expression instanceof ForLoop forLoop) {
-            String initialisationExpression = getCExpression(forLoop.getDeclarationExpression());
-            String comparisonExpression = getCExpression(forLoop.getComparisonExpression());
-            String counterExpression = getCExpression(forLoop.getCounterExpression());
+            String initialisationExpression = Optional
+                    .ofNullable(forLoop.getDeclarationExpression())
+                    .map(this::getCExpression).orElse("");
+            String comparisonExpression = Optional
+                    .ofNullable(forLoop.getComparisonExpression())
+                    .map(this::getCExpression).orElse("");
+            String counterExpression = Optional
+                    .ofNullable(forLoop.getCounterExpression())
+                    .map(this::getCExpression).orElse("");
+
             String statements = getCExpression(forLoop.getBlockExpression());
 
             return String.format("for (%s; %s; %s)\n%s", initialisationExpression, comparisonExpression,

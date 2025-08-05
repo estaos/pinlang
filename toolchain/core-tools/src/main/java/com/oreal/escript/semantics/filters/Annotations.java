@@ -17,8 +17,10 @@ import com.oreal.escript.parser.ast.CompareLessThanEqualToExpression;
 import com.oreal.escript.parser.ast.CompareLessThanExpression;
 import com.oreal.escript.parser.ast.CompareNotEqualToExpression;
 import com.oreal.escript.parser.ast.CompilationUnit;
+import com.oreal.escript.parser.ast.DoWhileLoop;
 import com.oreal.escript.parser.ast.ExplicitCastExpression;
 import com.oreal.escript.parser.ast.Expression;
+import com.oreal.escript.parser.ast.ForLoop;
 import com.oreal.escript.parser.ast.FunctionCallExpression;
 import com.oreal.escript.parser.ast.IfStatement;
 import com.oreal.escript.parser.ast.Import;
@@ -36,6 +38,7 @@ import com.oreal.escript.parser.ast.Type;
 import com.oreal.escript.parser.ast.TypePassExpression;
 import com.oreal.escript.parser.ast.TypeReference;
 import com.oreal.escript.parser.ast.VariableDeclaration;
+import com.oreal.escript.parser.ast.WhileLoop;
 import com.oreal.escript.parser.logging.LogEntry;
 import com.oreal.escript.parser.logging.LogEntryCode;
 import com.oreal.escript.semantics.Scope;
@@ -156,6 +159,28 @@ public final class Annotations {
                 if(ifStatement.getElseBlockExpression() != null) {
                     visitBlockExpression(ifStatement.getElseBlockExpression(), scope, logs, expectedReturnValue);
                 }
+            } else if(statement instanceof WhileLoop whileLoop) {
+                expectBoolean(whileLoop.getBooleanExpression(), scope, logs);
+                visitBlockExpression(whileLoop.getBlockExpression(), scope, logs, expectedReturnValue);
+            } else if(statement instanceof DoWhileLoop doWhileLoop) {
+                expectBoolean(doWhileLoop.getBooleanExpression(), scope, logs);
+                visitBlockExpression(doWhileLoop.getBlockExpression(), scope, logs, expectedReturnValue);
+            } else if(statement instanceof ForLoop forLoop) {
+                Scope forLoopScope = new Scope(scope, "", false);
+
+                if(forLoop.getDeclarationExpression() != null) {
+                    visitExpression(forLoop.getDeclarationExpression(), forLoopScope, logs);
+                }
+
+                if(forLoop.getComparisonExpression() != null) {
+                    expectBoolean(forLoop.getComparisonExpression(), forLoopScope, logs);
+                }
+
+                if(forLoop.getCounterExpression() != null) {
+                    visitExpression(forLoop.getCounterExpression(), forLoopScope, logs);
+                }
+
+                visitBlockExpression(forLoop.getBlockExpression(), forLoopScope, logs, expectedReturnValue);
             }
         }
     }
@@ -280,24 +305,20 @@ public final class Annotations {
                 }
                 case AssignmentExpression assignmentExpression -> {
                     @Nullable Symbol symbol = scope.resolveSymbol(assignmentExpression.getSymbolName());
-                    if(symbol == null) {
-                        boolean alreadyInScope = scope.nameAlreadyInScope(assignmentExpression.getSymbolName());
-                        if(alreadyInScope) {
-                            logs.add(LogEntry.error(expression.getSource(), LogEntryCode.TYPE_MISMATCH));
+                    if(symbol != null) {
+                        @Nullable TypeReference valueType = visitExpression(assignmentExpression.getValue(), scope, logs);
+                        if(valueType == null) {
+                            logs.add(LogEntry.error(expression.getSource(), LogEntryCode.VALUE_HAS_NO_TYPE));
+                        } else if(
+                                !getExpressionTypeInFavorOfHint(assignmentExpression.getValue(), symbol.getType(), scope, logs)
+                                        .getName().equals(symbol.getType().getName())) {
+                            logs.add(LogEntry.error(expression.getSource(), LogEntryCode.TYPE_MISMATCH,
+                                    String.format("Symbol type is %s assigned type is %s", symbol.getType().getName(), valueType.getName()), null));
                         } else {
-                            @Nullable TypeReference valueType = visitExpression(assignmentExpression.getValue(), scope, logs);
-                            if(valueType == null) {
-                                logs.add(LogEntry.error(expression.getSource(), LogEntryCode.VALUE_HAS_NO_TYPE));
-                            } else if(
-                                    !getExpressionTypeInFavorOfHint(assignmentExpression.getValue(), symbol.getType(), scope, logs)
-                                            .equals(symbol.getType().getName())) {
-                                logs.add(LogEntry.error(expression.getSource(), LogEntryCode.TYPE_MISMATCH));
-                            } else {
-                                typeReference = symbol.getType();
-                            }
+                            typeReference = symbol.getType();
                         }
                     } else {
-                        logs.add(LogEntry.error(expression.getSource(), LogEntryCode.SYMBOL_ALREADY_IN_SCOPE));
+                        logs.add(LogEntry.error(expression.getSource(), LogEntryCode.NO_SUCH_SYMBOL));
                     }
                 }
                 case LogicalNotExpression logicalNotExpression -> {
@@ -335,8 +356,6 @@ public final class Annotations {
                 default -> {
                 }
             }
-
-            // TODO: add more inference rules. I.e how do we infer return type of operators?
 
             expression.setType(typeReference);
             return typeReference;
