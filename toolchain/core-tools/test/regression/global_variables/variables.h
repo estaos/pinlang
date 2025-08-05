@@ -21,4 +21,5 @@ extern int16 myTypedInt;
 extern int16 noValue;
 extern char *myNativeString;
 extern void* addressOfMyInt;
+extern void* nullPtr;
 #endif // VARIABLES_H_

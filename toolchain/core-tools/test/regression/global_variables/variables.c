@@ -4,3 +4,4 @@ int16 myTypedInt = 4;
 int16 noValue;
 char *myNativeString = "Hello \b World";
 void* addressOfMyInt = (&myInt);
+void* nullPtr = NULL;

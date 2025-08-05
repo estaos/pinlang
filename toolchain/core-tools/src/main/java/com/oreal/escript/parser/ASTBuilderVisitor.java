@@ -5,18 +5,21 @@ import com.oreal.escript.parser.ast.Argument;
 import com.oreal.escript.parser.ast.AssignmentExpression;
 import com.oreal.escript.parser.ast.BlockExpression;
 import com.oreal.escript.parser.ast.BooleanLiteralExpression;
+import com.oreal.escript.parser.ast.BreakStatement;
 import com.oreal.escript.parser.ast.CallableCode;
 import com.oreal.escript.parser.ast.CallableCodeExpression;
 import com.oreal.escript.parser.ast.CallableType;
 import com.oreal.escript.parser.ast.CharLiteralExpression;
 import com.oreal.escript.parser.ast.CharSequenceLiteralExpression;
 import com.oreal.escript.parser.ast.CompilationUnit;
+import com.oreal.escript.parser.ast.ContinueStatement;
 import com.oreal.escript.parser.ast.ExplicitCastExpression;
 import com.oreal.escript.parser.ast.Expression;
 import com.oreal.escript.parser.ast.FunctionCallExpression;
 import com.oreal.escript.parser.ast.IfStatement;
 import com.oreal.escript.parser.ast.Import;
 import com.oreal.escript.parser.ast.NamedValueSymbol;
+import com.oreal.escript.parser.ast.NullExpression;
 import com.oreal.escript.parser.ast.NumberLiteralExpression;
 import com.oreal.escript.parser.ast.ReturnStatement;
 import com.oreal.escript.parser.ast.Source;
@@ -175,6 +178,8 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
             return visitCharLiteralExpression(ctx.charLiteralExpression());
         } else if(ctx.assignmentExpression() != null) {
             return visitAssignmentExpression(ctx.assignmentExpression());
+        } else if(ctx.nullExpression() != null) {
+            return visitNullExpression(ctx.nullExpression());
         } else {
             throw new IllegalArgumentException("Unknown expression " + ctx);
         }
@@ -194,6 +199,10 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
             return visitAssignmentStatement(ctx.assignmentStatement());
         } else if(ctx.ifStatement() != null) {
             return visitIfStatement(ctx.ifStatement());
+        } else if(ctx.continueStatement() != null) {
+            return visitContinueStatement(ctx.continueStatement());
+        } else if(ctx.breakStatement() != null) {
+            return visitBreakStatement(ctx.breakStatement());
         } else {
             throw new IllegalArgumentException("Unknown statement " + ctx);
         }
@@ -236,6 +245,16 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
     }
 
     @Override
+    public ContinueStatement visitContinueStatement(EScriptParser.ContinueStatementContext ctx) {
+        return new ContinueStatement(getNodeSource(file, ctx));
+    }
+
+    @Override
+    public BreakStatement visitBreakStatement(EScriptParser.BreakStatementContext ctx) {
+        return new BreakStatement(getNodeSource(file, ctx));
+    }
+
+    @Override
     public NumberLiteralExpression visitNumberLiteralExpression(EScriptParser.NumberLiteralExpressionContext ctx) {
         return new NumberLiteralExpression(getNodeSource(file, ctx), ctx.NUMBER().getText());
     }
@@ -271,6 +290,11 @@ public class ASTBuilderVisitor implements EScriptParserVisitor<Object> {
                 ctx.IDENTIFIER().getText(),
                 null,0, List.of()
         ));
+    }
+
+    @Override
+    public NullExpression visitNullExpression(EScriptParser.NullExpressionContext ctx) {
+        return new NullExpression(getNodeSource(file, ctx));
     }
 
     @Override

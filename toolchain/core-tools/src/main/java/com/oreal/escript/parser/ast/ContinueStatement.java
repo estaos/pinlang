@@ -1,8 +1,9 @@
 package com.oreal.escript.parser.ast;
 
 public class ContinueStatement extends Expression {
-    public ContinueStatement() {
+    public ContinueStatement(Source source) {
         super(null);
+        setSource(source);
     }
 
     @Override

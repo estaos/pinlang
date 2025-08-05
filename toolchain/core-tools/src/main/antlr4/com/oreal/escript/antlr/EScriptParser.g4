@@ -44,6 +44,7 @@ primaryExpression
     : numberLiteralExpression
     | charSequenceExpression
     | typePassExpression
+    | nullExpression
     | symbolValueExpression
     | booleanLiteralExpression
     | charLiteralExpression
@@ -57,6 +58,8 @@ statement
     | statementsBlock
     | assignmentStatement
     | ifStatement
+    | continueStatement
+    | breakStatement
     ;
 
 ifStatement
@@ -79,6 +82,14 @@ variableDeclarationStatement
 
 assignmentStatement
     : assignmentExpression SC
+    ;
+
+continueStatement
+    : CONTINUE_
+    ;
+
+breakStatement
+    : BREAK_
     ;
 
 statementsBlock
@@ -112,6 +123,10 @@ multilineCharSequenceExpression
 
 typePassExpression
     : HASH IDENTIFIER
+    ;
+
+nullExpression
+    : NULL_
     ;
 
 symbolValueExpression

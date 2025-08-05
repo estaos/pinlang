@@ -5,9 +5,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
-@AllArgsConstructor
 @Data
 public class NullExpression extends Expression {
+    public NullExpression(Source source) {
+        setSource(source);
+    }
+
     @Override
     public boolean isConstExpression() {
         return true;

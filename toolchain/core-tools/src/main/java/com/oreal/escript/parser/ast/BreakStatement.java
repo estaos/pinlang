@@ -1,8 +1,9 @@
 package com.oreal.escript.parser.ast;
 
 public class BreakStatement extends Expression {
-    public BreakStatement() {
+    public BreakStatement(Source source) {
         super(null);
+        setSource(source);
     }
 
     @Override

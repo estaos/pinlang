@@ -6,3 +6,5 @@ var noValue: int16;
 var myNativeString = "Hello \b World"; 
 
 var addressOfMyInt = myInt as any;
+
+var nullPtr = null;
