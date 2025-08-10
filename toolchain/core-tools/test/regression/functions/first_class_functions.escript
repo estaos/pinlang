@@ -34,7 +34,10 @@ function main(): int32 {
     }));
 
     var someInt: double = 256;
-    printf("Callable with arg passed %f and returned %f", someInt, callCallableWithArg(someInt, (arg: double): double => arg));
+    printf("Callable with arg passed %f and returned %f\n", someInt, callCallableWithArg(someInt, (arg: double): double => arg));
+
+    supplier = (): double => 512;
+    printf("Lambda Assigned returned %f\n", callNoArgsCallable(supplier));
 
     return 0;
 }
