@@ -26,8 +26,8 @@ public class AstAnnotator {
     public static AstAnnotator getDefaultAnnotator() {
         return new AstAnnotator(List.of(
                 new RegisterSymbolsAnnotationStep(),
-                new AnnotateUserTypesAnnotationStep(),
-                new GlobalVariableDeclarationAnnotationStep()
+                new GlobalVariableDeclarationAnnotationStep(),
+                new AnnotateUserTypesAnnotationStep()
         ));
     }
 }

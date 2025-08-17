@@ -27,12 +27,17 @@ public class Stdio {
         CallableType scanFCallableType = getScanFCallableType();
         NamedValueSymbol scanFCallable = getNamedValueSymbol("scanf", scanFCallableType, 0);
 
+        CallableType scanFSCallableType = getScanFSCallableType();
+        NamedValueSymbol scanFSCallable = getNamedValueSymbol("scanf_s", scanFSCallableType, 0);
+
         return new NativeSymbols(List.of(
                 printFCallableType,
-                scanFCallableType
+                scanFCallableType,
+                scanFSCallableType
         ), List.of(
                 printFCallable,
-                scanFCallable
+                scanFCallable,
+                scanFSCallable
         ));
     }
 
@@ -52,6 +57,18 @@ public class Stdio {
         return new CallableType(
                 Source.defaultSource(file),
                 String.format("scanf_%s", CALLABLE_TYPE_SIGIL),
+                List.of(),
+                "",
+                List.of(getNamedValueSymbol("format", "char", 1)),
+                TypeReference.ofType("int64"),
+                true
+        );
+    }
+
+    private static CallableType getScanFSCallableType() {
+        return new CallableType(
+                Source.defaultSource(file),
+                String.format("scanf_s_%s", CALLABLE_TYPE_SIGIL),
                 List.of(),
                 "",
                 List.of(getNamedValueSymbol("format", "char", 1)),

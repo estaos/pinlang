@@ -1,16 +1,21 @@
 import extern "stdio.h";
 import extern "stdlib.h";
 
+var NAME_BUFFER_SIZE: int64 = 100;
+
 function main(): int32 {
-    var name = calloc(100 as int64, sizeof(#char));
+    var namePtr = calloc(NAME_BUFFER_SIZE, sizeof(#char));
+    var name = namePtr as char[];
+
     printf("Please enter your name: ");
-    scanf("%[^\n]s", name);
+    scanf_s("%[^\n]s", name);
 
     var age: int64;
     printf("Please enter your age (years): ");
-    scanf("%d", age as any);
+    scanf_s("%lld", age as any);
 
-    printf("Your name is %s and you are %d years old.", name, age);
+    printf("Your name is %s and you are %lld years old.", name, age);
 
-    free(name);
+    free(namePtr);
+    return 0;
 }

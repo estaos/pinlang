@@ -116,12 +116,11 @@ public final class Annotations {
             // Not allowed to cast to types other than any outside of project scope
             logs.add(LogEntry.error(expression.getSource(), LogEntryCode.EXPRESSION_IS_NOT_CONST));
         } else {
-            // All other castings are valid if type being cast to is a subtype of type being cast from
             @Nullable TypeReference operandType = getExpressionTypeInFavorOfHint(operand, targetType, scope, logs);
             if(operandType == null) {
                 logs.add(LogEntry.error(expression.getSource(), LogEntryCode.NO_TYPE_INFORMATION));
             } else {
-                if(!isSubType(targetType, operandType)) {
+                if(!operandType.getName().equals("any") && !isSubType(targetType, operandType)) {
                     logs.add(LogEntry.error(expression.getSource(), LogEntryCode.TYPE_MISMATCH));
                 }
             }
