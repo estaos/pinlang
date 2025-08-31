@@ -135,7 +135,7 @@ public class ClangCodeGenerator implements  CodeGenerator {
     }
 
     private String getCIncludes(List<Import> imports) {
-        return imports.stream().map(importItem -> importItem.getFile().toPath().toString())
+        return imports.stream().map(importItem -> importItem.getFile().toPath().getFileName().toString())
                 .map(path -> String.format("#include \"%s\"\n", path.replace("\\", "/")
                         .replace(ES_EXTENSION, ".h")))
                 .collect(Collectors.joining());
@@ -153,6 +153,7 @@ public class ClangCodeGenerator implements  CodeGenerator {
     private String getHeaderDefinitionName(Path path) {
         return path.toString()
                 .replace(path.getFileSystem().getSeparator(), "_")
+                .replace(":", "_")
                 .replace(ES_EXTENSION, "_H_")
                 .replace(".", "_").toUpperCase();
     }
