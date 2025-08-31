@@ -1,0 +1,22 @@
+package org.estaos.pin.core.parser.ast;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
+
+@Setter
+@Getter
+public class BlockExpression extends Expression {
+    private List<Expression> statements;
+
+    public BlockExpression(Source source, List<Expression> statements) {
+        setSource(source);
+        this.statements = statements;
+    }
+
+    @Override
+    public boolean isConstExpression() {
+        return false;
+    }
+}

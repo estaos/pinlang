@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="16a71803-4fe9-4b7f-be5d-31734637e153" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/cli/README.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/examples/hello.escript" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/antlr4/com/oreal/escript/antlr/EScriptLexer.g4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/antlr4/com/oreal/escript/antlr/EScriptParser.g4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/codegen/ClangCodeGenerator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/codegen/CodeGenerator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/codegen/outputs/ClangRuntime.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/codegen/outputs/File.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/compiler/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/extern/Assert.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/extern/AstUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/extern/NativeSymbols.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/extern/Stdio.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/extern/Stdlib.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ASTBuilderVisitor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/AntlrErrorListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/CompilationUnitParser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/DefaultCompilationUnitParser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ExternalImportResolver.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/Parser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/AddExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/Argument.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/AssignmentExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/BinaryOperatorExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/BitwiseAndExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/BitwiseLeftShift.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/BitwiseNotExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/BitwiseOrExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/BitwiseRightShift.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/BitwiseXorExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/BlockExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/BooleanLiteralExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/BreakStatement.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/CallableCode.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/CallableCodeExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/CallableType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/CharLiteralExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/CharSequenceLiteralExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/CompareEqualToExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/CompareGreaterThanEqualToExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/CompareGreaterThanExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/CompareLessThanEqualToExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/CompareLessThanExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/CompareNotEqualToExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/CompilationUnit.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/ContinueStatement.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/DecrementExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/DivisionExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/DoWhileLoop.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/ExplicitCastExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/Expression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/ForEachLoop.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/ForLoop.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/FunctionCallExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/IfStatement.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/Import.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/IncrementExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/LogicalAndExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/LogicalNotExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/LogicalOrExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/ModulusExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/MultiplyExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/NamedValueSymbol.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/NullExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/NumberLiteralExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/ReturnStatement.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/Source.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/Struct.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/SubtractExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/Symbol.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/SymbolValueExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/Trait.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/Type.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/TypeParameter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/TypePassExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/TypeReference.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/VariableDeclaration.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/ast/WhileLoop.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/logging/LogEntry.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/logging/LogEntryCode.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/parser/logging/LogEntryType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/semantics/AstAnnotator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/semantics/Scope.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/semantics/filters/AnnotateUserTypesAnnotationStep.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/semantics/filters/AnnotationStep.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/semantics/filters/Annotations.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/semantics/filters/GlobalVariableDeclarationAnnotationStep.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/main/java/com/oreal/escript/semantics/filters/RegisterSymbolsAnnotationStep.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/test/java/codegen/ClangCodeGeneratorTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/test/java/codegen/test_utils/CodeGeneratorTestUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/src/test/java/com/oreal/escript/parser/ParserTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test.escript" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test/regression.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test/regression/control_flow/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test/regression/control_flow/main.escript" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test/regression/functions/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test/regression/functions/first_class_functions.escript" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test/regression/functions/hello_empty.escript" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test/regression/functions/hello_empty_with_rtype.escript" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test/regression/functions/hello_world.escript" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test/regression/functions/scan_input.escript" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test/regression/functions/typedef.escript" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test/regression/functions/var_args.escript" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test/regression/global_variables/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test/regression/global_variables/main.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test/regression/global_variables/variables.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test/regression/global_variables/variables.escript" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test/regression/global_variables/variables.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test/regression/imports/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test/regression/imports/file_1.escript" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test/regression/imports/file_2.escript" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../toolchain/core-tools/test/regression/imports/main.c" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 4
+}]]></component>
+  <component name="ProjectId" id="323h6LoazBaUcytg03MLlUz5qRt" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Main.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/Bmgut/Desktop/electronic-script/src/transpiler"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="16a71803-4fe9-4b7f-be5d-31734637e153" name="Changes" comment="" />
+      <created>1756654990678</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1756654990678</updated>
+    </task>
+    <servers />
+  </component>
+</project>
