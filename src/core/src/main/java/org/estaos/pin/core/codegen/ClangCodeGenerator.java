@@ -67,7 +67,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class ClangCodeGenerator implements  CodeGenerator {
-    private final String ES_EXTENSION = ".escript";
+    private final String ES_EXTENSION = ".pin";
     public final List<LogEntry> logs = new LinkedList<>();
 
     @Override

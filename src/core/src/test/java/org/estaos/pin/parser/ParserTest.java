@@ -19,11 +19,11 @@ public class ParserTest {
     public void should_return_main_compilation_unit() throws IOException {
         final var mockCompilationUnitParser = mock(CompilationUnitParser.class);
         when(mockCompilationUnitParser.parseImport(any(), any())).thenReturn(new CompilationUnit(
-                new File("main.escript"), List.of(), List.of(), List.of()));
+                new File("main.pin"), List.of(), List.of(), List.of()));
 
         final var instance = new Parser(mockCompilationUnitParser);
-        final CompilationUnit returnValue = instance.parse(new File("main.escript"));
+        final CompilationUnit returnValue = instance.parse(new File("main.pin"));
 
-        assertEquals(new File("main.escript"), returnValue.getSource());
+        assertEquals(new File("main.pin"), returnValue.getSource());
     }
 }
