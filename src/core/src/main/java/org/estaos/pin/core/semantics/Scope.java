@@ -22,8 +22,8 @@ public class Scope {
     /// Represents a scope of symbols that is imported under an alias.
     ///
     /// ```
-    /// import "abc.escript"
-    /// import "def.escript" as name
+    /// import "abc.pin"
+    /// import "def.pin" as name
     /// ```
     ///
     /// In the above example, contents of abc will be added under this scope, while contents

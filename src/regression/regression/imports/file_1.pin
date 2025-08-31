@@ -1,8 +1,8 @@
 // Import file 2
-import "file_2.escript";
+import "file_2.pin";
 
 // Test double import
-import "file_2.escript";
+import "file_2.pin";
 
 // Import c header file
 import extern "stdio.h";

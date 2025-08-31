@@ -16,8 +16,8 @@ import java.util.List;
 
 public class CodeGeneratorTestUtils {
     public static CompilationUnit get2ScriptCompilationUnit() {
-        var file = new File("abc/script2.escript");
-        var mainFile = new File("main.escript");
+        var file = new File("abc/script2.pin");
+        var mainFile = new File("main.pin");
         var importedCompilationUnit = new CompilationUnit(file, List.of(), List.of(), List.of());
         var import1 = new Import("", false, new Source(mainFile, 0, 0, 0), file, importedCompilationUnit);
 
@@ -27,7 +27,7 @@ public class CodeGeneratorTestUtils {
 
     public static CompilationUnit getCompilationUnitWithExternalStdioImport() {
         var file = new File("stdio.h");
-        var mainFile = new File("main.escript");
+        var mainFile = new File("main.pin");
         var importedCompilationUnit = new CompilationUnit(file, List.of(), List.of(), List.of());
         var import1 = new Import("", true, new Source(mainFile, 0, 0, 0), file, importedCompilationUnit);
 
@@ -69,7 +69,7 @@ public class CodeGeneratorTestUtils {
         );
 
         return  new CompilationUnit(
-                new File("main.escript"), List.of(), symbols, List.of());
+                new File("main.pin"), List.of(), symbols, List.of());
     }
 
     public static CompilationUnit getVoidFunctionWithNoStatementsCompilationUnit() {
@@ -86,7 +86,7 @@ public class CodeGeneratorTestUtils {
         var functionSymbol = new NamedValueSymbol("myFunction", typeReference, source, true,
                 false, "", new CallableCodeExpression(null, callableCode), false);
 
-        return new CompilationUnit(new File("main.escript"), List.of(), List.of(functionSymbol),
+        return new CompilationUnit(new File("main.pin"), List.of(), List.of(functionSymbol),
                 List.of(callableType), List.of(callableCode));
     }
 
@@ -113,7 +113,7 @@ public class CodeGeneratorTestUtils {
                 false, "", new CallableCodeExpression(null, callableCode), false);
 
         var symbols = List.of(functionSymbol);
-        return new CompilationUnit(new File("main.escript"), List.of(), symbols,
+        return new CompilationUnit(new File("main.pin"), List.of(), symbols,
                 List.of(callableType), List.of(callableCode));
     }
 }
