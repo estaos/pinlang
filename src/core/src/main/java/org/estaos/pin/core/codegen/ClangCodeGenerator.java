@@ -233,7 +233,7 @@ public class ClangCodeGenerator implements  CodeGenerator {
 
     private static String asterisks(int arrayDimensions) {
         return IntStream.range(0, arrayDimensions)
-                .mapToObj(_ -> "*")
+                .mapToObj(count -> "*")
                 .collect(Collectors.joining());
     }
 

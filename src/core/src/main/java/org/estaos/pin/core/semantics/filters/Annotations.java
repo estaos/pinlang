@@ -214,19 +214,19 @@ public final class Annotations {
                     Type smallestFittingType = getSmallestFittingTypeForNumberLiteral(numberLiteralExpression, scope);
                     typeReference = TypeReference.ofType(smallestFittingType);
                 }
-                case BooleanLiteralExpression _ -> {
+                case BooleanLiteralExpression ignored -> {
                     Type booleanType = scope.resolveType("boolean");
                     typeReference = TypeReference.ofType(booleanType);
                 }
-                case CharLiteralExpression _ -> {
+                case CharLiteralExpression ignored -> {
                     Type charType = scope.resolveType("char");
                     typeReference = TypeReference.ofType(charType);
                 }
-                case CharSequenceLiteralExpression _ -> {
+                case CharSequenceLiteralExpression ignored -> {
                     Type charSequenceType = scope.resolveType("char");
                     typeReference = TypeReference.ofType(charSequenceType, 1);
                 }
-                case NullExpression _ -> {
+                case NullExpression ignored -> {
                     Type anyType = scope.resolveType("any");
                     typeReference = TypeReference.ofType(anyType);
                 }
