@@ -1,0 +1,24 @@
+name: Regression Tests
+
+on: pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: graalvm/setup-graalvm@v1
+      with:
+        java-version: '22'
+        distribution: 'graalvm'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Test & Install core
+      working-directory: ./src/core
+      run: mvn clean install
+
+    - name: Test and install transpiler
+      working-directory: ./src/transpiler
+      run: mvn clean install
