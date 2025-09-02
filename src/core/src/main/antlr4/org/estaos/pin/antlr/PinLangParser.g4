@@ -30,42 +30,42 @@ variableDeclarationWithNoInitialisation
     ;
 
 variableDeclarationWithInitialisation
-    : VAR_ variableName (CO typeReference)? EQ expression2 SC
+    : VAR_ variableName (CO typeReference)? EQ expression SC
     ;
 
-expression2
-    : expression2 functionCallArgumentEnclosure
+expression
+    : expression functionCallArgumentEnclosure
     | typePassExpression
-    | anonymousFunctionHeader EG expression2    // lambda
+    | anonymousFunctionHeader EG expression    // lambda
     | anonymousFunctionHeader statementsBlock   // anonymous function
-    | expression2 explicitTypeCastSigil
-    | NOT expression2
-    | SQUIG expression2
-    | expression2 ST expression2
-    | expression2 SL expression2
-    | expression2 PC expression2
-    | expression2 PL expression2
-    | expression2 MINUS expression2
-    | expression2 LTLT expression2
-    | expression2 GTGT expression2
-    | expression2 LT expression2
-    | expression2 LTEQ expression2
-    | expression2 GT expression2
-    | expression2 GTEQ expression2
-    | expression2 EE expression2
-    | expression2 NE expression2
-    | expression2 A expression2
-    | expression2 CIR expression2
-    | expression2 P expression2
-    | expression2 AA expression2
-    | expression2 PP expression2
-    | variableName EQ expression2
-    | OP expression2 CP // In brackets
-    | primaryExpression2
+    | expression explicitTypeCastSigil
+    | NOT expression
+    | SQUIG expression
+    | expression ST expression
+    | expression SL expression
+    | expression PC expression
+    | expression PL expression
+    | expression MINUS expression
+    | expression LTLT expression
+    | expression GTGT expression
+    | expression LT expression
+    | expression LTEQ expression
+    | expression GT expression
+    | expression GTEQ expression
+    | expression EE expression
+    | expression NE expression
+    | expression A expression
+    | expression CIR expression
+    | expression P expression
+    | expression AA expression
+    | expression PP expression
+    | variableName EQ expression
+    | OP expression CP // In brackets
+    | primaryExpression
     ;
 
 // Primary expressions are expressions that cannot have other expressions
-primaryExpression2
+primaryExpression
     : numberLiteralExpression
     | charSequenceExpression
     | nullExpression
@@ -88,25 +88,25 @@ statement
     ;
 
 ifStatement
-    : IF_ OP expression2 CP statementsBlock
+    : IF_ OP expression CP statementsBlock
       elseIfBlock*
       elseBlock?
     ;
 
 whileLoopStatement
-    : WHILE_ OP expression2 CP statementsBlock
+    : WHILE_ OP expression CP statementsBlock
     ;
 
 doWhileLoopStatement
-    : DO_ statementsBlock WHILE_ OP expression2 CP SC
+    : DO_ statementsBlock WHILE_ OP expression CP SC
     ;
 
 forLoopStatement
-    : FOR_ OP variableDeclaration? expression2 SC expression2 CP statementsBlock
+    : FOR_ OP variableDeclaration? expression SC expression CP statementsBlock
     ;
 
 returnStatement
-    : RETURN_ expression2 SC
+    : RETURN_ expression SC
     ;
 
 variableDeclarationStatement
@@ -122,7 +122,7 @@ breakStatement
     ;
 
 expressionStatement
-    : expression2 SC
+    : expression SC
     ;
 
 statementsBlock
@@ -130,7 +130,7 @@ statementsBlock
     ;
 
 elseIfBlock
-    : ELSE_ IF_ OP expression2 CP statementsBlock
+    : ELSE_ IF_ OP expression CP statementsBlock
     ;
 
 elseBlock
@@ -221,7 +221,7 @@ functionParameter
     ;
 
 functionCallArgumentEnclosure
-    : OP (expression2 (C expression2)*)? CP
+    : OP (expression (C expression)*)? CP
     ;
 
 functionReturnType
