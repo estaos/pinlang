@@ -15,9 +15,9 @@ jobs:
         distribution: 'graalvm'
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Test & Install core
-      working-directory: ./src/core
-      run: mvn clean install
+    - name: Run regression
+      working-directory: ./src/regression
+      run: ./regression.sh
 
     - name: Test and install transpiler
       working-directory: ./src/transpiler
