@@ -37,8 +37,8 @@ jobs:
         env:
           TAG: ${{ env.TAG }}
 
-      - name: Build Transpiler Executable
-        working-directory: ./src/transpiler
+      - name: Build CLI Executable
+        working-directory: ./src/cli
         run: mvn -Pnative package -Drevision=${TAG}
         env:
           TAG: ${{ env.TAG }}
@@ -63,5 +63,5 @@ jobs:
           prerelease: ${{ env.PRERELEASE }}
           files: |
             src/core/target/*.jar
-            src/transpiler/target/*.jar
-            src/transpiler/target/*.exe
+            src/cli/target/*.jar
+            src/cli/target/*.exe
