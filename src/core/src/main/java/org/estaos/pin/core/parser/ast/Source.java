@@ -14,8 +14,8 @@ import java.io.File;
 public class Source {
     private File file;
     private int lineNumber;
-    private int startColumn;
-    private int endColumn;
+    private int startIndex;
+    private int endIndex;
 
     public static Source defaultSource(File file) {
         return new Source(file, -1, 0, -1);
