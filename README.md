@@ -32,7 +32,7 @@ function main(): int32 {
 Run it with:
 
 ```bash
-> pin main.pin; clang main.c; ./a
+> pin emit main.pin; clang main.c; ./a
 ```
 
 ## Installation (Windows)

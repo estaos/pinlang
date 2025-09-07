@@ -18,6 +18,13 @@
     </properties>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
@@ -80,6 +87,18 @@
             <groupId>org.estaos.pin</groupId>
             <artifactId>core</artifactId>
             <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli</artifactId>
+            <version>4.7.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli-codegen</artifactId>
+            <version>4.7.7</version>
         </dependency>
     </dependencies>
 </project>

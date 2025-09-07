@@ -13,7 +13,7 @@ cd ./regression/imports
 rm -f a.*
 rm -f file_*.h
 rm -f file_*.c
-./../../../cli/target/pin "file_1.pin"
+./../../../cli/target/pin emit "file_1.pin"
 clang main.c file_1.c file_2.c
 ./a
 cd ../../
@@ -24,7 +24,7 @@ cd ./regression/global_variables
 rm -f a.*
 rm -f *.h
 rm -f variables.c
-./../../../cli/target/pin "variables.pin"
+./../../../cli/target/pin emit "variables.pin"
 clang main.c variables.c
 ./a
 cd ../../
@@ -35,7 +35,7 @@ cd ./regression/functions
 rm -f a.*
 rm -f *.h
 rm -f *.c
-./../../../cli/target/pin "hello_empty.pin"
+./../../../cli/target/pin emit "hello_empty.pin"
 clang hello_empty.c
 ./a
 cd ../../
@@ -46,7 +46,7 @@ cd ./regression/functions
 rm -f a.*
 rm -f *.h
 rm -f *.c
-./../../../cli/target/pin "hello_empty_with_rtype.pin"
+./../../../cli/target/pin emit "hello_empty_with_rtype.pin"
 clang hello_empty_with_rtype.c
 ./a
 cd ../../
@@ -57,7 +57,7 @@ cd ./regression/functions
 rm -f a.*
 rm -f *.h
 rm -f *.c
-./../../../cli/target/pin "typedef.pin"
+./../../../cli/target/pin emit "typedef.pin"
 clang typedef.c
 ./a
 cd ../../
@@ -68,7 +68,7 @@ cd ./regression/functions
 rm -f a.*
 rm -f *.h
 rm -f *.c
-./../../../cli/target/pin "hello_world.pin"
+./../../../cli/target/pin emit "hello_world.pin"
 clang hello_world.c
 ./a
 cd ../../
@@ -79,7 +79,7 @@ cd ./regression/functions
 rm -f a.*
 rm -f *.h
 rm -f *.c
-./../../../cli/target/pin "scan_input.pin"
+./../../../cli/target/pin emit "scan_input.pin"
 clang scan_input.c
 ./a <<EOF
 James Bond
@@ -93,7 +93,7 @@ cd ./regression/functions
 rm -f a.*
 rm -f *.h
 rm -f *.c
-./../../../cli/target/pin "first_class_functions.pin"
+./../../../cli/target/pin emit "first_class_functions.pin"
 clang first_class_functions.c
 ./a
 cd ../../
@@ -104,7 +104,7 @@ cd ./regression/control_flow
 rm -f a.*
 rm -f *.h
 rm -f *.c
-./../../../cli/target/pin "main.pin"
+./../../../cli/target/pin emit "main.pin"
 clang main.c
 ./a
 cd ../../
