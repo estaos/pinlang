@@ -21,13 +21,7 @@ public class AntlrErrorListener extends BaseErrorListener {
 
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
-        List<String> stack = ((Parser) recognizer).getRuleInvocationStack();
-        Collections.reverse(stack);
-        String ruleStack = "rule stack: " + stack;
-        String error = "line "+line+":"+charPositionInLine+" at "+offendingSymbol+": "+msg;
-
-        Source source = new Source(fileBeingParsed, line, charPositionInLine, charPositionInLine+1);
-        destination.add(LogEntry.warning(source, LogEntryCode.SYNTAX_LOG, ruleStack, e));
-        destination.add(LogEntry.error(source, LogEntryCode.SYNTAX_LOG, error, e));
+        Source source = new Source(fileBeingParsed, line, -1, -1);
+        destination.add(LogEntry.error(source, LogEntryCode.SYNTAX_LOG, msg, e));
     }
 }
