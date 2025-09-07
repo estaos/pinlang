@@ -44,7 +44,13 @@ Run it with:
 
    ```bash
    > pin
-   No source to compile
+   Usage: pin [-hV] [COMMAND]
+   pinlang cli
+     -h, --help      Show this help message and exit.
+     -V, --version   Print version information and exit.
+   Commands:
+     emit     Transpile a pin file to c source and header files
+     version  Print pinlang version
    ```
 
 ## Developer Setup (Contributing)
