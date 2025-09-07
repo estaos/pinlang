@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.estaos.pin</groupId>
-    <artifactId>transpiler</artifactId>
+    <artifactId>cli</artifactId>
     <version>${revision}</version>
 
     <properties>
@@ -34,7 +34,7 @@
                 </executions>
                 <configuration>
                     <imageName>pin</imageName>
-                    <mainClass>org.estaos.pin.transpiler.Main</mainClass>
+                    <mainClass>org.estaos.pin.cli.Main</mainClass>
                 </configuration>
             </plugin>
 
@@ -43,7 +43,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.5.1</version>
                 <configuration>
-                    <mainClass>org.estaos.pin.transpiler.Main</mainClass>
+                    <mainClass>org.estaos.pin.cli.Main</mainClass>
                 </configuration>
             </plugin>
 
@@ -58,7 +58,7 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>org.estaos.pin.transpiler.Main</mainClass>
+                                    <mainClass>org.estaos.pin.cli.Main</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

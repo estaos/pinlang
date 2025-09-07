@@ -23,6 +23,6 @@ jobs:
       working-directory: ./src/regression
       run: ./regression.sh
 
-    - name: Test and install transpiler
-      working-directory: ./src/transpiler
+    - name: Test and install cli
+      working-directory: ./src/cli
       run: mvn clean install

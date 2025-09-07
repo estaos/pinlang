@@ -1,4 +1,4 @@
-package org.estaos.pin.transpiler;
+package org.estaos.pin.cli;
 
 import org.estaos.pin.core.codegen.ClangCodeGenerator;
 import org.estaos.pin.core.codegen.outputs.File;

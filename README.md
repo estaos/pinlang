@@ -37,8 +37,8 @@ Run it with:
 
 ## Installation (Windows)
 
-1. Download the transpiler [here](https://github.com/estaos/pinlang/releases).
-2. Place the transpiler in a folder of your choice and add that folder to your `PATH`.
+1. Download the cli [here](https://github.com/estaos/pinlang/releases).
+2. Place the cli in a folder of your choice and add that folder to your `PATH`.
 3. After refreshing your environment variables (usually by restarting your terminal), you should be able to use the `pin` command.
    Test it by running:
 
