@@ -5,6 +5,12 @@
   <artifactId>cli</artifactId>
   <version>${revision}</version>
   <build>
+    <resources>
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.graalvm.buildtools</groupId>
