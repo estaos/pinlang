@@ -1,0 +1,63 @@
+name: Tag Push Build
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Get pushed tag
+        id: get_tag
+        run: echo "TAG=${GITHUB_REF##*/}" >> $GITHUB_ENV && echo "TAG=${GITHUB_REF##*/}"
+
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: "22"
+          distribution: "graalvm"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install core
+        working-directory: ./src/core
+        run: mvn clean install -Drevision=${TAG}
+        env:
+          TAG: ${{ env.TAG }}
+
+      - name: Build Transpiler Executable
+        working-directory: ./src/transpiler
+        run: mvn -Pnative package -Drevision=${TAG}
+        env:
+          TAG: ${{ env.TAG }}
+
+      - name: Detect prerelease
+        id: detect
+        run: |
+          if [[ "${TAG}" =~ -rc[0-9]+$ ]]; then
+            echo "PRERELEASE=true" >> $GITHUB_ENV
+          else
+            echo "PRERELEASE=false" >> $GITHUB_ENV
+          fi
+        env:
+          TAG: ${{ env.TAG }}
+
+      - name: Upload Release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "${{ env.TAG }}"
+          title: "Pin ${{ env.TAG }}"
+          prerelease: ${{ env.PRERELEASE }}
+          files: |
+            src/core/target/*.jar
+            src/transpiler/target/*.jar
+            src/transpiler/target/*.exe

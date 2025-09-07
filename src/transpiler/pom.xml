@@ -6,12 +6,15 @@
 
     <groupId>org.estaos.pin</groupId>
     <artifactId>transpiler</artifactId>
-    <version>0.1.1</version>
+    <version>${revision}</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!--Set default when running locally-->
+        <revision>0.0.1-SNAPSHOT</revision>
     </properties>
 
     <build>
@@ -76,7 +79,7 @@
         <dependency>
             <groupId>org.estaos.pin</groupId>
             <artifactId>core</artifactId>
-            <version>0.1.1</version>
+            <version>${revision}</version>
         </dependency>
     </dependencies>
 </project>
