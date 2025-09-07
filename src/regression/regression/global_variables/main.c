@@ -7,6 +7,6 @@ int main() {
     printf("noValueType (uninitialized): %d\n", noValue);
     printf("myNativeString: %s\n", myNativeString);
 
-    printf("addressOfMyInt: %d\n", addressOfMyInt);
+    printf("addressOfMyInt: %p\n", addressOfMyInt);
     return 0;
 }

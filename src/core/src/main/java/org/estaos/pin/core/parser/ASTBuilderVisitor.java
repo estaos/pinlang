@@ -155,7 +155,7 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
                 .map(this::visitTypeReference)
                 .orElse(null);
 
-        Expression value = visitExpression2(ctx.expression2());
+        Expression value = visitExpression(ctx.expression());
 
         return new NamedValueSymbol(
                 variableName, typeReference,
@@ -164,9 +164,9 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
     }
 
     @Override
-    public Expression visitExpression2(PinLangParser.Expression2Context ctx) {
-        if(ctx.primaryExpression2() != null) {
-            return visitPrimaryExpression2(ctx.primaryExpression2());
+    public Expression visitExpression(PinLangParser.ExpressionContext ctx) {
+        if(ctx.primaryExpression() != null) {
+            return visitPrimaryExpression(ctx.primaryExpression());
         } else if(ctx.typePassExpression() != null) {
             return visitTypePassExpression(ctx.typePassExpression());
         } else if(ctx.statementsBlock() != null && ctx.anonymousFunctionHeader() != null) {
@@ -174,10 +174,10 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
             FunctionDefinition functionDefinition = getAnonymousFunction(ctx.anonymousFunctionHeader(), ctx.statementsBlock());
             pendingFunctionDefinitions.add(functionDefinition);
             return new SymbolValueExpression(getNodeSource(file, ctx), Objects.requireNonNull(functionDefinition.symbol()).getName());
-        } else if(!ctx.expression2().isEmpty()) {
-            Expression left = visitExpression2(ctx.expression2().getFirst());
-            if(ctx.expression2().size() > 1) {
-                Expression right = visitExpression2(ctx.expression2().get(1));
+        } else if(!ctx.expression().isEmpty()) {
+            Expression left = visitExpression(ctx.expression().getFirst());
+            if(ctx.expression().size() > 1) {
+                Expression right = visitExpression(ctx.expression().get(1));
                 return getBinaryExpression(ctx, left, right);
             } else if(ctx.EG() != null) {
                 // lambda
@@ -199,7 +199,7 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
     }
 
     @Override
-    public Expression visitPrimaryExpression2(PinLangParser.PrimaryExpression2Context ctx) {
+    public Expression visitPrimaryExpression(PinLangParser.PrimaryExpressionContext ctx) {
         if(ctx.numberLiteralExpression() != null) {
             return visitNumberLiteralExpression(ctx.numberLiteralExpression());
         } else if(ctx.charSequenceExpression() != null) {
@@ -246,7 +246,7 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
 
     @Override
     public IfStatement visitIfStatement(PinLangParser.IfStatementContext ctx) {
-        Expression expression = visitExpression2(ctx.expression2());
+        Expression expression = visitExpression(ctx.expression());
         BlockExpression blockExpression = visitStatementsBlock(ctx.statementsBlock());
 
         @Nullable BlockExpression elseBlock = Optional.ofNullable(ctx.elseBlock())
@@ -260,14 +260,14 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
 
     @Override
     public WhileLoop visitWhileLoopStatement(PinLangParser.WhileLoopStatementContext ctx) {
-        Expression expression = visitExpression2(ctx.expression2());
+        Expression expression = visitExpression(ctx.expression());
         BlockExpression blockExpression = visitStatementsBlock(ctx.statementsBlock());
         return new WhileLoop(getNodeSource(file, ctx), expression, blockExpression);
     }
 
     @Override
     public DoWhileLoop visitDoWhileLoopStatement(PinLangParser.DoWhileLoopStatementContext ctx) {
-        Expression expression = visitExpression2(ctx.expression2());
+        Expression expression = visitExpression(ctx.expression());
         BlockExpression blockExpression = visitStatementsBlock(ctx.statementsBlock());
         return new DoWhileLoop(getNodeSource(file, ctx), expression, blockExpression);
     }
@@ -285,13 +285,13 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
         // TODO: For now parser does not allow single expression because we need to get this
         // code to be able to tell which expression (first or last) was passed.
         @Nullable Expression comparisonExpression = null;
-        if(!ctx.expression2().isEmpty()) {
-            comparisonExpression = visitExpression2(ctx.expression2().getFirst());
+        if(!ctx.expression().isEmpty()) {
+            comparisonExpression = visitExpression(ctx.expression().getFirst());
         }
 
         @Nullable Expression counterExpression = null;
-        if(ctx.expression2().size() > 1) {
-            counterExpression = visitExpression2(ctx.expression2().get(1));
+        if(ctx.expression().size() > 1) {
+            counterExpression = visitExpression(ctx.expression().get(1));
         }
 
         BlockExpression blockExpression = visitStatementsBlock(ctx.statementsBlock());
@@ -301,7 +301,7 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
 
     @Override
     public ReturnStatement visitReturnStatement(PinLangParser.ReturnStatementContext ctx) {
-        return new ReturnStatement(getNodeSource(file, ctx), visitExpression2(ctx.expression2()));
+        return new ReturnStatement(getNodeSource(file, ctx), visitExpression(ctx.expression()));
     }
 
     @Override
@@ -323,7 +323,7 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
 
     @Override
     public Expression visitExpressionStatement(PinLangParser.ExpressionStatementContext ctx) {
-        return visitExpression2(ctx.expression2());
+        return visitExpression(ctx.expression());
     }
 
     @Override
@@ -482,7 +482,7 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
 
     @Override
     public List<Argument> visitFunctionCallArgumentEnclosure(PinLangParser.FunctionCallArgumentEnclosureContext ctx) {
-        return ctx.expression2().stream().map(this::visitExpression2).map(Argument::new).toList();
+        return ctx.expression().stream().map(this::visitExpression).map(Argument::new).toList();
     }
 
     @Override
@@ -497,7 +497,7 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
 
     @Override
     public IfStatement.ElseIfBlock visitElseIfBlock(PinLangParser.ElseIfBlockContext ctx) {
-        Expression expression = visitExpression2(ctx.expression2());
+        Expression expression = visitExpression(ctx.expression());
         BlockExpression blockExpression = visitStatementsBlock(ctx.statementsBlock());
 
         return new IfStatement.ElseIfBlock(expression, blockExpression);
@@ -594,7 +594,7 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
         return String.format("temp_%s", UUID.randomUUID().toString().replaceAll("-", "_"));
     }
 
-    private Expression getBinaryExpression(PinLangParser.Expression2Context ctx, Expression left, Expression right) {
+    private Expression getBinaryExpression(PinLangParser.ExpressionContext ctx, Expression left, Expression right) {
         BinaryOperatorExpression expression;
 
         if (ctx.ST() != null) {
@@ -641,7 +641,7 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
         return expression;
     }
 
-    private Expression getUnaryExpression(Expression operand, PinLangParser.Expression2Context ctx) {
+    private Expression getUnaryExpression(Expression operand, PinLangParser.ExpressionContext ctx) {
         if(ctx.NOT() != null) {
             return new LogicalNotExpression(getNodeSource(file, ctx), operand);
         } else if(ctx.SQUIG() != null) {
