@@ -12,7 +12,7 @@ A programming language for microcontrollers that feels like JavaScript but compi
 
 1. Not a superset of C
 2. Little to no runtime
-3. Same data types as C
+3. Data types compatible with C data types
 4. Can call C functions and pass Pin functions to C
 5. Robust functionality delivered through its own small, modern standard library
 
@@ -63,4 +63,5 @@ To contribute, make a PR to the `main` branch. Ensure that you also update the v
 ## License
 
 Project license can be found [here](./LICENSE).
+
 
