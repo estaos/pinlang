@@ -58,8 +58,9 @@ Run it with:
 1. Install **Java 22**.
 2. Use **IntelliJ IDEA** (recommended) or any Java IDE/editor.
 
-To contribute, make a PR to the `dev` branch. Ensure that you also update the version in the relevant `.pom` files.
+To contribute, make a PR to the `main` branch. Ensure that you also update the version in the relevant `.pom` files.
 
 ## License
 
 Project license can be found [here](./LICENSE).
+
