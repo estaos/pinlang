@@ -5,152 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d89ffb80-c43b-4f7c-922e-b76f36545b98" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangLexer.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$AnonymousFunctionHeaderContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$ArrayIndexingWithOptionalIndexContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$ArrayTypeReferenceContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$BooleanLiteralExpressionContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$BreakStatementContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$CharLiteralExpressionContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$CharSequenceExpressionContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$CompilationUnitContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$ContinueStatementContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$DoWhileLoopStatementContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$DocumentationCommentLinesContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$ElseBlockContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$ElseIfBlockContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$ExplicitTypeCastSigilContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$ExpressionContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$ExpressionStatementContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$ExternalImportContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$ForLoopStatementContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$FunctionCallArgumentEnclosureContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$FunctionDefinitionContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$FunctionHeaderContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$FunctionParameterContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$FunctionParameterListContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$FunctionReturnTypeContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$FunctionTypeDefContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$FunctionVarArgsIndicatorContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$IfStatementContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$ImportPathContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$LanguageImportContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$MultilineCharSequenceExpressionContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$NonArrayTypeReferenceContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$NullExpressionContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$NumberLiteralExpressionContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$PrimaryExpressionContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$ReturnStatementContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$SingleLineCharSequenceExpressionContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$StatementContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$StatementsBlockContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$SymbolValueExpressionContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$TypePassExpressionContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$TypeReferenceContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$VariableDeclarationContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$VariableDeclarationStatementContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$VariableDeclarationWithInitialisationContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$VariableDeclarationWithNoInitialisationContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$VariableNameContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser$WhileLoopStatementContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParser.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParserBaseListener.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParserBaseVisitor.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParserListener.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/antlr/PinLangParserVisitor.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/codegen/ClangCodeGenerator.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/codegen/CodeGenerator.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/codegen/outputs/ClangRuntime.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/codegen/outputs/File.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/extern/Assert.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/extern/AstUtils.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/extern/NativeSymbols.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/extern/Stdio.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/extern/Stdlib.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ASTBuilderVisitor$FunctionDefinition.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ASTBuilderVisitor.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/AntlrErrorListener.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/CompilationUnitParser.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/DefaultCompilationUnitParser.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ExternalImportResolver.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/Parser.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/AddExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/Argument.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/AssignmentExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/BinaryOperatorExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/BitwiseAndExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/BitwiseLeftShift.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/BitwiseNotExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/BitwiseOrExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/BitwiseRightShift.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/BitwiseXorExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/BlockExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/BooleanLiteralExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/BreakStatement.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/CallableCode.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/CallableCodeExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/CallableType.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/CharLiteralExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/CharSequenceLiteralExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/CompareEqualToExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/CompareGreaterThanEqualToExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/CompareGreaterThanExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/CompareLessThanEqualToExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/CompareLessThanExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/CompareNotEqualToExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/CompilationUnit.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/ContinueStatement.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/DecrementExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/DivisionExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/DoWhileLoop.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/ExplicitCastExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/Expression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/ForEachLoop.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/ForLoop.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/FunctionCallExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/IfStatement$ElseIfBlock.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/IfStatement.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/Import.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/IncrementExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/LogicalAndExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/LogicalNotExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/LogicalOrExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/ModulusExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/MultiplyExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/NamedValueSymbol.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/NullExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/NumberLiteralExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/ReturnStatement.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/Source.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/Struct.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/SubtractExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/Symbol.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/SymbolValueExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/Trait.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/Type.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/TypeParameter.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/TypePassExpression.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/TypeReference.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/VariableDeclaration.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/ast/WhileLoop.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/logging/LogEntry.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/logging/LogEntryCode.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/parser/logging/LogEntryType.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/semantics/AstAnnotator.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/semantics/Scope.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/semantics/filters/AnnotateUserTypesAnnotationStep.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/semantics/filters/AnnotationStep.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/semantics/filters/Annotations.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/semantics/filters/GlobalVariableDeclarationAnnotationStep.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/core/org/estaos/pin/core/semantics/filters/RegisterSymbolsAnnotationStep.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/regression/regression.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/aws.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/src/main/antlr4/org/estaos/pin/antlr/PinLangLexer.g4" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/src/main/antlr4/org/estaos/pin/antlr/PinLangLexer.g4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/src/main/antlr4/org/estaos/pin/antlr/PinLangParser.g4" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/src/main/antlr4/org/estaos/pin/antlr/PinLangParser.g4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/extern/Assert.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/extern/Assert.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/extern/Stdio.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/extern/Stdio.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/extern/Stdlib.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/extern/Stdlib.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/parser/ASTBuilderVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/parser/ASTBuilderVisitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/parser/ast/CallableType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/parser/ast/CallableType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/parser/ast/NamedValueSymbol.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/parser/ast/NamedValueSymbol.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/parser/ast/NumberLiteralExpression.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/parser/ast/NumberLiteralExpression.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/parser/ast/Struct.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/parser/ast/Struct.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/parser/ast/Trait.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/parser/ast/Type.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/parser/ast/Type.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/parser/ast/TypeParameter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/parser/ast/TypeParameter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/parser/ast/TypeReference.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/src/main/java/org/estaos/pin/core/parser/ast/TypeReference.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -168,29 +38,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Application.Main.executor": "Run",
-    "Maven.cli [clean].executor": "Run",
-    "Maven.cli [compile].executor": "Run",
-    "Maven.cli [install].executor": "Run",
-    "Maven.core [clean].executor": "Run",
-    "Maven.core [compile].executor": "Run",
-    "Maven.core [install].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Bmgut/Desktop/electronic-script/src/regression",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.cli [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.cli [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.cli [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.core [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.core [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.core [install].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feat/sound-types&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Bmgut/Desktop/electronic-script/src/regression&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="org.estaos.pin.cli.Main" />

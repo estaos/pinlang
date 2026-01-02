@@ -60,6 +60,16 @@ public class CallableType extends Type {
 
     }
 
+    @Override
+    public boolean canBeCastedTo(Type other) {
+        return false;
+    }
+
+    @Override
+    public boolean canBeAssigned(Type other) {
+        return false;
+    }
+
     /// Reject if any of this params is not other params and is subtype of other params
     private boolean parametersCheck(List<? extends Symbol> otherParameters) {
         if(parameters.size() == otherParameters.size()) {

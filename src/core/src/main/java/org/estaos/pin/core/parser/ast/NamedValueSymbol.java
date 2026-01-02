@@ -37,6 +37,7 @@ public class NamedValueSymbol extends Symbol {
     private @Nullable Expression value;
 
     /// Set to true if this symbol should shadow same symbol in super class.
+    /// TODO: Remove as is not needed in sound types
     private boolean overrides;
 
     public boolean isArray() {

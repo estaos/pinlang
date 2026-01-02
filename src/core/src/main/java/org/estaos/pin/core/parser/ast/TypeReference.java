@@ -18,7 +18,8 @@ public class TypeReference {
     /// Set during annotation.
     private @Nullable Type type;
 
-    private int arrayDimensions;
+    /// Entries in this list are nullable. A null entry basically means that dimension does not have a size yet.
+    private List<Expression> arrayDimensions;
 
     /// Keeps a list of type arguments to this TypeReference.
     ///
@@ -30,18 +31,18 @@ public class TypeReference {
     private List<TypeReference> typeArguments;
 
     public static TypeReference ofType(Type type) {
-        return new TypeReference(type.getName(), type, 0, List.of());
+        return new TypeReference(type.getName(), type, List.of(), List.of());
     }
 
-    public static TypeReference ofType(Type type, int arrayDimensions) {
+    public static TypeReference ofType(Type type, List<Expression> arrayDimensions) {
         return new TypeReference(type.getName(), type, arrayDimensions, List.of());
     }
 
     public static TypeReference ofType(String typeName) {
-        return new TypeReference(typeName, null, 0, List.of());
+        return new TypeReference(typeName, null, List.of(), List.of());
     }
 
-    public static TypeReference ofType(String typeName, int arrayDimensions) {
+    public static TypeReference ofType(String typeName, List<Expression> arrayDimensions) {
         return new TypeReference(typeName, null, arrayDimensions, List.of());
     }
 }

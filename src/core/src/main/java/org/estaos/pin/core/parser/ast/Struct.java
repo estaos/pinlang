@@ -17,5 +17,17 @@ public class Struct extends Type {
     }
 
     private List<NamedValueSymbol> symbols;
+
+    // TODO: Not part of sound types (remove)
     private TypeReference extendsType;
+
+    @Override
+    public boolean canBeCastedTo(Type other) {
+        return false;
+    }
+
+    @Override
+    public boolean canBeAssigned(Type other) {
+        return false;
+    }
 }
