@@ -10,7 +10,7 @@ import org.estaos.pin.core.parser.ast.TypeReference;
 import java.io.File;
 import java.util.List;
 
-import static org.estaos.pin.core.parser.ASTBuilderVisitor.CALLABLE_TYPE_SIGIL;
+import static org.estaos.pin.core.parser.ASTBuilderVisitor.USER_DEFINED_TYPE_SIGIL;
 
 public class Stdio {
     private static final File file = new File("stdio.h");
@@ -44,7 +44,7 @@ public class Stdio {
     private static CallableType getPrintFCallableType() {
         return new CallableType(
                 Source.defaultSource(file),
-                String.format("printf_%s", CALLABLE_TYPE_SIGIL),
+                String.format("printf_%s", USER_DEFINED_TYPE_SIGIL),
                 List.of(),
                 "",
                 List.of(getNamedValueSymbol("format", "char", 1)),
@@ -56,7 +56,7 @@ public class Stdio {
     private static CallableType getScanFCallableType() {
         return new CallableType(
                 Source.defaultSource(file),
-                String.format("scanf_%s", CALLABLE_TYPE_SIGIL),
+                String.format("scanf_%s", USER_DEFINED_TYPE_SIGIL),
                 List.of(),
                 "",
                 List.of(getNamedValueSymbol("format", "char", 1)),
@@ -68,7 +68,7 @@ public class Stdio {
     private static CallableType getScanFSCallableType() {
         return new CallableType(
                 Source.defaultSource(file),
-                String.format("scanf_s_%s", CALLABLE_TYPE_SIGIL),
+                String.format("scanf_s_%s", USER_DEFINED_TYPE_SIGIL),
                 List.of(),
                 "",
                 List.of(getNamedValueSymbol("format", "char", 1)),

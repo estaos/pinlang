@@ -12,7 +12,7 @@ import java.util.List;
 /// force it to be of a given interface. For example:
 ///
 /// ```
-/// function isGreaterThan<T implements Comparable>(T a, T b): boolean {
+/// function isGreaterThan<T is Comparable>(T a, T b): boolean {
 ///     return a.compareTo(b) > 0;
 /// }
 /// ```
@@ -22,7 +22,7 @@ import java.util.List;
 /// Multiple bounds can be specified with the `&` character. For example:
 ///
 /// ```
-/// T implements Comparable & Serializable
+/// T is Comparable & Serializable
 /// ```
 ///
 @Getter

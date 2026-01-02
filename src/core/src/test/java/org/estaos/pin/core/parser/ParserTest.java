@@ -1,7 +1,5 @@
-package org.estaos.pin.parser;
+package org.estaos.pin.core.parser;
 
-import org.estaos.pin.core.parser.CompilationUnitParser;
-import org.estaos.pin.core.parser.Parser;
 import org.estaos.pin.core.parser.ast.CompilationUnit;
 import org.junit.jupiter.api.Test;
 

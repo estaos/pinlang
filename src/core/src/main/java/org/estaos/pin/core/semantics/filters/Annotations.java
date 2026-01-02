@@ -44,6 +44,7 @@ import org.estaos.pin.core.parser.logging.LogEntryCode;
 import org.estaos.pin.core.semantics.Scope;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -90,7 +91,7 @@ public final class Annotations {
             @Nullable TypeReference typeReference = getExpressionTypeInFavorOfHint(namedValueSymbol.getValue(), namedValueSymbol.getType(), scope, logs);
             if(typeReference == null
                     || !namedValueSymbol.getType().getName().equals(typeReference.getName())
-                    || namedValueSymbol.getType().getArrayDimensions() != typeReference.getArrayDimensions()) {
+                    || namedValueSymbol.getType().getArrayDimensions().size() != typeReference.getArrayDimensions().size()) {
                 logs.add(LogEntry.error(namedValueSymbol.getSource(), LogEntryCode.TYPE_MISMATCH));
             }
         }
@@ -224,7 +225,7 @@ public final class Annotations {
                 }
                 case CharSequenceLiteralExpression ignored -> {
                     Type charSequenceType = scope.resolveType("char");
-                    typeReference = TypeReference.ofType(charSequenceType, 1);
+                    typeReference = TypeReference.ofType(charSequenceType, new ArrayList<>(1));
                 }
                 case NullExpression ignored -> {
                     Type anyType = scope.resolveType("any");
@@ -447,7 +448,7 @@ public final class Annotations {
     private void expectBoolean(Expression expression, Scope scope, List<LogEntry> logs) {
         @Nullable TypeReference expressionType = visitExpression(expression, scope, logs);
         if(expressionType == null
-                || expressionType.getArrayDimensions() > 0
+                || expressionType.getArrayDimensions().size() > 0
                 || !expressionType.getName().equals("boolean")) {
             logs.add(LogEntry.error(expression.getSource(), LogEntryCode.EXPRESSION_IS_NOT_BOOLEAN));
         }
@@ -456,7 +457,7 @@ public final class Annotations {
     private void expectNumber(Expression expression, Scope scope, List<LogEntry> logs) {
         @Nullable TypeReference expressionType = visitExpression(expression, scope, logs);
         if(expressionType == null
-                || expressionType.getArrayDimensions() > 0
+                || expressionType.getArrayDimensions().size() > 0
                 || !List.of("double", "float", "int512", "int256", "int128",
                 "int64", "int32", "int16", "int8", "char").contains(expressionType.getName())) {
             logs.add(LogEntry.error(expression.getSource(), LogEntryCode.EXPRESSION_IS_NOT_NUMBER));

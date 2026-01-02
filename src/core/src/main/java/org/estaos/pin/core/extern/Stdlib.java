@@ -10,7 +10,7 @@ import org.estaos.pin.core.parser.ast.TypeReference;
 import java.io.File;
 import java.util.List;
 
-import static org.estaos.pin.core.parser.ASTBuilderVisitor.CALLABLE_TYPE_SIGIL;
+import static org.estaos.pin.core.parser.ASTBuilderVisitor.USER_DEFINED_TYPE_SIGIL;
 
 public class Stdlib {
     private static final File file = new File("stdlib.h");
@@ -54,11 +54,11 @@ public class Stdlib {
     private static CallableType getMallocCallableType() {
         return new CallableType(
                 Source.defaultSource(file),
-                String.format("malloc_%s", CALLABLE_TYPE_SIGIL),
+                String.format("malloc_%s", USER_DEFINED_TYPE_SIGIL),
                 List.of(),
                 "",
                 List.of(getNamedValueSymbol("size", "int64", 0)),
-                TypeReference.ofType("any", 0), // void*
+                TypeReference.ofType("any"), // void*
                 false
         );
     }
@@ -66,14 +66,14 @@ public class Stdlib {
     private static CallableType getCallocCallableType() {
         return new CallableType(
                 Source.defaultSource(file),
-                String.format("calloc_%s", CALLABLE_TYPE_SIGIL),
+                String.format("calloc_%s", USER_DEFINED_TYPE_SIGIL),
                 List.of(),
                 "",
                 List.of(
                         getNamedValueSymbol("count", "int64", 0),
                         getNamedValueSymbol("size", "int64", 0)
                 ),
-                TypeReference.ofType("any", 0),
+                TypeReference.ofType("any"),
                 false
         );
     }
@@ -81,14 +81,14 @@ public class Stdlib {
     private static CallableType getReallocCallableType() {
         return new CallableType(
                 Source.defaultSource(file),
-                String.format("realloc_%s", CALLABLE_TYPE_SIGIL),
+                String.format("realloc_%s", USER_DEFINED_TYPE_SIGIL),
                 List.of(),
                 "",
                 List.of(
                         getNamedValueSymbol("ptr", "any", 0),
                         getNamedValueSymbol("new_size", "int64", 0)
                 ),
-                TypeReference.ofType("any", 0),
+                TypeReference.ofType("any"),
                 false
         );
     }
@@ -96,7 +96,7 @@ public class Stdlib {
     private static CallableType getFreeCallableType() {
         return new CallableType(
                 Source.defaultSource(file),
-                String.format("free_%s", CALLABLE_TYPE_SIGIL),
+                String.format("free_%s", USER_DEFINED_TYPE_SIGIL),
                 List.of(),
                 "",
                 List.of(getNamedValueSymbol("ptr", "any", 0)),
@@ -108,7 +108,7 @@ public class Stdlib {
     private static CallableType getSizeofCallableType() {
         return new CallableType(
                 Source.defaultSource(file),
-                String.format("sizeof_%s", CALLABLE_TYPE_SIGIL),
+                String.format("sizeof_%s", USER_DEFINED_TYPE_SIGIL),
                 List.of(),
                 "",
                 List.of(), TypeReference.ofType("int64"), true

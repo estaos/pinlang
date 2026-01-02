@@ -3,7 +3,10 @@ package org.estaos.pin.core.parser;
 import org.estaos.pin.antlr.PinLangParser;
 import org.estaos.pin.antlr.PinLangParserVisitor;
 import org.estaos.pin.core.parser.ast.AddExpression;
+import org.estaos.pin.core.parser.ast.AddressOfExpression;
 import org.estaos.pin.core.parser.ast.Argument;
+import org.estaos.pin.core.parser.ast.ArrayAccessExpression;
+import org.estaos.pin.core.parser.ast.ArrowAccessExpression;
 import org.estaos.pin.core.parser.ast.AssignmentExpression;
 import org.estaos.pin.core.parser.ast.BinaryOperatorExpression;
 import org.estaos.pin.core.parser.ast.BitwiseAndExpression;
@@ -39,16 +42,20 @@ import org.estaos.pin.core.parser.ast.Import;
 import org.estaos.pin.core.parser.ast.LogicalAndExpression;
 import org.estaos.pin.core.parser.ast.LogicalNotExpression;
 import org.estaos.pin.core.parser.ast.LogicalOrExpression;
+import org.estaos.pin.core.parser.ast.MemberAccessExpression;
 import org.estaos.pin.core.parser.ast.ModulusExpression;
 import org.estaos.pin.core.parser.ast.MultiplyExpression;
 import org.estaos.pin.core.parser.ast.NamedValueSymbol;
 import org.estaos.pin.core.parser.ast.NullExpression;
 import org.estaos.pin.core.parser.ast.NumberLiteralExpression;
+import org.estaos.pin.core.parser.ast.PointerDerefExpression;
 import org.estaos.pin.core.parser.ast.ReturnStatement;
 import org.estaos.pin.core.parser.ast.Source;
+import org.estaos.pin.core.parser.ast.Struct;
 import org.estaos.pin.core.parser.ast.SubtractExpression;
 import org.estaos.pin.core.parser.ast.SymbolValueExpression;
 import org.estaos.pin.core.parser.ast.Type;
+import org.estaos.pin.core.parser.ast.TypeParameter;
 import org.estaos.pin.core.parser.ast.TypePassExpression;
 import org.estaos.pin.core.parser.ast.TypeReference;
 import org.estaos.pin.core.parser.ast.VariableDeclaration;
@@ -62,6 +69,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -73,8 +81,9 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
     /// The file being parsed
     private final File file;
     private final List<FunctionDefinition> pendingFunctionDefinitions = new LinkedList<>();
+    private final List<Struct> pendingStructDefinitions = new LinkedList<>();
 
-    public static final String CALLABLE_TYPE_SIGIL = "_type__";
+    public static final String USER_DEFINED_TYPE_SIGIL = "_type__";
     public static final String CALLABLE_CODE_SIGIL = "_code__";
 
     public ASTBuilderVisitor(File file) {
@@ -87,7 +96,8 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
         imports.addAll(ctx.languageImport().stream().map(this::visitLanguageImport).toList());
         imports.addAll(ctx.externalImport().stream().map(this::visitExternalImport).toList());
 
-        List<NamedValueSymbol> symbols = new LinkedList<>(ctx.variableDeclaration().stream().map(this::visitVariableDeclaration).toList());
+        List<NamedValueSymbol> symbols = new LinkedList<>(ctx.variableDeclaration().stream()
+                .map(this::visitVariableDeclaration).toList());
         List<Type> types = new LinkedList<>(ctx.functionTypeDef().stream().map(this::visitFunctionTypeDef).toList());
         List<CallableCode> callableCodeBlocks = new LinkedList<>();
 
@@ -103,6 +113,9 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
                 symbols.add(functionDefinition.symbol);
             }
         }
+
+        types.addAll(ctx.structDefinition().stream().map(this::visitStructDefinition).map(TypeReference::getType).toList());
+        types.addAll(pendingStructDefinitions);
 
         return new CompilationUnit(file, imports, symbols, types, callableCodeBlocks);
     }
@@ -138,9 +151,7 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
     @Override
     public NamedValueSymbol visitVariableDeclarationWithNoInitialisation(PinLangParser.VariableDeclarationWithNoInitialisationContext ctx) {
         String variableName = visitVariableName(ctx.variableName());
-        TypeReference typeReference = Optional.ofNullable(ctx.nonArrayTypeReference())
-                .map(this::visitNonArrayTypeReference)
-                .orElseGet(() -> visitArrayTypeReference(ctx.arrayTypeReference()));
+        TypeReference typeReference = visitTypeReference(ctx.typeReference());
 
         return new NamedValueSymbol(
                 variableName, typeReference,
@@ -159,8 +170,37 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
 
         return new NamedValueSymbol(
                 variableName, typeReference,
-                getNodeSource(file, ctx), true, false,
+                getNodeSource(file, ctx), ctx.VAR_() != null, false,
                 "", value, false);
+    }
+
+    @Override
+    public TypeReference visitStructDefinition(PinLangParser.StructDefinitionContext ctx) {
+        String name = visitVariableName(ctx.variableName());
+        String documentation = Optional.ofNullable(ctx.documentationCommentLines())
+                .map(this::visitDocumentationCommentLines)
+                .orElse("");
+
+        List<TypeParameter> typeParameters = Optional.of(ctx.genericParameters())
+                .map(this::visitGenericParameters)
+                .orElse(List.of());
+
+        Struct type = new Struct(getNodeSource(file, ctx), name, typeParameters, documentation);
+        List<NamedValueSymbol> fields = ctx.variableDeclaration().stream().map(this::visitVariableDeclaration).toList();
+        type.setSymbols(fields);
+
+        return new TypeReference(name, type, List.of(), List.of());
+    }
+
+    @Override
+    public TypeReference visitAnonymousStruct(PinLangParser.AnonymousStructContext ctx) {
+        String name = getRandomSymbolName();
+        Struct type = new Struct(getNodeSource(file, ctx), name, List.of(), "");
+        List<NamedValueSymbol> fields = ctx.variableDeclaration().stream().map(this::visitVariableDeclaration).toList();
+        type.setSymbols(fields);
+
+        pendingStructDefinitions.add(type);
+        return new TypeReference(name, type, List.of(), List.of());
     }
 
     @Override
@@ -360,7 +400,7 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
         return new TypePassExpression(
                 getNodeSource(file, ctx), new TypeReference(
                 ctx.IDENTIFIER().getText(),
-                null,0, List.of()
+                null,List.of(), List.of()
         ));
     }
 
@@ -391,22 +431,60 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
 
     @Override
     public TypeReference visitTypeReference(PinLangParser.TypeReferenceContext ctx) {
+        List<TypeReference> typeParameters = Optional.ofNullable(ctx.typeArguments())
+                .map(this::visitTypeArguments)
+                .orElse(List.of());
+
         if(ctx.nonArrayTypeReference() != null) {
-            return visitNonArrayTypeReference(ctx.nonArrayTypeReference());
-        } else {
+            TypeReference typeReference = visitNonArrayTypeReference(ctx.nonArrayTypeReference());
+            typeReference.setTypeArguments(typeParameters);
+            return typeReference;
+        } else if(ctx.arrayTypeReference() != null) {
             return visitArrayTypeReference(ctx.arrayTypeReference());
+        } else {
+            TypeReference typeReference = visitTypeReference(ctx.typeReference());
+            typeReference.setArrayDimensions(new ArrayList<>(ctx.ST().size()));
+            return typeReference;
         }
     }
 
     @Override
+    public List<TypeReference> visitTypeArguments(PinLangParser.TypeArgumentsContext ctx) {
+        return ctx.typeArgumentPart().stream().map(this::visitTypeArgumentPart).toList();
+    }
+
+    @Override
+    public TypeReference visitTypeArgumentPart(PinLangParser.TypeArgumentPartContext ctx) {
+        return visitTypeReference(ctx.typeReference());
+    }
+
+    @Override
+    public List<TypeParameter> visitGenericParameters(PinLangParser.GenericParametersContext ctx) {
+        return ctx.genericParameterPart().stream().map(this::visitGenericParameterPart).toList();
+    }
+
+    @Override
+    public TypeParameter visitGenericParameterPart(PinLangParser.GenericParameterPartContext ctx) {
+        String name = visitVariableName(ctx.variableName());
+        List<TypeReference> bounds = ctx.typeReference().stream().map(this::visitTypeReference).toList();
+        return new TypeParameter(name, bounds);
+    }
+
+    @Override
     public TypeReference visitNonArrayTypeReference(PinLangParser.NonArrayTypeReferenceContext ctx) {
-        return new TypeReference(ctx.IDENTIFIER().getText(), null, 0, List.of());
+        if(ctx.IDENTIFIER() != null) {
+            return new TypeReference(ctx.IDENTIFIER().getText(), null, List.of(), List.of());
+        } else {
+            return visitAnonymousStruct(ctx.anonymousStruct());
+        }
     }
 
     @Override
     public TypeReference visitArrayTypeReference(PinLangParser.ArrayTypeReferenceContext ctx) {
-        int dimensionsCount = ctx.arrayIndexingWithOptionalIndex().size();
-        return new TypeReference(ctx.IDENTIFIER().getText(), null, dimensionsCount, List.of());
+        TypeReference typeReference = visitNonArrayTypeReference(ctx.nonArrayTypeReference());
+        typeReference.setArrayDimensions(ctx.arrayIndexingWithOptionalIndex().stream()
+                .map(this::visitArrayIndexingWithOptionalIndex).toList());
+        return typeReference;
     }
 
     @Override
@@ -441,7 +519,11 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
                 .map(this::visitFunctionReturnType)
                 .orElse(null);
 
-        return new CallableType(source, "", List.of(), "", parameters, returnType, isVarArgs);
+        List<TypeParameter> typeParameters = Optional.ofNullable(ctx.genericParameters())
+                .map(this::visitGenericParameters)
+                .orElse(List.of());
+
+        return new CallableType(source, "", typeParameters, "", parameters, returnType, isVarArgs);
     }
 
     @Override
@@ -509,8 +591,12 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
     }
 
     @Override
-    public Object visitArrayIndexingWithOptionalIndex(PinLangParser.ArrayIndexingWithOptionalIndexContext ctx) {
-        return null;
+    public @Nullable Expression visitArrayIndexingWithOptionalIndex(PinLangParser.ArrayIndexingWithOptionalIndexContext ctx) {
+        if(ctx.expression() != null) {
+            return visitExpression(ctx.expression());
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -566,7 +652,7 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
     }
 
     private FunctionDefinition getFunctionDefinition(Source source, String symbolName, CallableType callableType, BlockExpression blockExpression) {
-        String typeName = String.format("%s_%s", symbolName, CALLABLE_TYPE_SIGIL);
+        String typeName = String.format("%s_%s", symbolName, USER_DEFINED_TYPE_SIGIL);
         callableType.setName(typeName);
 
         boolean isMain = symbolName.equals("main");
@@ -633,7 +719,13 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
             expression = new LogicalAndExpression(left, right);
         } else if(ctx.PP() != null) {
             expression = new LogicalOrExpression(left, right);
-        } else {
+        } else if(ctx.D() != null) {
+            expression = new MemberAccessExpression(left, right);
+        } else if(ctx.OB() != null && ctx.CB() !=null) {
+            expression = new ArrayAccessExpression(left, right);
+        } else if(ctx.AAO() != null) {
+            expression = new ArrowAccessExpression(left, right);
+        }else {
             throw new UnsupportedOperationException("Cannot parse binary operator " + ctx);
         }
 
@@ -647,9 +739,13 @@ public class ASTBuilderVisitor implements PinLangParserVisitor<Object> {
         } else if(ctx.SQUIG() != null) {
             return new BitwiseNotExpression(getNodeSource(file, ctx), operand);
         } else if(ctx.EQ() != null) {
-            return new AssignmentExpression(getNodeSource(file, ctx), visitVariableName(ctx.variableName()), operand);
+            return new AssignmentExpression(getNodeSource(file, ctx), visitVariableName(ctx.variableName().getFirst()), operand);
         } else if(ctx.explicitTypeCastSigil() != null) {
             return getExplicitCast(operand, ctx.explicitTypeCastSigil());
+        } else if(ctx.ST() != null) {
+            return new PointerDerefExpression(getNodeSource(file, ctx), operand);
+        } else if(ctx.A() != null) {
+            return new AddressOfExpression(getNodeSource(file, ctx), operand);
         } else {
             throw new UnsupportedOperationException("Cannot parse operator yet " + ctx);
         }

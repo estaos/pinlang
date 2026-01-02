@@ -118,33 +118,33 @@ public class Scope {
     /// The project scope has no parent.
     public static Scope getProjectScope() {
         // Note that these are the built in types, i.e, not user defined.
-        var doubleType = new Type(null, "double", List.of(), "", List.of());
-        var floatType = new Type(null, "float", List.of(), "", List.of(doubleType));
-        var int512Type = new Type(null, "int512", List.of(), "", List.of());
-        var int256Type = new Type(null, "int256", List.of(), "", List.of(int512Type));
-        var int128Type = new Type(null, "int128", List.of(), "", List.of(int256Type));
-        var int64Type = new Type(null, "int64", List.of(), "", List.of(int128Type, doubleType));
-        var int32Type = new Type(null, "int32", List.of(), "", List.of(int64Type, floatType));
-        var int16Type = new Type(null, "int16", List.of(), "", List.of(int32Type));
-        var int8Type = new Type(null, "int8", List.of(), "", List.of(int16Type));
+//        var doubleType = new Type(null, "double", List.of(), "", List.of());
+//        var floatType = new Type(null, "float", List.of(), "", List.of(doubleType));
+//        var int512Type = new Type(null, "int512", List.of(), "", List.of());
+//        var int256Type = new Type(null, "int256", List.of(), "", List.of(int512Type));
+//        var int128Type = new Type(null, "int128", List.of(), "", List.of(int256Type));
+//        var int64Type = new Type(null, "int64", List.of(), "", List.of(int128Type, doubleType));
+//        var int32Type = new Type(null, "int32", List.of(), "", List.of(int64Type, floatType));
+//        var int16Type = new Type(null, "int16", List.of(), "", List.of(int32Type));
+//        var int8Type = new Type(null, "int8", List.of(), "", List.of(int16Type));
+//
+//
+//        var charType = new Type(null, "char", List.of(), "", List.of(int8Type));
+//        var booleanType = new Type(null, "boolean", List.of(), "", List.of());
+//        var anyType = new Type(null, "any", List.of(), "", List.of());
 
-
-        var charType = new Type(null, "char", List.of(), "", List.of(int8Type));
-        var booleanType = new Type(null, "boolean", List.of(), "", List.of());
-        var anyType = new Type(null, "any", List.of(), "", List.of());
-
-        return new Scope("", true)
-                .registerType(int8Type)
-                .registerType(int16Type)
-                .registerType(int32Type)
-                .registerType(int64Type)
-                .registerType(int128Type)
-                .registerType(int256Type)
-                .registerType(int512Type)
-                .registerType(floatType)
-                .registerType(doubleType)
-                .registerType(charType)
-                .registerType(booleanType)
-                .registerType(anyType);
+        return new Scope("", true);
+//                .registerType(int8Type)
+//                .registerType(int16Type)
+//                .registerType(int32Type)
+//                .registerType(int64Type)
+//                .registerType(int128Type)
+//                .registerType(int256Type)
+//                .registerType(int512Type)
+//                .registerType(floatType)
+//                .registerType(doubleType)
+//                .registerType(charType)
+//                .registerType(booleanType)
+//                .registerType(anyType);
     }
 }

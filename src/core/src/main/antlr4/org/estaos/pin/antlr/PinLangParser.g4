@@ -9,7 +9,8 @@ compilationUnit
     | externalImport
     | variableDeclaration
     | functionDefinition
-    | functionTypeDef)* EOF
+    | functionTypeDef
+    | structDefinition)* EOF
     ;
 
 languageImport
@@ -25,22 +26,34 @@ variableDeclaration
     ;
 
 variableDeclarationWithNoInitialisation
-    : VAR_ variableName CO nonArrayTypeReference SC
-    | VAR_ variableName CO arrayTypeReference SC
+    : VAR_ variableName CO typeReference SC
     ;
 
 variableDeclarationWithInitialisation
-    : VAR_ variableName (CO typeReference)? EQ expression SC
+    : (VAR_ | VAL_) variableName (CO typeReference)? EQ expression SC
+    ;
+
+structDefinition
+    : documentationCommentLines? TYPE_ variableName genericParameters? OBC variableDeclaration* CBC
+    ;
+
+anonymousStruct
+    : OBC variableDeclaration* CBC
     ;
 
 expression
     : expression functionCallArgumentEnclosure
+    | expression OB expression CB // Array access
+    | expression D expression // Member access
+    | expression AAO expression // Arrow access
     | typePassExpression
     | anonymousFunctionHeader EG expression    // lambda
     | anonymousFunctionHeader statementsBlock   // anonymous function
     | expression explicitTypeCastSigil
     | NOT expression
     | SQUIG expression
+    | ST expression // Pointer dereference
+    | A expression // Address of
     | expression ST expression
     | expression SL expression
     | expression PC expression
@@ -62,6 +75,7 @@ expression
     | variableName EQ expression
     | OP expression CP // In brackets
     | primaryExpression
+    | OBC (variableName CO expression C?)* CBC // Object
     ;
 
 // Primary expressions are expressions that cannot have other expressions
@@ -183,16 +197,34 @@ variableName
     ;
 
 typeReference
-    : nonArrayTypeReference
+    : nonArrayTypeReference typeArguments?
     | arrayTypeReference
+    | typeReference ST+ // Pointer type reference
+    ;
+
+typeArguments
+    : LT typeArgumentPart (C typeArgumentPart)* GT
+    ;
+
+typeArgumentPart
+    : typeReference
+    ;
+
+genericParameters
+    : LT genericParameterPart (C genericParameterPart)* GT
+    ;
+
+genericParameterPart
+    : variableName (IS_ typeReference (A typeReference)*)?
     ;
 
 nonArrayTypeReference
     : IDENTIFIER
+    | anonymousStruct
     ;
 
 arrayTypeReference
-    : IDENTIFIER arrayIndexingWithOptionalIndex+
+    : nonArrayTypeReference arrayIndexingWithOptionalIndex+
     ;
 
 functionTypeDef
@@ -204,7 +236,7 @@ functionDefinition
     ;
 
 functionHeader
-    : FUNCTION_ variableName OP functionParameterList? CP (CO functionReturnType)?
+    : FUNCTION_ variableName genericParameters? OP functionParameterList? CP (CO functionReturnType)?
     ;
 
 anonymousFunctionHeader
@@ -229,9 +261,7 @@ functionReturnType
     ;
 
 arrayIndexingWithOptionalIndex
-    : (OB CB)
-    // TODO: Add optional expression once AST supports it
-//    : (OB expression? CB)
+    : (OB expression? CB)
     ;
 
 importPath

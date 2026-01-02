@@ -198,7 +198,7 @@ public class ClangCodeGenerator implements  CodeGenerator {
 
     private String getSymbolDeclaration(Symbol symbol, boolean asExtern) {
         if(symbol instanceof NamedValueSymbol valueSymbol) {
-            String asterisks = asterisks(valueSymbol.getType().getArrayDimensions());
+            String asterisks = asterisks(valueSymbol.getType().getArrayDimensions().size());
             String cVariableName = asterisks + valueSymbol.getName();
 
             if(valueSymbol.isFunction()) {
@@ -443,16 +443,16 @@ public class ClangCodeGenerator implements  CodeGenerator {
             TypeReference operandType = Objects.requireNonNull(explicitCastExpression.getOperand().getType());
             TypeReference targetType = Objects.requireNonNull(explicitCastExpression.getType());
             String targetTypeName = targetType.getName();
-            String targetCType = getCTypeName(targetTypeName) + asterisks(targetType.getArrayDimensions());
+            String targetCType = getCTypeName(targetTypeName) + asterisks(targetType.getArrayDimensions().size());
 
             if(targetTypeName.equals("any")) {
-                if(operandType.getArrayDimensions() > 0 || operandType.getType() instanceof  CallableType) {
+                if(operandType.getArrayDimensions().size() > 0 || operandType.getType() instanceof  CallableType) {
                     return String.format("(%s)(%s)", targetCType, operandCExpression);
                 } else {
                     return String.format("(&%s)", operandCExpression);
                 }
             } else if(operandType.getName().equals("any")) {
-                if(targetType.getArrayDimensions() > 0 || targetType.getType() instanceof CallableType) {
+                if(targetType.getArrayDimensions().size() > 0 || targetType.getType() instanceof CallableType) {
                     return String.format("(%s)(%s)", targetCType, operandCExpression);
                 } else {
                     return String.format("*((%s*)(%s))", targetCType, operandCExpression);
@@ -477,7 +477,7 @@ public class ClangCodeGenerator implements  CodeGenerator {
         } else if(callableType.getReturnType().getType() instanceof CallableType returnTypeCallable) {
             return returnTypeCallable.getName();
         }else {
-            String pointers = asterisks(callableType.getReturnType().getArrayDimensions());
+            String pointers = asterisks(callableType.getReturnType().getArrayDimensions().size());
             return getCTypeName(callableType.getReturnType().getName()) + pointers;
         }
     }

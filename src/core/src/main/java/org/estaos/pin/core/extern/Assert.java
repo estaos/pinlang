@@ -8,7 +8,7 @@ import org.estaos.pin.core.parser.ast.Source;
 import java.io.File;
 import java.util.List;
 
-import static org.estaos.pin.core.parser.ASTBuilderVisitor.CALLABLE_TYPE_SIGIL;
+import static org.estaos.pin.core.parser.ASTBuilderVisitor.USER_DEFINED_TYPE_SIGIL;
 
 public class Assert {
     private static final File file = new File("assert.h");
@@ -28,7 +28,7 @@ public class Assert {
     private static CallableType getAssertCallableType() {
         return new CallableType(
                 Source.defaultSource(file),
-                String.format("assert_%s", CALLABLE_TYPE_SIGIL),
+                String.format("assert_%s", USER_DEFINED_TYPE_SIGIL),
                 List.of(),
                 "",
                 List.of(),
